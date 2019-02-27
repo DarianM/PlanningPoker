@@ -1,0 +1,370 @@
+.sessionContainer {
+  padding-left: 55px;
+  padding-right: 85px;
+  display: grid;
+  grid-template-columns: minmax(300px, auto);
+  grid-template-rows: auto;
+  grid-template-areas:
+    "header"
+    "roomid"
+    "game"
+    "results"
+    "stories"
+    "chat";
+  grid-gap: 25px;
+}
+
+.log-session {
+  border: 1px solid #74b807;
+  border-radius: 7px;
+  padding: 20px;
+  margin: 30px;
+  background-color: #f5f5ef;
+}
+
+.session-button {
+  color: #ffffff;
+  background-color: #89c403;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: Arial;
+  padding: 6px 4px;
+  border-radius: 7px;
+  border: 1px solid #74b807;
+  text-shadow: 0px 1px 0px #6f9928;
+}
+
+.session-button:hover {
+  background-color: #77a809;
+  cursor: pointer;
+}
+
+.session-button:active {
+  position: relative;
+  top: 1px;
+}
+
+.votes-option {
+  color: #4b9ae8;
+  background-color: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Open Sans", sans-serif;
+  padding: 9px 8px 11px;
+  border-radius: 4px;
+  border: 1px solid #4b9ae8;
+}
+
+.votes-option:hover {
+  color: #185c9f;
+  border-color: #185c9f;
+  cursor: pointer;
+}
+
+.votes-option:active {
+  position: relative;
+  top: 1px;
+}
+
+.sessionId {
+  width: 95px;
+  height: 30px;
+  margin: 7px;
+}
+
+.header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  color: #000009;
+  border-bottom: 1px solid #d5d9de;
+  background-color: #fff;
+  padding-right: 45px;
+  padding-left: 45px;
+  margin-left: -55px;
+  margin-right: -85px;
+}
+
+.header-userImg {
+  content: url(https://www.planitpoker.com/profile/userimage/1214688/);
+  width: 60px;
+  border-radius: 50%;
+  display: block;
+  padding: 13px;
+}
+
+.header-userName {
+  display: block;
+  float: left;
+  padding: 28px;
+  margin-right: -25px;
+}
+
+.header-logo {
+  content: url(https://planitpoker.azureedge.net/Content/logo.png);
+  padding: 15px 15px;
+}
+
+.stories {
+  grid-area: stories;
+  background-color: white;
+  padding-bottom: 23px;
+  border-radius: 4px;
+}
+
+.chart-container {
+  display: grid;
+  background-color: #fafcfe;
+  grid-template-rows: 60px 433px;
+  grid-template-columns: minmax(300px, auto);
+  grid-template-areas:
+    "title"
+    "donut"
+    "votes";
+}
+
+@media screen and (min-width: 1025px) {
+  .chart-container {
+    display: grid;
+    background-color: #fafcfe;
+    grid-template-rows: 60px 433px;
+    grid-template-columns: minmax(auto, 550px) minmax(160px, 220px);
+    grid-template-areas:
+      "title title"
+      "donut votes";
+  }
+}
+
+.chart-title {
+  grid-area: title;
+  text-align: center;
+  font-size: 20px;
+  padding-top: 15px;
+  background-color: white;
+  border-radius: 5px 5px 0 0;
+  border-bottom: 1px solid #d5d9de;
+}
+
+.chart-donut {
+  grid-area: donut;
+  align-content: center;
+  border: 20px solid #f8e71d;
+  border-radius: 50%;
+  padding: 88px;
+  margin: 40px;
+}
+
+.donut-circle1 {
+  font-weight: 300;
+  font-size: 26px;
+  color: #131b23;
+  margin-bottom: 10px;
+}
+
+.donut-circle2 {
+  font-weight: 400;
+  color: #808284;
+  font-size: 14px;
+}
+
+.donut-circle3 {
+  font-weight: 300;
+  font-size: 20px;
+  color: #131b23;
+  margin-top: 10px;
+}
+
+.chart-votes {
+  grid-area: votes;
+  text-align: center;
+}
+
+.nav-story {
+  list-style-type: none;
+  padding: 0;
+}
+
+.nav-story > li {
+  display: inline;
+  padding: 10px;
+}
+
+.todaystory {
+  border-top: 1px solid #d5d9de;
+  background-color: #f5f5f5;
+  padding-left: 15px;
+}
+
+.game {
+  max-width: 750px;
+  border: 1px solid white;
+  grid-area: game;
+}
+
+.results {
+  display: grid;
+  border-radius: 10px 10px 0 0;
+  grid-area: results;
+  min-width: 300px;
+  max-width: 720px;
+  grid-template-rows: repeat(3, 60px) auto 1fr;
+  background-color: white;
+}
+
+.results > div {
+  padding-left: 20px;
+  padding-right: 20px;
+  border-bottom: 1px solid #d5d9de;
+}
+
+.results-header {
+  color: white;
+  font-size: 20px;
+  background-color: dodgerblue;
+  text-align: center;
+  padding-top: 15px;
+  border-radius: 10px 10px 0 0;
+  grid-area: 1/1/2/3;
+}
+
+.players-text {
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+.timer {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.members {
+  grid-area: 3/1/4/3;
+}
+
+.controls {
+  grid-area: 4/1/5/3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 25px;
+  grid-row-gap: 12px;
+  background-color: #fafcfe;
+  padding: 30px;
+}
+
+.votes-display {
+  padding-right: 20px;
+  color: black;
+  grid-area: 5/1/6/3;
+}
+
+.sessionRoomId {
+  grid-area: roomid;
+}
+
+.chat {
+  grid-area: chat;
+}
+
+.vote-point {
+  padding: 4px 4px;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  outline: 1px solid #d5d9de;
+  outline-offset: -30px;
+}
+
+p.corner {
+  font-size: 18px;
+  color: black;
+  position: absolute;
+  margin: 0;
+  padding: 5px;
+}
+
+p.corner:nth-child(1) {
+  border-color: green;
+  top: 0px;
+  left: 15px;
+}
+
+p.corner:nth-child(2) {
+  border-color: red;
+  top: 0px;
+  right: 15px;
+}
+
+p.corner:nth-child(3) {
+  border-color: yellow;
+  bottom: 0;
+  left: 15px;
+}
+
+p.corner:nth-child(4) {
+  border-color: pink;
+  bottom: 0;
+  right: 15px;
+  transform: scale(-1, -1);
+}
+
+.pokerCardButton {
+  width: 130px;
+  height: 175px;
+  margin: 5px;
+  background-color: white;
+  border: 2px;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #131b23;
+  font-size: 46px;
+  font-weight: 300;
+  font-family: "Lato", sans-serif;
+}
+
+.pokerCardButton:hover {
+  box-shadow: 0px 0px 4.95px 0.05px;
+  cursor: pointer;
+}
+
+.card-center {
+  border: 1px solid #d5d9de;
+  position: absolute;
+  padding: 15px;
+  margin: 25px;
+  width: 60px;
+  height: 100px;
+  border-radius: 4px;
+  margin-left: -117px;
+  cursor: pointer;
+}
+
+.body-session {
+  margin: -8px;
+  color: black;
+  font-size: 16px;
+  font-family: "Open Sans", sans-serif;
+  background-color: #edf2f7;
+  /*background-image: url("./pokerblue.jpg");*/
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+@media screen and (min-width: 867px) {
+  .sessionContainer {
+    padding-left: 55px;
+    padding-right: 85px;
+    display: grid;
+    grid-template-columns: minmax(300px, auto) 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: "header header" "roomid roomid" "game results" "stories stories" "chat .";
+    grid-gap: 25px;
+  }
+}
