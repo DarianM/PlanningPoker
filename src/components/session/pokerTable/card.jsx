@@ -1,4 +1,5 @@
 import React from "react";
+import Connection from "../../../websocket";
 
 const Card = props => (
   <div className="vote-point">
@@ -8,9 +9,13 @@ const Card = props => (
     <p className="corner">{props.value}</p>
     <input
       type="button"
-      id="card{value}"
+      id="card"
       className="pokerCardButton"
       value={props.value}
+      onClick={e => {
+        e.preventDefault();
+        Connection.handleVote(e.target.value);
+      }}
     />
   </div>
 );

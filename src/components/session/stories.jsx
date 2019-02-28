@@ -1,4 +1,6 @@
 import React from "react";
+import StoreState from "../../stores/stateStore";
+import Run from "../..";
 
 const SessionStories = props => (
   <div className="stories">
@@ -14,7 +16,7 @@ const SessionStories = props => (
       </li>
     </ul>
     <StorysMenu />
-    <StoryDescription />
+    <StoryDescription story={props.stories.history.story} />
   </div>
 );
 
@@ -25,6 +27,14 @@ const StorysMenu = props => <div className="story-menu" />;
 const StoryDescription = props => (
   <div id="roomstory" className="todaystory">
     <p>Story Description:</p>
-    <textarea id="storyTeller" value="{state.history.story}" />
+    <textarea
+      id="storyTeller"
+      value={props.story}
+      onChange={e => {
+        StoreState.setStory(e.target.value);
+        Run(StoreState.getState());
+        console.log(StoreState.getState());
+      }}
+    />
   </div>
 );

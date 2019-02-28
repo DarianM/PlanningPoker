@@ -10,12 +10,12 @@ import SessionChat from "./chat";
 const Session = props => (
   <div className="body-session">
     <div className="sessionContainer">
-      <Header />
-      <SessionRoomId />
-      {!state.votes.end ? <PokerTable /> : <Chart />}
-      <PokerResults />
-      <SessionStories />
-      <SessionChat />
+      <Header head={props.state.room} />
+      <SessionRoomId roomId={props.state.room.id} />
+      {!props.state.votes.end ? <PokerTable /> : <Chart />}
+      <PokerResults result={props.state} />
+      <SessionStories stories={props.state} />
+      <SessionChat chat={props.state} />
     </div>
   </div>
 );

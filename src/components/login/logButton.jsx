@@ -1,4 +1,6 @@
 import React from "react";
+import StoreState from "../../stores/stateStore";
+import Connection from "../../websocket";
 
 const LoginButton = props => (
   <div>
@@ -6,7 +8,13 @@ const LoginButton = props => (
       id={props.id}
       className="session-button"
       onClick={e => {
-        e.preventDefalut();
+        e.preventDefault();
+        {
+          props.task == "create"
+            ? Connection.createRoom()
+            : Connection.joinRoom();
+        }
+        StoreState.getState().hasJoined = true;
       }}
     >
       {props.text}

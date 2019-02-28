@@ -1,6 +1,7 @@
 import React from "react";
 import UserName from "./username";
 import LogButton from "./logButton";
+import IdGame from "./idGame";
 
 const Login = props => (
   <React.Fragment>
@@ -8,15 +9,10 @@ const Login = props => (
       <div className="log-session">
         <h2>Poker Planning</h2>
         <UserName />
-        <LogButton id="startSession" text="Start a Session" />
+        <LogButton id="startSession" text="Start a Session" room="create" />
         <h4>... or ...</h4>
-        <input
-          id="joinRoomId"
-          className="sessionId"
-          type="text"
-          placeholder="Session ID"
-        />
-        <LogButton id="joinSession" text="Join a Session" />
+        <IdGame />
+        <LogButton id="joinSession" text="Join a Session" room="join" />
       </div>
     </div>
   </React.Fragment>

@@ -1,11 +1,11 @@
 import React from "react";
-import Logo from "./logedUser";
-import LogedUser from "./logo";
+import Logo from "./logo";
+import LogedUser from "./logedUser";
 
 const Header = props => (
   <div className="header">
     <Logo />
-    <LogedUser />
+    <LogedUser name={props.head.userName} />
   </div>
 );
 

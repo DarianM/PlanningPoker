@@ -12,19 +12,35 @@ class State extends EventEmitter {
       },
       votes: {
         end: false,
-        list: ["4"]
+        list: [{ user: "Trump", voted: "China" }]
       },
       history: {
         story: ""
       },
       chat: {
-        messages: [""]
+        messages: ["test"]
       }
     };
   }
 
   getState() {
     return this.state;
+  }
+
+  setRoomId(id) {
+    this.state.room.id = id;
+  }
+
+  setUserName(user) {
+    this.state.room.userName = user;
+  }
+
+  setStory(story) {
+    this.state.history.story = story;
+  }
+
+  addVote(vote) {
+    this.state.votes.list.push(vote);
   }
 }
 const gameState = new State();

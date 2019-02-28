@@ -16,8 +16,10 @@ const PokerResults = props => (
       <ControlButton title={"Finish Voting"} onClick={"2"} />
     </div>
     <ul>
-      {/* {state.votes.list.map((item,index) => <VotesList key={index} vote={item} />)}
-                 {state.votes.list.map(item => <li>{state.room.userName} voted {item}</li>)}*/}
+      {props.result.votes.list.map((item, index) => (
+        <VotesList key={index} user={item.user} vote={item.voted} />
+      ))}
+      {/* {state.votes.list.map(item => <li>{state.room.userName} voted {item}</li>)}*/}
     </ul>
   </div>
 );
@@ -28,11 +30,20 @@ const ControlButton = props => (
   <button
     className="votes-option"
     onClick={e => {
-      handleClick(e, props.onClick);
+      e.preventDefault();
+      // handleClick(e, props.onClick);
     }}
   >
     {props.title}
   </button>
+);
+
+const VotesList = ({ vote, user }) => (
+  <li>
+    <p>
+      {user} voted: {vote}
+    </p>
+  </li>
 );
 
 function handleClick(e, option) {

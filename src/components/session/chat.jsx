@@ -1,26 +1,39 @@
 import React from "react";
+import Connection from "../../websocket";
 
 const SessionChat = props => (
   <div id="message" className="chat">
     <ChatInput />
-    <ChatOutput />
+    <ChatOutput output={props.chat} />
   </div>
 );
 
 export default SessionChat;
 
-const ChatInput = () => (
+const ChatInput = props => (
   <div id="chat-input">
     <p>Message...</p>
     <input type="text" id="messageInput" />
-    <input type="button" id="sendButton" value="SendMessage" />
+    <input
+      type="button"
+      id="sendButton"
+      value="SendMessage"
+      onClick={e => {
+        e.preventDefault();
+        Connection.handleMessage(e.target.value);
+      }}
+    />
   </div>
 );
 
-const ChatOutput = () => (
+const ChatOutput = props => (
   <div id="chat-output">
     <ul id="messageList">
-      {/* {state.chat.messages.map((item, index) => <li key={index}>{state.room.userName} says: {item}</li>)} */}
+      {props.output.chat.messages.map((message, index) => (
+        <li key={index}>
+          {props.output.room.userName} says: {message}
+        </li>
+      ))}
     </ul>
   </div>
 );
