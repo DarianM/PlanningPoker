@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import Login from "./components/login/login";
 import Session from "./components/session/session";
 
@@ -15,5 +16,9 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  state: PropTypes.object
+};
 
 export default App;

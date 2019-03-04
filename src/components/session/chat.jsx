@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import Connection from "../../websocket";
 
 const SessionChat = props => (
@@ -10,21 +10,36 @@ const SessionChat = props => (
 
 export default SessionChat;
 
-const ChatInput = props => (
-  <div id="chat-input">
-    <p>Message...</p>
-    <input type="text" id="messageInput" />
-    <input
-      type="button"
-      id="sendButton"
-      value="SendMessage"
-      onClick={e => {
-        e.preventDefault();
-        Connection.handleMessage(e.target.value);
-      }}
-    />
-  </div>
-);
+class ChatInput extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { message: "" };
+  }
+  render() {
+    return (
+      <div id="chat-input">
+        <p>Message...</p>
+        <input
+          type="text"
+          id="messageInput"
+          onChange={e => {
+            this.state.message = e.target.value;
+          }}
+        />
+        <input
+          type="button"
+          id="sendButton"
+          value="SendMessage"
+          onClick={e => {
+            e.preventDefault();
+            Connection.handleMessage(this.state.message);
+          }}
+        />
+      </div>
+    );
+  }
+}
 
 const ChatOutput = props => (
   <div id="chat-output">

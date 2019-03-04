@@ -147,6 +147,7 @@
 
 .chart-donut {
   grid-area: donut;
+  place-self: center;
   align-content: center;
   border: 20px solid #f8e71d;
   border-radius: 50%;
@@ -207,7 +208,7 @@
   grid-area: results;
   min-width: 300px;
   max-width: 720px;
-  grid-template-rows: repeat(3, 60px) auto 1fr;
+  grid-template-rows: repeat(2, 60px) auto 1fr;
   background-color: white;
 }
 
@@ -239,6 +240,28 @@
 
 .members {
   grid-area: 3/1/4/3;
+}
+
+.member-logo {
+  content: url(https://www.planitpoker.com/profile/userimage/1249920);
+  width: 42px;
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.member-logo-status {
+  width: 10px;
+  background-color: green;
+  height: 10px;
+  border: 1px solid gray;
+  border-radius: 50%;
+  margin-top: 35px;
+  position: absolute;
+}
+
+.player {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
 }
 
 .controls {
@@ -284,7 +307,7 @@ p.corner {
 
 p.corner:nth-child(1) {
   border-color: green;
-  top: 0px;
+  top: 3px;
   left: 15px;
 }
 
@@ -302,7 +325,7 @@ p.corner:nth-child(3) {
 
 p.corner:nth-child(4) {
   border-color: pink;
-  bottom: 0;
+  bottom: 3px;
   right: 15px;
   transform: scale(-1, -1);
 }

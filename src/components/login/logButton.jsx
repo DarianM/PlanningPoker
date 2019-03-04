@@ -1,6 +1,7 @@
 import React from "react";
 import StoreState from "../../stores/stateStore";
 import Connection from "../../websocket";
+import Run from "../..";
 
 const LoginButton = props => (
   <div>
@@ -9,12 +10,15 @@ const LoginButton = props => (
       className="session-button"
       onClick={e => {
         e.preventDefault();
-        {
-          props.task == "create"
+        if (StoreState.state.room.userName === "") {
+          StoreState.state.room.validUser = false;
+          Run(StoreState.getState());
+        } else {
+          props.room === "create"
             ? Connection.createRoom()
             : Connection.joinRoom();
+          StoreState.getState().hasJoined = true;
         }
-        StoreState.getState().hasJoined = true;
       }}
     >
       {props.text}

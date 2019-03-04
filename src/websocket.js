@@ -1,12 +1,10 @@
-import { Component } from "react";
 const signalR = require("@aspnet/signalr");
 import StateStore from "./stores/stateStore";
 import Run from "../src/index";
 
-class Hub extends Component {
+class Hub {
   constructor(props) {
-    super(props);
-
+    //super(props);
     this.state = {
       hubConnection: new signalR.HubConnectionBuilder()
         .withUrl("http://192.168.1.113:5000/chatHub")
@@ -16,19 +14,35 @@ class Hub extends Component {
       .start()
       .then(() => console.log("Connection started!"))
       .catch(err => console.log(err));
-  }
 
-  onHandleVote() {
     this.state.hubConnection.on("ReceiveVote", function(user, vote) {
-      StateStore.state.votes.list.push({ user: user, voted: vote });
-      console.log(StateStore.state);
+      StateStore.addVote(user, vote);
       Run(StateStore.getState());
     });
-  }
 
-  onHandleMessage() {
     this.state.hubConnection.on("ReceiveMessage", function(user, message) {
       StateStore.state.chat.messages.push(message);
+      Run(StateStore.getState());
+    });
+
+    this.state.hubConnection.on("FinishGame", function() {
+      StateStore.endVote();
+      Run(StateStore.getState());
+    });
+
+    this.state.hubConnection.on("ClearVotes", function() {
+      StateStore.clearVotes();
+      Run(StateStore.getState());
+    });
+
+    this.state.hubConnection.on("FlipVotes", function() {
+      StateStore.flipVotes();
+      Run(StateStore.getState());
+    });
+
+    this.state.hubConnection.on("JoinMember", function(members) {
+      StateStore.addMember(members);
+      console.log(StateStore.getState());
       Run(StateStore.getState());
     });
   }
@@ -36,11 +50,22 @@ class Hub extends Component {
   async createRoom() {
     const Id = await this.state.hubConnection.invoke("CreateRoom");
     StateStore.setRoomId(Id);
-    Run(StateStore.getState());
+    await this.state.hubConnection.invoke(
+      "HandleMember",
+      StateStore.state.room.id,
+      StateStore.state.room.userName
+    );
+    //Run(StateStore.getState());
   }
 
-  joinRoom(id) {
-    this.state.hubConnection.invoke("JoinRoom", id);
+  async joinRoom() {
+    this.state.hubConnection.invoke("JoinRoom", StateStore.state.room.id);
+    await this.state.hubConnection.invoke(
+      "HandleMember",
+      StateStore.state.room.id,
+      StateStore.state.room.userName
+    );
+    //Run(StateStore.getState());
   }
 
   handleVote(vote) {
@@ -51,7 +76,7 @@ class Hub extends Component {
       StateStore.state.room.id,
       StateStore.state.history.story
     );
-    this.onHandleVote();
+    //this.onHandleVote();
   }
 
   handleMessage(msg) {
@@ -61,7 +86,30 @@ class Hub extends Component {
       msg,
       StateStore.state.room.id
     );
-    this.onHandleMessage();
+    //this.onHandleMessage();
+  }
+
+  handleControl(option) {
+    switch (option) {
+      case "1": {
+        this.state.hubConnection.invoke("ClearVotes", StateStore.state.room.id);
+        break;
+        //this.onClearVotes();
+      }
+      case "2": {
+        this.state.hubConnection.invoke(
+          "FinishVoting",
+          StateStore.state.room.id,
+          StateStore.state.history.story
+        );
+        break;
+        //this.onFinishVoting();
+      }
+      case "3": {
+        this.state.hubConnection.invoke("ShowVotes", StateStore.state.room.id);
+        break;
+      }
+    }
   }
 }
 

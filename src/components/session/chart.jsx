@@ -1,8 +1,9 @@
 import React from "react";
+import StateStore from "../../stores/stateStore";
 
 const Chart = props => (
   <div className="chart-container">
-    <div className="chart-title">{state.history.story}</div>
+    <div className="chart-title">{StateStore.state.history.story}</div>
     <div className="chart-donut">
       <div className="donut-circle1">2Players</div>
       <div className="donut-circle2">voted</div>

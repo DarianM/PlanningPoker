@@ -1,6 +1,6 @@
-import { EventEmitter } from "events";
+import { Component } from "react";
 
-class State extends EventEmitter {
+class State extends Component {
   constructor() {
     super();
     this.state = {
@@ -8,10 +8,13 @@ class State extends EventEmitter {
       userError: false,
       room: {
         id: -1,
-        userName: ""
+        userName: "",
+        validUser: true
       },
+      members: [],
       votes: {
         end: false,
+        flip: false,
         list: [{ user: "Trump", voted: "China" }]
       },
       history: {
@@ -39,8 +42,24 @@ class State extends EventEmitter {
     this.state.history.story = story;
   }
 
-  addVote(vote) {
-    this.state.votes.list.push(vote);
+  addMember(members) {
+    this.state.members = members;
+  }
+
+  addVote(user, vote) {
+    this.state.votes.list.push({ user: user, voted: vote });
+  }
+
+  endVote() {
+    this.state.votes.end = true;
+  }
+
+  clearVotes() {
+    this.state.votes.list = [];
+  }
+
+  flipVotes() {
+    this.state.votes.flip = true;
   }
 }
 const gameState = new State();
