@@ -1,31 +1,63 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import Header from "./header/header";
-import SessionRoomId from "./sessionRoomId";
+import SessionInfo from "./sessionInfo";
 import PokerTable from "./pokerTable/pokerTable";
 import Chart from "./chart";
-import PokerResults from "./pokerResults/pokerResults";
-import SessionStories from "./stories";
-import SessionChat from "./chat";
+import PokerBets from "./pokerBets/pokerBets";
+import Stories from "./stories";
+import { Toasts } from "../modals";
 
-const Session = props => (
+const mapStateToProps = state => {
+  console.log(state);
+  // console.log(new Date().getTime());
+  return {
+    game: state.gameRoom,
+    history: state.gameHistory,
+    votes: state.gameVotes,
+    chat: state.chat,
+    toasts: state.toasts
+  };
+};
+
+const ConnectedSession = ({ game, history, votes, chat, toasts }) => (
   <div className="body-session">
     <div className="sessionContainer">
-      <Header head={props.state.room} />
-      <SessionRoomId roomId={props.state.room.id} />p
-      {!props.state.votes.end ? <PokerTable /> : <Chart />}
-      <PokerResults result={props.state} />
-      <SessionStories stories={props.state} />
-      <SessionChat chat={props.state} />
+      <Header head={game.user} />
+      <SessionInfo roomId={game.id} roomHistory={history} />
+      {!votes.end ? <PokerTable /> : <Chart />}
+      <PokerBets stats={game} results={votes} log={chat} />
+      <Stories stories={history} />
     </div>
+    <Toasts toasts={toasts} />
   </div>
 );
 
-Session.propTypes = {
-  state: {
-    room: { id: PropTypes.string },
-    votes: { end: PropTypes.bool }
-  }
+ConnectedSession.propTypes = {
+  game: PropTypes.shape({
+    user: PropTypes.string,
+    id: PropTypes.number
+  }).isRequired,
+  history: PropTypes.shape({
+    storys: PropTypes.arrayOf(PropTypes.object),
+    story: PropTypes.string
+  }).isRequired,
+  votes: PropTypes.shape({
+    end: PropTypes.instanceOf(Date),
+    flip: PropTypes.bool,
+    list: PropTypes.arrayOf(
+      PropTypes.shape({
+        user: PropTypes.string,
+        voted: PropTypes.string,
+        id: PropTypes.number
+      })
+    )
+  }).isRequired,
+  chat: PropTypes.shape({
+    messages: PropTypes.arrayOf(PropTypes.object)
+  }).isRequired
 };
 
+const Session = connect(mapStateToProps)(ConnectedSession);
 export default Session;

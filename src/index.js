@@ -1,13 +1,15 @@
-// import PropTypes from "prop-types";
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import StateStore from "./stores/stateStore";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import App from './App';
+import store from './storeRedux';
 
-const Run = gameState =>
-  ReactDOM.render(<App state={gameState} />, document.getElementById("app"));
-Run(StateStore.getState());
+ReactDOM.render(
+  // eslint-disable-next-line react/jsx-filename-extension
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('app'),
+);
 
 module.hot.accept();
-
-export default Run;

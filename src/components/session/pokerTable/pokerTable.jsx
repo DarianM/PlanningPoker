@@ -1,7 +1,7 @@
 import React from "react";
 import PokerCards from "./pokerCards";
 
-const PokerTable = props => (
+const PokerTable = () => (
   <div id="pointButtons" className="game">
     <PokerCards />
   </div>

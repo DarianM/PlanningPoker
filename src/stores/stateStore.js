@@ -1,8 +1,5 @@
-import { Component } from "react";
-
-class State extends Component {
+class State {
   constructor() {
-    super();
     this.state = {
       hasJoined: false,
       userError: false,
@@ -47,7 +44,7 @@ class State extends Component {
   }
 
   addVote(user, vote) {
-    this.state.votes.list.push({ user: user, voted: vote });
+    this.state.votes.list.push({ user, voted: vote });
   }
 
   endVote() {

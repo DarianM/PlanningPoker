@@ -1,12 +1,17 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Logo from "./logo";
 import LogedUser from "./logedUser";
 
-const Header = props => (
+const Header = ({ head }) => (
   <div className="header">
     <Logo />
-    <LogedUser name={props.head.userName} />
+    <LogedUser name={head} />
   </div>
 );
+
+Header.propTypes = {
+  head: PropTypes.string.isRequired
+};
 
 export default Header;

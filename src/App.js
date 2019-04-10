@@ -1,24 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import Login from "./components/login/login";
-import Session from "./components/session/session";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import Login from './components/login/login';
+import Session from './components/session/session';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.game = props.state;
-  }
-  render() {
-    return (
-      <div>
-        {!this.game.hasJoined ? <Login /> : <Session state={this.game} />}
-      </div>
-    );
-  }
-}
+const mapStateToProps = state => ({ hasJoined: state.gameRoom.hasJoined });
 
-App.propTypes = {
-  state: PropTypes.object
+const ConnectedApp = ({ hasJoined }) => (
+  // eslint-disable-next-line react/jsx-filename-extension
+  <div>{!hasJoined ? <Login /> : <Session />}</div>
+);
+
+ConnectedApp.propTypes = {
+  hasJoined: PropTypes.bool.isRequired,
 };
 
+const App = connect(mapStateToProps)(ConnectedApp);
 export default App;

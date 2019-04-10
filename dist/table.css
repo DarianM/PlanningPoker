@@ -10,7 +10,7 @@
     "game"
     "results"
     "stories"
-    "chat";
+    ".";
   grid-gap: 25px;
 }
 
@@ -56,8 +56,24 @@
 }
 
 .votes-option:hover {
-  color: #185c9f;
-  border-color: #185c9f;
+  color: #1b538b;
+  border-color: #1b538b;
+  cursor: pointer;
+}
+
+.votes-blue {
+  color: white;
+  background-color: #4b9ae8;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Open Sans", sans-serif;
+  padding: 9px 8px 11px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.votes-blue:hover {
+  background-color: #1b538b;
   cursor: pointer;
 }
 
@@ -86,7 +102,7 @@
 }
 
 .header-userImg {
-  content: url(https://www.planitpoker.com/profile/userimage/1214688/);
+  content: url(https://www.planitpoker.com/profile/userimage/1274166/);
   width: 60px;
   border-radius: 50%;
   display: block;
@@ -113,6 +129,7 @@
 }
 
 .chart-container {
+  grid-area: game;
   display: grid;
   background-color: #fafcfe;
   grid-template-rows: 60px 433px;
@@ -190,10 +207,49 @@
   padding: 10px;
 }
 
+.newstory-btn {
+  float: right;
+}
+
+.newstory-btn > :first-child {
+  color: #4b9ae8;
+  font-size: 16px;
+  border: none;
+  background: none;
+}
+
+.newstory-btn > :first-child :hover {
+  color: #1b538b;
+  cursor: pointer;
+}
+
 .todaystory {
-  border-top: 1px solid #d5d9de;
+  border-top-color: rgb(213, 217, 222);
+  border-top-style: solid;
+  border-top-width: 1px;
+}
+
+.storytable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.storytable tr:nth-child(odd) {
   background-color: #f5f5f5;
-  padding-left: 15px;
+}
+
+.storytable tr:hover {
+  background-color: #d9d9d9;
+  cursor: pointer;
+}
+
+.table-title {
+  padding: 10px;
+}
+
+.table-title :first-child {
+  color: #a6a6a6;
+  padding-right: 5px;
 }
 
 .game {
@@ -208,7 +264,7 @@
   grid-area: results;
   min-width: 300px;
   max-width: 720px;
-  grid-template-rows: repeat(2, 60px) auto 1fr;
+  grid-template-rows: repeat(2, 60px) auto auto 1fr;
   background-color: white;
 }
 
@@ -264,6 +320,13 @@
   grid-template-columns: auto 1fr 1fr;
 }
 
+.startgame-control {
+  display: grid;
+  grid-area: 4/1/5/3;
+  background-color: #fafcfe;
+  padding: 30px;
+}
+
 .controls {
   grid-area: 4/1/5/3;
   display: grid;
@@ -271,7 +334,7 @@
   grid-column-gap: 25px;
   grid-row-gap: 12px;
   background-color: #fafcfe;
-  padding: 30px;
+  padding: 35px;
 }
 
 .votes-display {
@@ -284,8 +347,45 @@
   grid-area: roomid;
 }
 
-.chat {
-  grid-area: chat;
+.activestory {
+  font-size: 18px;
+  color: #4b9ae8;
+}
+
+.activestory:hover {
+  color: #1b538b;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.editable-input {
+  vertical-align: middle;
+  display: table-cell;
+  width: 650px;
+  height: 35px;
+  border: 1px solid rgb(213, 217, 222);
+  border-radius: 3px;
+  background-color: white;
+}
+
+.activestory-input {
+  border: none;
+  width: 600px;
+  font-size: 16px;
+  padding-left: 15px;
+}
+
+.editable-submit {
+  color: white;
+  padding: 5px;
+  height: 30px;
+  background-color: rgb(75, 154, 232);
+  border: 1px transparent;
+  border-radius: 4px;
+}
+
+.editable-submit:hover {
+  cursor: pointer;
 }
 
 .vote-point {
@@ -370,16 +470,6 @@ p.corner:nth-child(4) {
   /*background-image: url("./pokerblue.jpg");*/
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  line-height: 60px; /* Vertically center the text there */
-}
-
 @media screen and (min-width: 867px) {
   .sessionContainer {
     padding-left: 55px;
@@ -387,7 +477,12 @@ p.corner:nth-child(4) {
     display: grid;
     grid-template-columns: minmax(300px, auto) 1fr;
     grid-template-rows: auto;
-    grid-template-areas: "header header" "roomid roomid" "game results" "stories stories" "chat .";
+    grid-template-areas:
+      "header header"
+      "roomid roomid"
+      "game results"
+      "stories results"
+      ". .";
     grid-gap: 25px;
   }
 }
