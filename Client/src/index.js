@@ -13,3 +13,5 @@ ReactDOM.render(
 );
 
 module.hot.accept();
+
+fetch("/api").then(r => r.json().then(res => console.log(res)));
