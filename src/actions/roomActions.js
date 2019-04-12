@@ -1,5 +1,6 @@
 import {
-  ASSIGN_ROOM,
+  CREATE_ROOM,
+  JOIN_ROOM,
   START_GAME,
   NEW_MEMBER,
   ADD_VOTE,
@@ -17,10 +18,16 @@ import {
 
 function login(payload) {
   return dispatch => {
-    dispatch({
-      type: ASSIGN_ROOM,
-      payload: { user: payload.user, hasJoined: true }
-    });
+    if (payload.id)
+      dispatch({
+        type: JOIN_ROOM,
+        payload: { user: payload.user, id: payload.id, hasJoined: true }
+      });
+    else
+      dispatch({
+        type: CREATE_ROOM,
+        payload: { user: payload.user, hasJoined: true }
+      });
     dispatch({
       type: NEW_MEMBER,
       payload: { member: payload.user, voted: false }

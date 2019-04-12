@@ -47,7 +47,6 @@ class PokerBets extends Component {
 
     const { seconds } = this.state;
     const { minutes } = this.state;
-
     return (
       <div id="votesResults" className="results">
         <StatusMessage

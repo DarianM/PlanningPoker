@@ -1,6 +1,6 @@
 import logReducer from "./logReducer";
 import actions from "../actions/roomActions";
-import { ASSIGN_ROOM, NEW_MEMBER } from "../actions/types";
+import { CREATE_ROOM, NEW_MEMBER } from "../actions/types";
 
 describe("logReducer", () => {
   describe("before assinging a room, login data is required", () => {
@@ -12,7 +12,7 @@ describe("logReducer", () => {
       payload: { member: "name", voted: false }
     });
     expect(mockLoginFunc).toBeCalledWith({
-      type: ASSIGN_ROOM,
+      type: CREATE_ROOM,
       payload: { user: "name", hasJoined: true }
     });
   });
@@ -30,7 +30,7 @@ describe("logReducer", () => {
 
       expect(
         logReducer(initialState, {
-          type: ASSIGN_ROOM,
+          type: CREATE_ROOM,
           payload: { user: "name", hasJoined: true }
         })
       ).toEqual(expected);

@@ -1,7 +1,7 @@
 import React from "react";
 import StateStore from "../../stores/stateStore";
 
-const IdGame = props => (
+const IdGame = prost => (
   <div id="joinId">
     <input
       id="gameId"

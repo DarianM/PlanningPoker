@@ -53,7 +53,10 @@ describe("Poker results Component", () => {
         <PokerBets stats={gameRoom} results={gameVotes} log={chat} />
       );
       wrapper.setProps({
-        stats: { gameStart: new Date("2019-04-09T11:05:10") }
+        stats: {
+          gameStart: new Date("2019-04-09T11:05:10"),
+          members: gameRoom.members
+        }
       });
       wrapper.instance().startTimer();
       jest.advanceTimersByTime(1000);
@@ -67,7 +70,10 @@ describe("Poker results Component", () => {
         <PokerBets stats={gameRoom} results={gameVotes} log={chat} />
       );
       wrapper.setProps({
-        stats: { gameStart: new Date("2019-04-09T11:04:50") }
+        stats: {
+          gameStart: new Date("2019-04-09T11:04:50"),
+          members: gameRoom.members
+        }
       });
       wrapper.instance().startTimer();
       jest.advanceTimersByTime(1000);
@@ -97,7 +103,10 @@ describe("Poker results Component", () => {
       wrapper.instance().stopTimer();
 
       wrapper.setProps({
-        stats: { gameStart: new Date("2018-01-09T11:05:20") }
+        stats: {
+          gameStart: new Date("2018-01-09T11:05:20"),
+          members: gameRoom.members
+        }
       });
       expect(wrapper.find(".timer").text()).toEqual("00:13");
     });
@@ -109,7 +118,10 @@ describe("Poker results Component", () => {
         <PokerBets stats={gameRoom} results={gameVotes} log={chat} />
       );
       wrapper.setProps({
-        stats: { gameStart: new Date("2019-04-09T11:02:00") }
+        stats: {
+          gameStart: new Date("2019-04-09T11:02:00"),
+          members: gameRoom.members
+        }
       });
       wrapper.instance().startTimer();
       jest.advanceTimersByTime(1000);
@@ -117,7 +129,10 @@ describe("Poker results Component", () => {
       wrapper.instance().stopTimer();
 
       wrapper.setProps({
-        stats: { gameStart: new Date("2019-04-09T11:01:45") }
+        stats: {
+          gameStart: new Date("2019-04-09T11:01:45"),
+          members: gameRoom.members
+        }
       });
       wrapper.instance().startTimer();
       jest.advanceTimersByTime(1000);

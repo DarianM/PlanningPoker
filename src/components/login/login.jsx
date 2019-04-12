@@ -16,16 +16,25 @@ export class ConnectedLogin extends Component {
       user: "",
       id: -1
     };
-    this.handleSession = this.handleSession.bind(this);
     this.handleUser = this.handleUser.bind(this);
     this.handleJoinId = this.handleJoinId.bind(this);
+    this.handleNewSession = this.handleNewSession.bind(this);
+    this.handleJoinSession = this.handleJoinSession.bind(this);
   }
 
-  handleSession(event) {
+  handleNewSession(event) {
     event.preventDefault();
     const { login } = this.props;
     const { user } = this.state;
     login({ user });
+  }
+
+  handleJoinSession(event) {
+    event.preventDefault();
+    const { login } = this.props;
+    const { user } = this.state;
+    const { id } = this.state;
+    login({ user, id });
   }
 
   handleUser(event) {
@@ -56,7 +65,7 @@ export class ConnectedLogin extends Component {
               type="button"
               id="startSession"
               className="session-button"
-              onClick={this.handleSession}
+              onClick={this.handleNewSession}
             >
               Start a Session
             </button>
@@ -74,9 +83,7 @@ export class ConnectedLogin extends Component {
               type="button"
               id="joinSession"
               className="session-button"
-              onClick={e => {
-                e.preventDefault();
-              }}
+              onClick={this.handleJoinSession}
             >
               Join a Session
             </button>

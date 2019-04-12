@@ -1,6 +1,6 @@
 import {
-  // ASSIGN_ROOM,
-  SOCKET_ROOM_CREATED,
+  // ROOM_CREATED,
+  CREATE_ROOM,
   START_GAME,
   USER_VOTE,
   NEW_MEMBER,
@@ -13,7 +13,7 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-  if (action.type === SOCKET_ROOM_CREATED) {
+  if (action.type === CREATE_ROOM) {
     return { ...state, ...action.payload };
   }
   if (action.type === START_GAME) {
