@@ -8,6 +8,7 @@ const messages = {
     { message: "voted", user: "testUser", id: 2 }
   ]
 };
+
 const name = "Dave";
 
 describe("Chat Component", () => {
