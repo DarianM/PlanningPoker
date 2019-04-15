@@ -13,7 +13,3 @@ ReactDOM.render(
 );
 
 module.hot.accept();
-
-fetch("/api", { method: "DELETE" }).then(r =>
-  r.json().then(res => console.log(res))
-);
