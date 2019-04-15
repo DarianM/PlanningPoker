@@ -10,4 +10,8 @@ router.get("/api", function (req, res, next) {
   res.send({ title: "asfjhasjk" });
 });
 
+router.post("/api", function (req, res, next) {
+  console.log(req.body)
+});
+
 module.exports = router;

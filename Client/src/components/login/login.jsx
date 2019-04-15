@@ -27,6 +27,10 @@ export class ConnectedLogin extends Component {
     const { login } = this.props;
     const { user } = this.state;
     login({ user });
+    fetch("http://localhost:3000/api", {
+      method: "POST",
+      body: { user }
+    });
   }
 
   handleJoinSession(event) {
