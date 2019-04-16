@@ -4,7 +4,7 @@ const knexfile = require("../knexfile");
 const knex = require("knex")(knexfile);
 const joi = require("joi");
 
-router.get("/", function(req, res, next) {
+router.get("/", function(req, res) {
   res.send({ message: "Hello. You are @ localhost:3000/api" });
 });
 
