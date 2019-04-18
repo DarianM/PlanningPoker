@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 import Login from "./components/login/login";
 import Session from "./components/session/session";
 
-const mapStateToProps = state => ({ hasJoined: state.gameRoom.hasJoined });
+const mapStateToProps = state => ({
+  hasJoined: state.gameRoom.hasJoined
+});
 
 const ConnectedApp = ({ hasJoined }) => (
   // eslint-disable-next-line react/jsx-filename-extension

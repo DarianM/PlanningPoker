@@ -26,7 +26,7 @@ export class ConnectedLogin extends Component {
     event.preventDefault();
     const { login } = this.props;
     const { user } = this.state;
-    const response = await fetch("/api", {
+    const response = await fetch("/api/room", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user })
@@ -36,11 +36,17 @@ export class ConnectedLogin extends Component {
     login({ user, roomId, memberId });
   }
 
-  handleJoinSession(event) {
+  async handleJoinSession(event) {
     event.preventDefault();
     const { login } = this.props;
     const { user } = this.state;
     const { id } = this.state;
+    const response = await fetch("/api/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user, id })
+    });
+    const data = await response.json();
     login({ user, id });
   }
 

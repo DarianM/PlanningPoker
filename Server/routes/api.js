@@ -10,7 +10,8 @@ router.get("/", async (req, res) => {
 
 const validateMember = async (req, res, next) => {
   const memberSchema = joi.object().keys({
-    user: joi.string()
+    user: joi.string(),
+    roomName: joi.string()
   });
   try {
     await joi.validate(req.body, memberSchema);
@@ -20,29 +21,40 @@ const validateMember = async (req, res, next) => {
   }
 };
 
-const createRoom = async (req, res, next) => {
-  const UNIQUE_CONSTRAINT_FAILED = 19;
-  let roomId = Math.ceil(Math.random() * 100);
-  try {
-    await knex("rooms").insert({ uid: roomId });
-    req.body.roomId = roomId;
-    next();
-  } catch (error) {
-    error.errno === UNIQUE_CONSTRAINT_FAILED
-      ? await createRoom()
-      : res.sendStatus(500);
-  }
-};
-
-router.post("/room", validateMember, createRoom, async (req, res) => {
-  try {
-    const [memberId] = await knex("members")
-      .insert({ name: req.body.user })
-      .returning("id");
-    res.send({ roomId: req.body.roomId, memberId });
-  } catch (error) {
-    res.sendStatus(400);
-  }
+router.post("/join", async (req, res) => {
+  const roomId = req.body.id;
+  const name = req.body.user;
+  const result = await knex("members")
+    .select("name")
+    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
+    .where({ roomId, name });
+  console.log(result);
 });
+
+router.post("/room", validateMember, async (req, res) => {
+  const roomName = req.body.roomName || "NewRoom";
+  const owner = req.body.user;
+
+  res.send(await createRoom(owner, roomName));
+});
+
+async function createRoom(owner, roomName) {
+  let memberId;
+  let roomId;
+  await knex.transaction(async trx => {
+    [memberId] = await knex("members")
+      .transacting(trx)
+      .insert({ name: owner })
+      .returning("id");
+    [roomId] = await knex("rooms")
+      .transacting(trx)
+      .insert({ name: roomName })
+      .returning("id");
+    await knex("roomsMembers")
+      .transacting(trx)
+      .insert({ userId: memberId, roomId });
+  });
+  return { roomId, memberId };
+}
 
 module.exports = router;
