@@ -20,11 +20,10 @@ export default function(state = initialState, action) {
     return { ...state, ...action.payload };
   }
   if (action.type === NEW_MEMBER) {
-    const member = { ...action.payload, id: state.nextMemberId };
     return {
       ...state,
-      members: [...state.members, member],
-      nextMemberId: state.nextMemberId + 1
+      user: action.payload.member,
+      members: [...state.members, action.payload]
     };
   }
 

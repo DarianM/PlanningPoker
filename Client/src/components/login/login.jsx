@@ -26,12 +26,14 @@ export class ConnectedLogin extends Component {
     event.preventDefault();
     const { login } = this.props;
     const { user } = this.state;
-    login({user});
     const response = await fetch("/api", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user })
     });
+    const data = await response.json();
+    const { roomId, memberId } = data;
+    login({ user, roomId, memberId });
   }
 
   handleJoinSession(event) {

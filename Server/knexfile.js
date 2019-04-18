@@ -8,7 +8,8 @@ module.exports = {
     },
     migrations: {
       directory: "./db/migrations"
-    }
+    },
+    useNullAsDefault: true
   },
   test: {
     client: "sqlite3",
@@ -17,6 +18,7 @@ module.exports = {
     },
     migrations: {
       directory: "./db/migrations"
-    }
+    },
+    useNullAsDefault: true
   }
 };

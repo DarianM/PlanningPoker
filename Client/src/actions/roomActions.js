@@ -26,11 +26,11 @@ function login(payload) {
     else
       dispatch({
         type: CREATE_ROOM,
-        payload: { user: payload.user, hasJoined: true }
+        payload: { id: payload.roomId, hasJoined: true }
       });
     dispatch({
       type: NEW_MEMBER,
-      payload: { member: payload.user, voted: false }
+      payload: { member: payload.user, voted: false, id: payload.memberId }
     });
   };
 }
