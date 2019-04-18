@@ -9,7 +9,6 @@ const initialStore = {
     user: "",
     id: -1,
     hasJoined: false,
-    nextMemberId: 2,
     members: [{ member: "testUser", voted: true, id: 1 }],
     gameStart: null
   },
