@@ -10,8 +10,8 @@ router.get("/", async (req, res) => {
 
 const validateMember = async (req, res, next) => {
   const memberSchema = joi.object().keys({
-    user: joi.string(),
-    roomName: joi.string()
+    user: joi.string().not(""),
+    roomName: joi.string().allow("")
   });
   try {
     await joi.validate(req.body, memberSchema);
