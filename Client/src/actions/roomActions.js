@@ -16,21 +16,24 @@ import {
   RESET_TIMER
 } from "./types";
 
-function login(payload) {
+function createRoom(payload) {
   return dispatch => {
-    if (payload.id)
-      dispatch({
-        type: JOIN_ROOM,
-        payload: { user: payload.user, id: payload.id, hasJoined: true }
-      });
-    else
-      dispatch({
-        type: CREATE_ROOM,
-        payload: { id: payload.roomId, hasJoined: true }
-      });
+    dispatch({
+      type: CREATE_ROOM,
+      payload: { id: payload.roomId, hasJoined: true }
+    });
     dispatch({
       type: NEW_MEMBER,
       payload: { member: payload.user, voted: false, id: payload.memberId }
+    });
+  };
+}
+
+function joinRoom(payload) {
+  return dispatch => {
+    dispatch({
+      type: JOIN_ROOM,
+      payload
     });
   };
 }
@@ -124,7 +127,8 @@ function resetTimer(payload) {
 }
 
 export default {
-  login,
+  createRoom,
+  joinRoom,
   startGame,
   addVote,
   addStory,
