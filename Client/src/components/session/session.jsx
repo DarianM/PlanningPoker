@@ -24,7 +24,11 @@ const ConnectedSession = ({ game, history, votes, chat, toasts }) => (
   <div className="body-session">
     <div className="sessionContainer">
       <Header head={game.user} />
-      <SessionInfo roomId={game.id} roomHistory={history} />
+      <SessionInfo
+        roomName={game.roomName}
+        roomId={game.id}
+        roomHistory={history}
+      />
       {!votes.end ? <PokerTable /> : <Chart />}
       <PokerBets stats={game} results={votes} log={chat} />
       <Stories stories={history} />

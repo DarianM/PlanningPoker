@@ -5,14 +5,22 @@ import actions from "../../actions/roomActions";
 import EditableText from "../editableText";
 
 const mapDispatchToProps = dispatch => ({
-  editStory: story => dispatch(actions.editStory(story))
+  editStory: story => dispatch(actions.editStory(story)),
+  editRoomName: roomName => dispatch(actions.editRoomName(roomName))
 });
 
-export const ConnectedSessionInfo = ({ roomId, roomHistory, editStory }) => {
+export const ConnectedSessionInfo = ({
+  roomId,
+  roomName,
+  editRoomName,
+  roomHistory,
+  editStory
+}) => {
   const onTextChanged = ({ value }) =>
     editStory({ value, id: roomHistory.activeStory.id });
   return (
     <div>
+      <EditableText text={roomName} commit={editRoomName} />
       <p className="sessionRoomId">
         your room ID:
         {roomId}

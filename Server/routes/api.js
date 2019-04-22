@@ -105,7 +105,7 @@ async function createRoom(owner, roomName) {
       .transacting(trx)
       .insert({ userId: memberId, roomId });
   });
-  return { roomId, memberId };
+  return { roomId, memberId, roomName };
 }
 
 module.exports = router;

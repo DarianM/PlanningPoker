@@ -20,7 +20,11 @@ function createRoom(payload) {
   return dispatch => {
     dispatch({
       type: CREATE_ROOM,
-      payload: { id: payload.roomId, hasJoined: true }
+      payload: {
+        id: payload.roomId,
+        hasJoined: true,
+        roomName: payload.roomName
+      }
     });
     dispatch({
       type: NEW_MEMBER,
@@ -33,7 +37,12 @@ function joinRoom(payload) {
   return dispatch => {
     dispatch({
       type: JOIN_ROOM,
-      payload
+      payload: {
+        id: payload.roomId,
+        user: payload.user,
+        members: payload.roomMembers,
+        hasJoined: true
+      }
     });
   };
 }
@@ -81,6 +90,13 @@ function editStory(payload) {
         }
       });
     dispatch({ type: EDIT_STORY, payload });
+  };
+}
+
+function editRoomName(payload) {
+  return {
+    type: CREATE_ROOM,
+    payload: { roomName: payload.value }
   };
 }
 
@@ -134,6 +150,7 @@ export default {
   addStory,
   deleteStory,
   editStory,
+  editRoomName,
   addMessage,
   memberVoted,
   flipCards,

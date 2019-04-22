@@ -30,10 +30,7 @@ export default function(state = initialState, action) {
   if (action.type === JOIN_ROOM) {
     return {
       ...state,
-      id: action.payload.roomId,
-      user: action.payload.user,
-      members: action.payload.roomMembers,
-      hasJoined: true
+      ...action.payload
     };
   }
 

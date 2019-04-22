@@ -15,7 +15,8 @@ export class ConnectedLogin extends Component {
     super();
     this.state = {
       user: "",
-      id: -1
+      id: -1,
+      roomName: "ABc"
     };
     this.handleUser = this.handleUser.bind(this);
     this.handleJoinId = this.handleJoinId.bind(this);
@@ -27,14 +28,16 @@ export class ConnectedLogin extends Component {
     event.preventDefault();
     const { createRoom } = this.props;
     const { user } = this.state;
+    let { roomName } = this.state;
     const response = await fetch("/api/room", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user })
+      body: JSON.stringify({ user, roomName })
     });
     const data = await response.json();
+    ({ roomName } = data);
     const { roomId, memberId } = data;
-    createRoom({ user, roomId, memberId });
+    createRoom({ user, roomId, roomName, memberId });
   }
 
   async handleJoinSession(event) {
@@ -48,7 +51,7 @@ export class ConnectedLogin extends Component {
       body: JSON.stringify({ user, roomId: id })
     });
     const data = await response.json();
-    if (response.status === 400){
+    if (response.status === 400) {
       console.log(data.error);
     } else {
       joinRoom(data);
@@ -85,11 +88,8 @@ export class ConnectedLogin extends Component {
               className="session-button"
               onClick={this.handleNewSession}
             >
-
-
-
-              Start a Session
-</button>
+              {`Start a Session`}
+            </button>
             <h4>... or ...</h4>
             <div id="joinId">
               <input
@@ -106,11 +106,8 @@ export class ConnectedLogin extends Component {
               className="session-button"
               onClick={this.handleJoinSession}
             >
-
-
-
-              Join a Session
-</button>
+              {`Join a Session`}
+            </button>
           </div>
         </div>
       </>

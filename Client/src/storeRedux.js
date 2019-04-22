@@ -8,6 +8,7 @@ const initialStore = {
   gameRoom: {
     user: "",
     id: -1,
+    roomName: "",
     hasJoined: false,
     members: [],
     gameStart: null
