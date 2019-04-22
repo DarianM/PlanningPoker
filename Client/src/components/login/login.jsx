@@ -42,20 +42,17 @@ export class ConnectedLogin extends Component {
     const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    const room = await fetch(`/api/room/${id}`);
-    if (room.status === 200) {
-      const response = await fetch("/api/member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, roomId: id })
-      });
-      if (response.status === 400)
-        console.log("A user with this name already exists");
-      else {
-        const data = await response.json();
-        joinRoom(data);
-      }
-    } else console.log(`Room with id ${id} does not exist`);
+    const response = await fetch("/api/member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user, roomId: id })
+    });
+    const data = await response.json();
+    if (response.status === 400){
+      console.log(data.error);
+    } else {
+      joinRoom(data);
+    }
   }
 
   handleUser(event) {
@@ -90,8 +87,9 @@ export class ConnectedLogin extends Component {
             >
 
 
+
               Start a Session
-                                    </button>
+</button>
             <h4>... or ...</h4>
             <div id="joinId">
               <input
@@ -110,8 +108,9 @@ export class ConnectedLogin extends Component {
             >
 
 
+
               Join a Session
-                                    </button>
+</button>
           </div>
         </div>
       </>

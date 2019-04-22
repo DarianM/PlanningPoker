@@ -62,21 +62,27 @@ router.get("/", async (req, res) => {
   res.send({ message: "Hello. You are @ localhost:3000/api" });
 });
 
-router.get("/room/:roomId", async (req, res) => {
-  const id = req.params.roomId;
-  const [room] = await knex("rooms")
+const checkRoomAvailability = async id => {
+  const [roomId] = await knex("rooms")
     .select()
     .where({ id });
-  return room ? res.send({ id }) : res.sendStatus(404);
-});
+  return roomId;
+};
 
 router.post("/member", validateNewMember, async (req, res) => {
   const { roomId, user } = req.body;
 
+  const isRoomAvailable = await checkRoomAvailability(roomId);
+  if (isRoomAvailable === undefined) {
+    return res.status(400).send({ error: "Room not available" });
+  }
+
   const isUsernameTaken = await checkUserUniquenessWithinRoom(user, roomId);
   !isUsernameTaken
     ? res.send(await addUserToRoom(user, roomId))
-    : res.sendStatus(400);
+    : res.status(400).send({
+        error: "A user with the same name already exists in the room"
+      });
 });
 
 router.post("/room", validateNewRoom, async (req, res) => {
