@@ -5,7 +5,8 @@ import actions from "../../actions/roomActions";
 
 function mapDispatchToProps(dispatch) {
   return {
-    login: user => dispatch(actions.login(user))
+    createRoom: user => dispatch(actions.createRoom(user)),
+    joinRoom: data => dispatch(actions.joinRoom(data))
   };
 }
 
@@ -24,7 +25,7 @@ export class ConnectedLogin extends Component {
 
   async handleNewSession(event) {
     event.preventDefault();
-    const { login } = this.props;
+    const { createRoom } = this.props;
     const { user } = this.state;
     const response = await fetch("/api/room", {
       method: "POST",
@@ -33,21 +34,25 @@ export class ConnectedLogin extends Component {
     });
     const data = await response.json();
     const { roomId, memberId } = data;
-    login({ user, roomId, memberId });
+    createRoom({ user, roomId, memberId });
   }
 
   async handleJoinSession(event) {
     event.preventDefault();
-    const { login } = this.props;
+    const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    const response = await fetch("/api/join", {
+    const response = await fetch("/api/member", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, id })
+      body: JSON.stringify({ user, roomId: id })
     });
     const data = await response.json();
-    login({ user, id });
+    if (response.status === 400){
+      console.log(data.error);
+    } else {
+      joinRoom(data);
+    }
   }
 
   handleUser(event) {
@@ -55,7 +60,7 @@ export class ConnectedLogin extends Component {
   }
 
   handleJoinId(event) {
-    this.setState({ id: event.target.value });
+    this.setState({ id: Number(event.target.value) });
   }
 
   render() {
@@ -80,8 +85,11 @@ export class ConnectedLogin extends Component {
               className="session-button"
               onClick={this.handleNewSession}
             >
+
+
+
               Start a Session
-            </button>
+</button>
             <h4>... or ...</h4>
             <div id="joinId">
               <input
@@ -98,8 +106,11 @@ export class ConnectedLogin extends Component {
               className="session-button"
               onClick={this.handleJoinSession}
             >
+
+
+
               Join a Session
-            </button>
+</button>
           </div>
         </div>
       </>
@@ -108,7 +119,8 @@ export class ConnectedLogin extends Component {
 }
 
 ConnectedLogin.propTypes = {
-  login: PropTypes.func.isRequired
+  createRoom: PropTypes.func.isRequired,
+  joinRoom: PropTypes.func.isRequired
 };
 
 const Login = connect(

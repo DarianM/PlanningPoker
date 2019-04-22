@@ -11,7 +11,6 @@ import { Toasts } from "../modals";
 
 const mapStateToProps = state => {
   console.log(state);
-  // console.log(new Date().getTime());
   return {
     game: state.gameRoom,
     history: state.gameHistory,

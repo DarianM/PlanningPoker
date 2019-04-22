@@ -1,11 +1,11 @@
 import {
-  // ROOM_CREATED,
   CREATE_ROOM,
   START_GAME,
   USER_VOTE,
   NEW_MEMBER,
   DELETE_VOTES,
-  RESET_TIMER
+  RESET_TIMER,
+  JOIN_ROOM
 } from "../actions/types";
 
 const initialState = {
@@ -24,6 +24,16 @@ export default function(state = initialState, action) {
       ...state,
       user: action.payload.member,
       members: [...state.members, action.payload]
+    };
+  }
+
+  if (action.type === JOIN_ROOM) {
+    return {
+      ...state,
+      id: action.payload.roomId,
+      user: action.payload.user,
+      members: action.payload.roomMembers,
+      hasJoined: true
     };
   }
 
