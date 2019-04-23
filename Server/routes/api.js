@@ -1,4 +1,17 @@
 const express = require("express");
+const ws = require("ws").Server;
+const wss = new ws({ port: 2345 });
+const roomsSockets = { 1: [] };
+
+wss.on("connection", (s, req) => {
+  // const roomId = req.url;
+  // s.roomId = roomId;
+  roomsSockets;
+  s.on("message", m => {
+    s.roomId = JSON.parse(m).id;
+  });
+  console.log("connected");
+});
 
 const router = express.Router();
 const joi = require("joi");
@@ -20,8 +33,9 @@ const checkUserUniquenessWithinRoom = async (user, roomId) => {
 };
 
 const addUserToRoom = async (user, roomId) => {
+  let userId;
   await knex.transaction(async trx => {
-    const [userId] = await knex("members")
+    [userId] = await knex("members")
       .transacting(trx)
       .insert({ name: user });
     await knex("roomsMembers")
@@ -29,7 +43,22 @@ const addUserToRoom = async (user, roomId) => {
       .insert({ userId, roomId });
   });
   const roomMembers = await getRoomMembers(roomId);
-  return { user, roomId, roomMembers };
+
+  const { roomName } = await knex("rooms")
+    .select("name as roomName")
+    .where({ id: roomId })
+    .first();
+
+  console.log(`Clients size: ${wss.clients.size}`);
+  wss.clients.forEach(c => {
+    console.log(`client room ${c.roomId} param room id ${roomId}`);
+
+    if (c.roomId === roomId) {
+      console.log("sending...");
+      c.send(JSON.stringify({ user, userId }));
+    }
+  });
+  return { user, roomId, roomMembers, roomName };
 };
 
 const validateNewRoom = async (req, res, next) => {
