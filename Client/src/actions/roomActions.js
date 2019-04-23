@@ -16,8 +16,29 @@ import {
   RESET_TIMER
 } from "./types";
 
+function openWebSocket(roomId, dispatch) {
+  console.log(`opening web socket for room ${roomId}`);
+  const socket = new WebSocket(`ws://localhost:2345/`);
+  socket.onopen = () => socket.send(JSON.stringify({ id: roomId }));
+  socket.onmessage = event => {
+    const data = JSON.parse(event.data);
+    console.log(`new user joined ${data}`);
+
+    dispatch({
+      type: NEW_MEMBER,
+      payload: {
+        member: data.user,
+        id: data.userId
+      }
+    });
+  };
+}
+
 function createRoom(payload) {
   return dispatch => {
+    const { roomId } = payload;
+    openWebSocket(roomId, dispatch);
+
     dispatch({
       type: CREATE_ROOM,
       payload: {
@@ -34,11 +55,15 @@ function createRoom(payload) {
 }
 
 function joinRoom(payload) {
+  const { roomId } = payload;
+
   return dispatch => {
+    openWebSocket(roomId, dispatch);
     dispatch({
       type: JOIN_ROOM,
       payload: {
         id: payload.roomId,
+        roomName: payload.roomName,
         user: payload.user,
         members: payload.roomMembers,
         hasJoined: true
