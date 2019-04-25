@@ -3,14 +3,19 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Login from "./components/login/login";
 import Session from "./components/session/session";
+import { Toasts } from "./components/modals";
 
 const mapStateToProps = state => ({
-  hasJoined: state.gameRoom.hasJoined
+  hasJoined: state.gameRoom.hasJoined,
+  toasts: state.toasts
 });
 
-const ConnectedApp = ({ hasJoined }) => (
+const ConnectedApp = ({ hasJoined, toasts }) => (
   // eslint-disable-next-line react/jsx-filename-extension
-  <div>{!hasJoined ? <Login /> : <Session />}</div>
+  <>
+    <div>{!hasJoined ? <Login /> : <Session />}</div>
+    <Toasts toasts={toasts} />
+  </>
 );
 
 ConnectedApp.propTypes = {

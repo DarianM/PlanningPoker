@@ -1,16 +1,50 @@
 const express = require("express");
 const ws = require("ws").Server;
-const wss = new ws({ port: 2345 });
-const roomsSockets = { 1: [] };
+const wss = new ws({ host: "192.168.1.105", port: "2345" });
+const roomsSockets = {};
+let disconnectedIPs = [];
 
 wss.on("connection", (s, req) => {
-  // const roomId = req.url;
-  // s.roomId = roomId;
-  roomsSockets;
-  s.on("message", m => {
-    s.roomId = JSON.parse(m).id;
+  const currentIp = req.connection.remoteAddress;
+  console.log(currentIp + " connected");
+  s.isAlive = true;
+  const interval = setInterval(() => {
+    wss.clients.forEach(ws => {
+      if (!ws.isAlive) {
+        console.log("terminating");
+        ws.terminate();
+      }
+      console.log(wss.clients.size);
+      ws.isAlive = false;
+      ws.ping("ping", false, err => console.log("--ping sent--"));
+    });
+  }, 7000);
+  s.on("pong", () => {
+    console.log("pong");
+    s.isAlive = true;
   });
-  console.log("connected");
+  s.on("message", m => {
+    console.log("socket onmessage " + m);
+    if (typeof m === "string") {
+      return;
+    }
+    const roomId = JSON.parse(m).id;
+    roomsSockets[roomId]
+      ? roomsSockets[roomId].push(s)
+      : (roomsSockets[roomId] = [s]);
+  });
+  s.on("close", (code, reason) => {
+    // code 1001 closed connection - 1006 lost connection
+    console.log(code);
+    console.log(reason);
+    console.log("client lost connection " + currentIp);
+    disconnectedIPs.push(currentIp);
+    setTimeout(() => {
+      disconnectedIPs = disconnectedIPs.filter(ips => ips !== currentIp);
+      console.log(disconnectedIPs);
+    }, 20000);
+  });
+  s.on("error", err => console.log(err.message));
 });
 
 const router = express.Router();
@@ -48,15 +82,9 @@ const addUserToRoom = async (user, roomId) => {
     .select("name as roomName")
     .where({ id: roomId })
     .first();
-
-  console.log(`Clients size: ${wss.clients.size}`);
-  wss.clients.forEach(c => {
-    console.log(`client room ${c.roomId} param room id ${roomId}`);
-
-    if (c.roomId === roomId) {
-      console.log("sending...");
-      c.send(JSON.stringify({ user, userId }));
-    }
+  roomsSockets[roomId] = roomsSockets[roomId] || [];
+  roomsSockets[roomId].forEach(s => {
+    if (s.readyState === 1) s.send(JSON.stringify({ user, userId }));
   });
   return { user, roomId, roomMembers, roomName };
 };
@@ -87,8 +115,20 @@ const validateNewMember = async (req, res, next) => {
   }
 };
 
-router.get("/", async (req, res) => {
-  res.send({ message: "Hello. You are @ localhost:3000/api" });
+router.get("/recent", (req, res) => {
+  const ip = req.connection.remoteAddress;
+  console.log(ip);
+  if (disconnectedIPs.find(ips => ips === ip)) {
+    res.send({ ip: `${ip}  -->  reconnection possible` });
+  } else {
+    res.send({ ip: "session expired" });
+  }
+});
+
+router.get("/:roomId", async (req, res) => {
+  const roomId = req.params.roomId;
+  const members = await getRoomMembers(roomId);
+  res.send({ members });
 });
 
 const checkRoomAvailability = async id => {
@@ -99,26 +139,30 @@ const checkRoomAvailability = async id => {
 };
 
 router.post("/member", validateNewMember, async (req, res) => {
-  const { roomId, user } = req.body;
+  setTimeout(async () => {
+    const { roomId, user } = req.body;
 
-  const isRoomAvailable = await checkRoomAvailability(roomId);
-  if (isRoomAvailable === undefined) {
-    return res.status(400).send({ error: "Room not available" });
-  }
+    const isRoomAvailable = await checkRoomAvailability(roomId);
+    if (isRoomAvailable === undefined) {
+      return res.status(400).send({ error: "Room not available" });
+    }
 
-  const isUsernameTaken = await checkUserUniquenessWithinRoom(user, roomId);
-  !isUsernameTaken
-    ? res.send(await addUserToRoom(user, roomId))
-    : res.status(400).send({
-        error: "A user with the same name already exists in the room"
-      });
+    const isUsernameTaken = await checkUserUniquenessWithinRoom(user, roomId);
+    !isUsernameTaken
+      ? res.send(await addUserToRoom(user, roomId))
+      : res.status(400).send({
+          error: "A user with the same name already exists in the room"
+        });
+  }, 4000);
 });
 
 router.post("/room", validateNewRoom, async (req, res) => {
-  const roomName = req.body.roomName || "NewRoom";
-  const owner = req.body.user;
+  setTimeout(async () => {
+    const roomName = req.body.roomName || "NewRoom";
+    const owner = req.body.user;
 
-  res.send(await createRoom(owner, roomName));
+    res.send(await createRoom(owner, roomName));
+  }, 3000);
 });
 
 async function createRoom(owner, roomName) {

@@ -16,7 +16,8 @@ export class ConnectedLogin extends Component {
     this.state = {
       user: "",
       id: -1,
-      roomName: "ABc"
+      roomName: "ABc",
+      isLoading: false
     };
     this.handleUser = this.handleUser.bind(this);
     this.handleJoinId = this.handleJoinId.bind(this);
@@ -24,38 +25,29 @@ export class ConnectedLogin extends Component {
     this.handleJoinSession = this.handleJoinSession.bind(this);
   }
 
+  // async componentDidMount() {
+  //   const response = await fetch("/api/recent");
+  //   const data = await response.json();
+  //   console.log(data.ip);
+  // }
+
   async handleNewSession(event) {
     event.preventDefault();
+    this.setState({ isLoading: true });
     const { createRoom } = this.props;
     const { user } = this.state;
-    let { roomName } = this.state;
-    const response = await fetch("/api/room", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, roomName })
-    });
-    const data = await response.json();
-    ({ roomName } = data);
-    const { roomId, memberId } = data;
-    createRoom({ user, roomId, roomName, memberId });
+    const { roomName } = this.state;
+
+    createRoom({ user, roomName });
   }
 
   async handleJoinSession(event) {
     event.preventDefault();
+    this.setState({ isLoading: true });
     const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    const response = await fetch("/api/member", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, roomId: id })
-    });
-    const data = await response.json();
-    if (response.status === 400) {
-      console.log(data.error);
-    } else {
-      joinRoom(data);
-    }
+    joinRoom({ user, roomId: id });
   }
 
   handleUser(event) {
@@ -67,6 +59,7 @@ export class ConnectedLogin extends Component {
   }
 
   render() {
+    const { isLoading } = this.state;
     return (
       <>
         <div className="container">
@@ -86,10 +79,11 @@ export class ConnectedLogin extends Component {
               type="button"
               id="startSession"
               className="session-button"
+              disabled={isLoading}
               onClick={this.handleNewSession}
             >
-              {`Start a Session`}
-            </button>
+              {isLoading ? "Processing..." : "Start a Session"}
+                                    </button>
             <h4>... or ...</h4>
             <div id="joinId">
               <input
@@ -104,9 +98,10 @@ export class ConnectedLogin extends Component {
               type="button"
               id="joinSession"
               className="session-button"
+              disabled={isLoading}
               onClick={this.handleJoinSession}
             >
-              {`Join a Session`}
+              {isLoading ? "Processing..." : "Join a Session"}
             </button>
           </div>
         </div>

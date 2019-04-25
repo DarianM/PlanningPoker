@@ -15,11 +15,24 @@ import {
   END_GAME,
   RESET_TIMER
 } from "./types";
+import { addToast } from "./toastsActions";
 
 function openWebSocket(roomId, dispatch) {
   console.log(`opening web socket for room ${roomId}`);
-  const socket = new WebSocket(`ws://localhost:2345/`);
+  const socket = new WebSocket(`ws://192.168.1.105:2345/`);
   socket.onopen = () => socket.send(JSON.stringify({ id: roomId }));
+  const pingInterval = setInterval(() => {
+    socket.send("ping");
+  }, 7000);
+  socket.onerror = () => {
+    console.log("Server offline || client lost connection");
+    //dispatch
+    clearInterval(pingInterval);
+    const rejoinInterval = setInterval(() => {
+      dispatch(rejoin({ roomId, rejoinInterval }));
+      console.log("rejoining");
+    }, 5000);
+  };
   socket.onmessage = event => {
     const data = JSON.parse(event.data);
     console.log(`new user joined ${data}`);
@@ -28,47 +41,94 @@ function openWebSocket(roomId, dispatch) {
       type: NEW_MEMBER,
       payload: {
         member: data.user,
+        voted: false,
         id: data.userId
       }
     });
   };
 }
 
-function createRoom(payload) {
-  return dispatch => {
+function rejoin(payload) {
+  console.log("inside rejoin");
+  return async dispatch => {
     const { roomId } = payload;
-    openWebSocket(roomId, dispatch);
-
-    dispatch({
-      type: CREATE_ROOM,
-      payload: {
-        id: payload.roomId,
-        hasJoined: true,
-        roomName: payload.roomName
+    try {
+      const response = await fetch(`/api/${roomId}`);
+      if (response.status === 200) {
+        clearInterval(payload.rejoinInterval);
+        openWebSocket(roomId, dispatch);
+        const data = await response.json();
+        console.log(data);
       }
-    });
-    dispatch({
-      type: NEW_MEMBER,
-      payload: { member: payload.user, voted: false, id: payload.memberId }
-    });
+    } catch (error) {
+      console.log("*******");
+      dispatch(addToast({ text: "Server oflline" }));
+    }
+  };
+}
+
+function createRoom(payload) {
+  return async dispatch => {
+    let { roomName } = payload;
+    const { user } = payload;
+    try {
+      const response = await fetch("/api/room", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, roomName })
+      });
+      const data = await response.json();
+      ({ roomName } = data);
+      const { roomId, memberId } = data;
+      openWebSocket(roomId, dispatch);
+
+      dispatch({
+        type: CREATE_ROOM,
+        payload: {
+          id: roomId,
+          hasJoined: true,
+          roomName
+        }
+      });
+      dispatch({
+        type: NEW_MEMBER,
+        payload: { member: user, voted: false, id: memberId }
+      });
+    } catch (error) {
+      dispatch(addToast({ text: "Server is offline..." }));
+    }
   };
 }
 
 function joinRoom(payload) {
-  const { roomId } = payload;
+  const { user, roomId } = payload;
 
-  return dispatch => {
-    openWebSocket(roomId, dispatch);
-    dispatch({
-      type: JOIN_ROOM,
-      payload: {
-        id: payload.roomId,
-        roomName: payload.roomName,
-        user: payload.user,
-        members: payload.roomMembers,
-        hasJoined: true
+  return async dispatch => {
+    try {
+      const response = await fetch("/api/member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, roomId })
+      });
+      const data = await response.json();
+      if (response.status === 400) {
+        console.log(data.error);
+      } else {
+        openWebSocket(roomId, dispatch);
+        dispatch({
+          type: JOIN_ROOM,
+          payload: {
+            id: roomId,
+            roomName: data.roomName,
+            user,
+            members: data.roomMembers,
+            hasJoined: true
+          }
+        });
       }
-    });
+    } catch (error) {
+      dispatch(addToast({ text: "Server offline" }));
+    }
   };
 }
 
