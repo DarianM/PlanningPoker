@@ -16,11 +16,11 @@ const mapStateToProps = state => {
     history: state.gameHistory,
     votes: state.gameVotes,
     chat: state.chat,
-    toasts: state.toasts
+    
   };
 };
 
-const ConnectedSession = ({ game, history, votes, chat, toasts }) => (
+const ConnectedSession = ({ game, history, votes, chat }) => (
   <div className="body-session">
     <div className="sessionContainer">
       <Header head={game.user} />
@@ -33,7 +33,6 @@ const ConnectedSession = ({ game, history, votes, chat, toasts }) => (
       <PokerBets stats={game} results={votes} log={chat} />
       <Stories stories={history} />
     </div>
-    <Toasts toasts={toasts} />
   </div>
 );
 
