@@ -1,6 +1,6 @@
 const express = require("express");
 const ws = require("ws").Server;
-const wss = new ws({ host: "192.168.1.105", port: "2345" });
+const wss = new ws({ host: "192.168.0.101", port: "2345" });
 const roomsSockets = {};
 let disconnectedIPs = [];
 
@@ -25,18 +25,24 @@ wss.on("connection", (s, req) => {
   });
   s.on("message", m => {
     console.log("socket onmessage " + m);
-    if (typeof m === "string") {
+    if (m === "ping") {
       return;
     }
     const roomId = JSON.parse(m).id;
+    s.roomId = roomId;
     roomsSockets[roomId]
       ? roomsSockets[roomId].push(s)
       : (roomsSockets[roomId] = [s]);
   });
   s.on("close", (code, reason) => {
+    roomsSockets[s.roomId] = roomsSockets[s.roomId].filter(
+      socket => socket !== s
+    );
+    s.terminate();
+    clearInterval(interval);
+    console.log(roomsSockets);
     // code 1001 closed connection - 1006 lost connection
-    console.log(code);
-    console.log(reason);
+
     console.log("client lost connection " + currentIp);
     disconnectedIPs.push(currentIp);
     setTimeout(() => {
@@ -58,15 +64,14 @@ const getRoomMembers = async roomId => {
     .where({ roomId });
 };
 
-const checkUserUniquenessWithinRoom = async (user, roomId) => {
-  const roomMembers = await getRoomMembers(roomId);
+const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
   return roomMembers.find(m => {
     const userToCompare = `^${m.member}$`;
     return new RegExp(userToCompare, "i").test(user);
   });
 };
 
-const addUserToRoom = async (user, roomId) => {
+const addUserToRoom = async (user, roomId, roomMembers) => {
   let userId;
   await knex.transaction(async trx => {
     [userId] = await knex("members")
@@ -76,17 +81,23 @@ const addUserToRoom = async (user, roomId) => {
       .transacting(trx)
       .insert({ userId, roomId });
   });
-  const roomMembers = await getRoomMembers(roomId);
 
-  const { roomName } = await knex("rooms")
-    .select("name as roomName")
-    .where({ id: roomId })
-    .first();
+  roomMembers.push({ member: user, id: userId });
+
+  const { roomName } = await getRoomName(roomId);
+
   roomsSockets[roomId] = roomsSockets[roomId] || [];
   roomsSockets[roomId].forEach(s => {
     if (s.readyState === 1) s.send(JSON.stringify({ user, userId }));
   });
   return { user, roomId, roomMembers, roomName };
+};
+
+const getRoomName = async roomId => {
+  return await knex("rooms")
+    .select("name as roomName")
+    .where({ id: roomId })
+    .first();
 };
 
 const validateNewRoom = async (req, res, next) => {
@@ -117,7 +128,6 @@ const validateNewMember = async (req, res, next) => {
 
 router.get("/recent", (req, res) => {
   const ip = req.connection.remoteAddress;
-  console.log(ip);
   if (disconnectedIPs.find(ips => ips === ip)) {
     res.send({ ip: `${ip}  -->  reconnection possible` });
   } else {
@@ -128,7 +138,8 @@ router.get("/recent", (req, res) => {
 router.get("/:roomId", async (req, res) => {
   const roomId = req.params.roomId;
   const members = await getRoomMembers(roomId);
-  res.send({ members });
+  const { roomName } = await getRoomName(roomId);
+  res.send({ members, roomName });
 });
 
 const checkRoomAvailability = async id => {
@@ -146,10 +157,14 @@ router.post("/member", validateNewMember, async (req, res) => {
     if (isRoomAvailable === undefined) {
       return res.status(400).send({ error: "Room not available" });
     }
+    const roomMembers = await getRoomMembers(roomId);
 
-    const isUsernameTaken = await checkUserUniquenessWithinRoom(user, roomId);
+    const isUsernameTaken = await checkUserUniquenessWithinRoom(
+      user,
+      roomMembers
+    );
     !isUsernameTaken
-      ? res.send(await addUserToRoom(user, roomId))
+      ? res.send(await addUserToRoom(user, roomId, roomMembers))
       : res.status(400).send({
           error: "A user with the same name already exists in the room"
         });
