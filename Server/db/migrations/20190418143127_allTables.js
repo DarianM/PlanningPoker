@@ -2,6 +2,7 @@ exports.up = async knex => {
   await knex.schema.createTable("members", table => {
     table.increments("id").primary();
     table.string("name").notNullable();
+    table.string("vote");
   });
   await knex.schema.createTable("rooms", table => {
     table.increments("id").primary();

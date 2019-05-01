@@ -13,10 +13,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => {
-  return { loggedUser: state.gameRoom.user, start: state.gameRoom.gameStart };
+  return {
+    loggedUser: state.gameRoom.user,
+    room: state.gameRoom.id,
+    start: state.gameRoom.gameStart
+  };
 };
 
-export const ConnectedCard = ({ value, addNewVote, loggedUser, start }) => (
+export const ConnectedCard = ({ value, addNewVote, loggedUser, room, start }) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
     <p className="corner" />
@@ -29,7 +33,7 @@ export const ConnectedCard = ({ value, addNewVote, loggedUser, start }) => (
       value={value}
       onClick={e => {
         e.preventDefault();
-        addNewVote({ user: loggedUser, voted: value }, start);
+        addNewVote({ user: loggedUser, roomId: room, voted: value }, start);
       }}
     />
   </div>

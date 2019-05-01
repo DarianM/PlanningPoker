@@ -19,15 +19,12 @@ import { addToast } from "./toastsActions";
 
 function openWebSocket(user, roomId, dispatch) {
   console.log(`opening web socket for room ${roomId}`);
-  const socket = new WebSocket(`ws://192.168.0.101:2345/`);
+  const socket = new WebSocket(`ws://192.168.0.102:2345/`);
   socket.onopen = () => socket.send(JSON.stringify({ id: roomId }));
   const pingInterval = setInterval(() => {
     socket.send("ping");
   }, 7000);
-  socket.onerror = () => {
-    console.log("Error ");
-    clearInterval(pingInterval);
-  };
+  socket.onerror = () => clearInterval(pingInterval);
   socket.onclose = () => {
     dispatch(addToast({ text: "Connection lost. Attempting to reconnect..." }));
     const rejoinInterval = setInterval(() => {
@@ -152,7 +149,20 @@ function startGame(payload) {
 }
 
 function addVote(payload) {
-  return { type: ADD_VOTE, payload };
+  return async dispatch => {
+    const { user, roomId, voted } = payload;
+    try {
+      await fetch("/api/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, roomId, voted })
+      });
+      dispatch({
+        type: ADD_VOTE,
+        payload
+      });
+    } catch (error) {}
+  };
 }
 
 function addStory(payload) {

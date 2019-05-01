@@ -1,6 +1,10 @@
 const express = require("express");
 const ws = require("ws").Server;
-const wss = new ws({ host: "192.168.0.101", port: "2345" });
+const wss = new ws({ host: "192.168.0.102", port: "2345" });
+const router = express.Router();
+const joi = require("joi");
+const knex = require("../db/config");
+
 const roomsSockets = {};
 let disconnectedIPs = [];
 
@@ -53,9 +57,47 @@ wss.on("connection", (s, req) => {
   s.on("error", err => console.log(err.message));
 });
 
-const router = express.Router();
-const joi = require("joi");
-const knex = require("../db/config");
+const validateNewRoom = async (req, res, next) => {
+  const schema = joi.object().keys({
+    user: joi.string().not(""),
+    roomName: joi.string().allow("")
+  });
+  try {
+    await joi.validate(req.body, schema);
+    next();
+  } catch (error) {
+    return res.sendStatus(400);
+  }
+};
+
+const validateMember = async (req, res, next) => {
+  let schema = joi.object().keys({
+    roomId: joi.number().integer(),
+    user: joi.string().not("")
+  });
+  if (req.body.voted) {
+    const allowedVotes = [
+      "0",
+      "1/2",
+      "1",
+      "2",
+      "3",
+      "5",
+      "8",
+      "13",
+      "20",
+      "40",
+      "100"
+    ];
+    schema = schema.keys({ voted: joi.string().allow(allowedVotes) });
+  }
+  try {
+    await joi.validate(req.body, schema);
+    next();
+  } catch (error) {
+    return res.sendStatus(400);
+  }
+};
 
 const getRoomMembers = async roomId => {
   return await knex("members")
@@ -70,6 +112,36 @@ const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
     return new RegExp(userToCompare, "i").test(user);
   });
 };
+
+const checkRoomAvailability = async id => {
+  const [roomId] = await knex("rooms")
+    .select()
+    .where({ id });
+  return roomId;
+};
+
+const getRoomName = async roomId => {
+  return await knex("rooms")
+    .select("name as roomName")
+    .where({ id: roomId })
+    .first();
+};
+
+async function createRoom(owner, roomName) {
+  let memberId, roomId;
+  await knex.transaction(async trx => {
+    [memberId] = await knex("members")
+      .transacting(trx)
+      .insert({ name: owner });
+    [roomId] = await knex("rooms")
+      .transacting(trx)
+      .insert({ name: roomName });
+    await knex("roomsMembers")
+      .transacting(trx)
+      .insert({ userId: memberId, roomId });
+  });
+  return { roomId, memberId, roomName };
+}
 
 const addUserToRoom = async (user, roomId, roomMembers) => {
   let userId;
@@ -93,39 +165,6 @@ const addUserToRoom = async (user, roomId, roomMembers) => {
   return { user, roomId, roomMembers, roomName };
 };
 
-const getRoomName = async roomId => {
-  return await knex("rooms")
-    .select("name as roomName")
-    .where({ id: roomId })
-    .first();
-};
-
-const validateNewRoom = async (req, res, next) => {
-  const schema = joi.object().keys({
-    user: joi.string().not(""),
-    roomName: joi.string().allow("")
-  });
-  try {
-    await joi.validate(req.body, schema);
-    next();
-  } catch (error) {
-    return res.sendStatus(400);
-  }
-};
-
-const validateNewMember = async (req, res, next) => {
-  const schema = joi.object().keys({
-    roomId: joi.number().integer(),
-    user: joi.string().not("")
-  });
-  try {
-    await joi.validate(req.body, schema);
-    next();
-  } catch (error) {
-    return res.sendStatus(400);
-  }
-};
-
 router.get("/recent", (req, res) => {
   const ip = req.connection.remoteAddress;
   if (disconnectedIPs.find(ips => ips === ip)) {
@@ -142,14 +181,18 @@ router.get("/:roomId", async (req, res) => {
   res.send({ members, roomName });
 });
 
-const checkRoomAvailability = async id => {
-  const [roomId] = await knex("rooms")
-    .select()
+router.post("/vote", validateMember, async (req, res) => {
+  const { user, roomId, voted } = req.body;
+  const [{ id }] = await knex("members")
+    .select("id")
+    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
+    .where({ name: user, roomId });
+  await knex("members")
+    .update({ vote: voted })
     .where({ id });
-  return roomId;
-};
+});
 
-router.post("/member", validateNewMember, async (req, res) => {
+router.post("/member", validateMember, async (req, res) => {
   setTimeout(async () => {
     const { roomId, user } = req.body;
 
@@ -179,21 +222,5 @@ router.post("/room", validateNewRoom, async (req, res) => {
     res.send(await createRoom(owner, roomName));
   }, 3000);
 });
-
-async function createRoom(owner, roomName) {
-  let memberId, roomId;
-  await knex.transaction(async trx => {
-    [memberId] = await knex("members")
-      .transacting(trx)
-      .insert({ name: owner });
-    [roomId] = await knex("rooms")
-      .transacting(trx)
-      .insert({ name: roomName });
-    await knex("roomsMembers")
-      .transacting(trx)
-      .insert({ userId: memberId, roomId });
-  });
-  return { roomId, memberId, roomName };
-}
 
 module.exports = router;

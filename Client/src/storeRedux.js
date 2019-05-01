@@ -28,7 +28,6 @@ const initialStore = {
   gameVotes: {
     end: null,
     flip: false,
-    nextVoteId: 2,
     list: [{ user: "testUser", voted: "1/3", id: 1 }]
   }
 };
