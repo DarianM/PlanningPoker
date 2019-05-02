@@ -26,7 +26,7 @@ module.exports = {
   },
   plugins: [new webpack.HotModuleReplacementPlugin()],
   devServer: {
-    host: "192.168.1.105",
+    host: "192.168.0.102",
     contentBase: "./dist",
     hot: true,
     proxy: {

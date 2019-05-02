@@ -6,18 +6,15 @@ const initialState = {
 
 export default function(state = initialState, action) {
   if (action.type === ADD_VOTE) {
-    const { user } = action.payload;
-    const { voted } = action.payload;
+    const { user, voted } = action.payload;
     const alreadyVoted = state.list.find(e => e.user === user);
     const vote = {
-      ...action.payload,
-      id: state.nextVoteId
+      ...action.payload
     };
     if (alreadyVoted === undefined)
       return {
         ...state,
-        list: [...state.list, vote],
-        nextVoteId: state.nextVoteId + 1
+        list: [...state.list, vote]
       };
     const updatedVote = { ...alreadyVoted, voted };
     const newList = state.list.filter(e => e.user !== user);

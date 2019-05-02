@@ -38,7 +38,7 @@ export class ConnectedLogin extends Component {
     const { user } = this.state;
     const { roomName } = this.state;
 
-    createRoom({ user, roomName });
+    createRoom({ user, roomName, component: this });
   }
 
   async handleJoinSession(event) {
@@ -47,7 +47,7 @@ export class ConnectedLogin extends Component {
     const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    joinRoom({ user, roomId: id });
+    joinRoom({ user, roomId: id, component: this });
   }
 
   handleUser(event) {

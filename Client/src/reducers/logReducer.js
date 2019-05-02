@@ -35,8 +35,7 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === USER_VOTE) {
-    const { user } = action.payload;
-    const { voted } = action.payload;
+    const { user, voted } = action.payload;
     return {
       ...state,
       members: state.members.map(e => (e.member === user ? { ...e, voted } : e))

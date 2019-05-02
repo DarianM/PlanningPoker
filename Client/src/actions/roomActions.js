@@ -17,26 +17,22 @@ import {
 } from "./types";
 import { addToast } from "./toastsActions";
 
-function openWebSocket(roomId, dispatch) {
+function openWebSocket(user, roomId, dispatch) {
   console.log(`opening web socket for room ${roomId}`);
-  const socket = new WebSocket(`ws://192.168.1.105:2345/`);
+  const socket = new WebSocket(`ws://192.168.0.102:2345/`);
   socket.onopen = () => socket.send(JSON.stringify({ id: roomId }));
   const pingInterval = setInterval(() => {
     socket.send("ping");
   }, 7000);
-  socket.onerror = () => {
-    console.log("Server offline || client lost connection");
-    //dispatch
-    clearInterval(pingInterval);
+  socket.onerror = () => clearInterval(pingInterval);
+  socket.onclose = () => {
+    dispatch(addToast({ text: "Connection lost. Attempting to reconnect..." }));
     const rejoinInterval = setInterval(() => {
-      dispatch(rejoin({ roomId, rejoinInterval }));
-      console.log("rejoining");
-    }, 5000);
+      dispatch(rejoin({ user, roomId, rejoinInterval }));
+    }, 10000);
   };
   socket.onmessage = event => {
     const data = JSON.parse(event.data);
-    console.log(`new user joined ${data}`);
-
     dispatch({
       type: NEW_MEMBER,
       payload: {
@@ -49,28 +45,38 @@ function openWebSocket(roomId, dispatch) {
 }
 
 function rejoin(payload) {
-  console.log("inside rejoin");
   return async dispatch => {
-    const { roomId } = payload;
+    const { roomId, user } = payload;
     try {
       const response = await fetch(`/api/${roomId}`);
       if (response.status === 200) {
         clearInterval(payload.rejoinInterval);
-        openWebSocket(roomId, dispatch);
+        openWebSocket(user, roomId, dispatch);
         const data = await response.json();
-        console.log(data);
+        dispatch(addToast({ text: "Reconnecting successful..." }));
+        dispatch({
+          type: JOIN_ROOM,
+          payload: {
+            id: roomId,
+            roomName: data.roomName,
+            user,
+            members: data.members,
+            hasJoined: true
+          }
+        });
+      } else {
+        dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
       }
     } catch (error) {
-      console.log("*******");
-      dispatch(addToast({ text: "Server oflline" }));
+      dispatch(addToast({ text: "Reconnecting failed..." }));
     }
   };
 }
 
 function createRoom(payload) {
+  const { user, component } = payload;
   return async dispatch => {
     let { roomName } = payload;
-    const { user } = payload;
     try {
       const response = await fetch("/api/room", {
         method: "POST",
@@ -80,7 +86,7 @@ function createRoom(payload) {
       const data = await response.json();
       ({ roomName } = data);
       const { roomId, memberId } = data;
-      openWebSocket(roomId, dispatch);
+      openWebSocket(user, roomId, dispatch);
 
       dispatch({
         type: CREATE_ROOM,
@@ -96,12 +102,13 @@ function createRoom(payload) {
       });
     } catch (error) {
       dispatch(addToast({ text: "Server is offline..." }));
+      component.setState({ isLoading: false });
     }
   };
 }
 
 function joinRoom(payload) {
-  const { user, roomId } = payload;
+  const { user, roomId, component } = payload;
 
   return async dispatch => {
     try {
@@ -111,10 +118,11 @@ function joinRoom(payload) {
         body: JSON.stringify({ user, roomId })
       });
       const data = await response.json();
+      console.log(data);
       if (response.status === 400) {
         console.log(data.error);
       } else {
-        openWebSocket(roomId, dispatch);
+        openWebSocket(user, roomId, dispatch);
         dispatch({
           type: JOIN_ROOM,
           payload: {
@@ -128,6 +136,7 @@ function joinRoom(payload) {
       }
     } catch (error) {
       dispatch(addToast({ text: "Server offline" }));
+      component.setState({ isLoading: false });
     }
   };
 }
@@ -140,7 +149,20 @@ function startGame(payload) {
 }
 
 function addVote(payload) {
-  return { type: ADD_VOTE, payload };
+  return async dispatch => {
+    const { user, roomId, voted } = payload;
+    try {
+      await fetch("/api/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, roomId, voted })
+      });
+      dispatch({
+        type: ADD_VOTE,
+        payload
+      });
+    } catch (error) {}
+  };
 }
 
 function addStory(payload) {
