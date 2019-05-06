@@ -16,6 +16,9 @@ export default function(state = initialState, action) {
   if (action.type === CREATE_ROOM) {
     return { ...state, ...action.payload };
   }
+  if (action.type === "WEBSOCKET_OPEN") {
+    return { ...state, hasJoined: true };
+  }
   if (action.type === START_GAME) {
     return { ...state, ...action.payload };
   }

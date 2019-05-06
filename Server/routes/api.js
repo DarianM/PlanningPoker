@@ -1,14 +1,19 @@
 const express = require("express");
-const ws = require("ws").Server;
-const wss = new ws({ host: "192.168.0.102", port: "2345" });
 const router = express.Router();
+const ws = require("ws").Server;
+const wss = new ws({ host: "192.168.1.105", port: "2345" });
 const joi = require("joi");
-const knex = require("../db/config");
+const db = require("../db/db_utils");
 
 const roomsSockets = {};
 let disconnectedIPs = [];
 
 wss.on("connection", (s, req) => {
+  const roomId = req.url.substring(1);
+  roomsSockets[roomId]
+    ? roomsSockets[roomId].push(s)
+    : (roomsSockets[roomId] = [s]);
+
   const currentIp = req.connection.remoteAddress;
   console.log(currentIp + " connected");
   s.isAlive = true;
@@ -18,7 +23,6 @@ wss.on("connection", (s, req) => {
         console.log("terminating");
         ws.terminate();
       }
-      console.log(wss.clients.size);
       ws.isAlive = false;
       ws.ping("ping", false, err => console.log("--ping sent--"));
     });
@@ -32,16 +36,22 @@ wss.on("connection", (s, req) => {
     if (m === "ping") {
       return;
     }
-    const roomId = JSON.parse(m).id;
-    s.roomId = roomId;
-    roomsSockets[roomId]
-      ? roomsSockets[roomId].push(s)
-      : (roomsSockets[roomId] = [s]);
+    const data = JSON.parse(m);
+    console.log(data);
+
+    if (data.action === "USER_VOTED") {
+      const { user, roomId, voted, id } = data;
+      roomsSockets[roomId].forEach(s => {
+        if (s.readyState === 1)
+          s.send(
+            JSON.stringify({ action: "USER_VOTED", user, roomId, voted, id })
+          );
+      });
+    }
   });
+
   s.on("close", (code, reason) => {
-    roomsSockets[s.roomId] = roomsSockets[s.roomId].filter(
-      socket => socket !== s
-    );
+    roomsSockets[roomId] = roomsSockets[roomId].filter(socket => socket !== s);
     s.terminate();
     clearInterval(interval);
     console.log(roomsSockets);
@@ -99,72 +109,6 @@ const validateMember = async (req, res, next) => {
   }
 };
 
-const getRoomMembers = async roomId => {
-  return await knex("members")
-    .select(["name as member", "id"])
-    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
-    .where({ roomId });
-};
-
-const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
-  return roomMembers.find(m => {
-    const userToCompare = `^${m.member}$`;
-    return new RegExp(userToCompare, "i").test(user);
-  });
-};
-
-const checkRoomAvailability = async id => {
-  const [roomId] = await knex("rooms")
-    .select()
-    .where({ id });
-  return roomId;
-};
-
-const getRoomName = async roomId => {
-  return await knex("rooms")
-    .select("name as roomName")
-    .where({ id: roomId })
-    .first();
-};
-
-async function createRoom(owner, roomName) {
-  let memberId, roomId;
-  await knex.transaction(async trx => {
-    [memberId] = await knex("members")
-      .transacting(trx)
-      .insert({ name: owner });
-    [roomId] = await knex("rooms")
-      .transacting(trx)
-      .insert({ name: roomName });
-    await knex("roomsMembers")
-      .transacting(trx)
-      .insert({ userId: memberId, roomId });
-  });
-  return { roomId, memberId, roomName };
-}
-
-const addUserToRoom = async (user, roomId, roomMembers) => {
-  let userId;
-  await knex.transaction(async trx => {
-    [userId] = await knex("members")
-      .transacting(trx)
-      .insert({ name: user });
-    await knex("roomsMembers")
-      .transacting(trx)
-      .insert({ userId, roomId });
-  });
-
-  roomMembers.push({ member: user, id: userId });
-
-  const { roomName } = await getRoomName(roomId);
-
-  roomsSockets[roomId] = roomsSockets[roomId] || [];
-  roomsSockets[roomId].forEach(s => {
-    if (s.readyState === 1) s.send(JSON.stringify({ user, userId }));
-  });
-  return { user, roomId, roomMembers, roomName };
-};
-
 router.get("/recent", (req, res) => {
   const ip = req.connection.remoteAddress;
   if (disconnectedIPs.find(ips => ips === ip)) {
@@ -176,41 +120,45 @@ router.get("/recent", (req, res) => {
 
 router.get("/:roomId", async (req, res) => {
   const roomId = req.params.roomId;
-  const members = await getRoomMembers(roomId);
-  const { roomName } = await getRoomName(roomId);
+  const members = await db.getRoomMembers(roomId);
+  const { roomName } = await db.getRoomName(roomId);
   res.send({ members, roomName });
 });
 
 router.post("/vote", validateMember, async (req, res) => {
   const { user, roomId, voted } = req.body;
-  const [{ id }] = await knex("members")
-    .select("id")
-    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
-    .where({ name: user, roomId });
-  await knex("members")
-    .update({ vote: voted })
-    .where({ id });
+  const id = await db.addMemberVote(user, roomId, voted);
+  res.send({ id });
 });
 
 router.post("/member", validateMember, async (req, res) => {
   setTimeout(async () => {
     const { roomId, user } = req.body;
 
-    const isRoomAvailable = await checkRoomAvailability(roomId);
+    const isRoomAvailable = await db.checkRoomAvailability(roomId);
     if (isRoomAvailable === undefined) {
       return res.status(400).send({ error: "Room not available" });
     }
-    const roomMembers = await getRoomMembers(roomId);
+    const roomMembers = await db.getRoomMembers(roomId);
 
-    const isUsernameTaken = await checkUserUniquenessWithinRoom(
+    const isUsernameTaken = await db.checkUserUniquenessWithinRoom(
       user,
       roomMembers
     );
-    !isUsernameTaken
-      ? res.send(await addUserToRoom(user, roomId, roomMembers))
-      : res.status(400).send({
-          error: "A user with the same name already exists in the room"
-        });
+    if (!isUsernameTaken) {
+      const credentials = await db.addUserToRoom(user, roomId, roomMembers);
+      const { userId } = credentials;
+      roomsSockets[roomId] = roomsSockets[roomId] || [];
+      roomsSockets[roomId].forEach(s => {
+        if (s.readyState === 1)
+          s.send(JSON.stringify({ action: "USER_JOINED", user, userId }));
+      });
+      res.send(credentials);
+    } else {
+      res.status(400).send({
+        error: "A user with the same name already exists in the room"
+      });
+    }
   }, 4000);
 });
 
@@ -219,7 +167,7 @@ router.post("/room", validateNewRoom, async (req, res) => {
     const roomName = req.body.roomName || "NewRoom";
     const owner = req.body.user;
 
-    res.send(await createRoom(owner, roomName));
+    res.send(await db.createRoom(owner, roomName));
   }, 3000);
 });
 
