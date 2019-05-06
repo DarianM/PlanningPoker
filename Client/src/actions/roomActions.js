@@ -13,14 +13,22 @@ import {
   FLIP_CARDS,
   DELETE_VOTES,
   END_GAME,
-  RESET_TIMER
+  RESET_TIMER,
+  WEBSOCKET_OPEN,
+  WEBSOCKET_SEND,
+  WEBSOCKET_CONNECT
 } from "./types";
 import { addToast } from "./toastsActions";
 
-function openWebSocket(user, roomId, dispatch) {
+function openWebSocket(user, roomId, dispatch, s) {
+  // return functest => {
   console.log(`opening web socket for room ${roomId}`);
-  const socket = new WebSocket(`ws://192.168.0.102:2345/`);
-  socket.onopen = () => socket.send(JSON.stringify({ id: roomId }));
+  const socket = s;
+  console.log(socket);
+  // const socket = new WebSocket(`ws://192.168.1.105:2345/`);
+  socket.onopen = () => {
+    socket.send(JSON.stringify({ action: "USER_JOINED", id: roomId }));
+  };
   const pingInterval = setInterval(() => {
     socket.send("ping");
   }, 7000);
@@ -33,25 +41,32 @@ function openWebSocket(user, roomId, dispatch) {
   };
   socket.onmessage = event => {
     const data = JSON.parse(event.data);
-    dispatch({
-      type: NEW_MEMBER,
-      payload: {
-        member: data.user,
-        voted: false,
-        id: data.userId
-      }
-    });
+    if (data.action === "USER_JOINED") {
+      dispatch({
+        type: NEW_MEMBER,
+        payload: {
+          member: data.user,
+          voted: false,
+          id: data.userId
+        }
+      });
+    }
+    if (data.action === "USER_VOTED") {
+      const { user, roomId, voted, id } = data;
+      dispatch({ type: ADD_VOTE, payload: { user, roomId, voted, id } });
+    }
   };
+  // };
 }
 
-function rejoin(payload) {
+export function rejoin(payload) {
   return async dispatch => {
     const { roomId, user } = payload;
     try {
       const response = await fetch(`/api/${roomId}`);
       if (response.status === 200) {
         clearInterval(payload.rejoinInterval);
-        openWebSocket(user, roomId, dispatch);
+        dispatch({ type: "WEBSOCKET_CONNECT", payload: { id: roomId } });
         const data = await response.json();
         dispatch(addToast({ text: "Reconnecting successful..." }));
         dispatch({
@@ -60,8 +75,8 @@ function rejoin(payload) {
             id: roomId,
             roomName: data.roomName,
             user,
-            members: data.members,
-            hasJoined: true
+            members: data.members
+            // hasJoined: true
           }
         });
       } else {
@@ -83,25 +98,34 @@ function createRoom(payload) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, roomName })
       });
-      const data = await response.json();
-      ({ roomName } = data);
-      const { roomId, memberId } = data;
-      openWebSocket(user, roomId, dispatch);
+      if (response.ok) {
+        const data = await response.json();
+        ({ roomName } = data);
+        const { roomId, memberId } = data;
 
-      dispatch({
-        type: CREATE_ROOM,
-        payload: {
-          id: roomId,
-          hasJoined: true,
-          roomName
-        }
-      });
-      dispatch({
-        type: NEW_MEMBER,
-        payload: { member: user, voted: false, id: memberId }
-      });
+        dispatch({
+          type: WEBSOCKET_CONNECT,
+          payload: { roomId }
+        });
+
+        dispatch({
+          type: CREATE_ROOM,
+          payload: {
+            id: roomId,
+            roomName
+          }
+        });
+
+        dispatch({
+          type: NEW_MEMBER,
+          payload: { member: user, voted: false, id: memberId }
+        });
+      } else {
+        dispatch(addToast({ text: "Server offline..." }));
+        component.setState({ isLoading: false });
+      }
     } catch (error) {
-      dispatch(addToast({ text: "Server is offline..." }));
+      dispatch(addToast({ text: "Check your internet connection" }));
       component.setState({ isLoading: false });
     }
   };
@@ -109,7 +133,6 @@ function createRoom(payload) {
 
 function joinRoom(payload) {
   const { user, roomId, component } = payload;
-
   return async dispatch => {
     try {
       const response = await fetch("/api/member", {
@@ -117,25 +140,28 @@ function joinRoom(payload) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, roomId })
       });
-      const data = await response.json();
-      console.log(data);
-      if (response.status === 400) {
-        console.log(data.error);
-      } else {
-        openWebSocket(user, roomId, dispatch);
+      if (response.status === 200) {
+        const data = await response.json();
+        dispatch({ type: "WEBSOCKET_CONNECT", payload: { id: roomId } });
         dispatch({
           type: JOIN_ROOM,
           payload: {
             id: roomId,
             roomName: data.roomName,
             user,
-            members: data.roomMembers,
-            hasJoined: true
+            members: data.roomMembers
+            // hasJoined: true
           }
         });
+      } else if (response.status === 400) {
+        const data = await response.json();
+        console.log(data.error);
+      } else {
+        dispatch(addToast({ text: "Server offline..." }));
+        component.setState({ isLoading: false });
       }
     } catch (error) {
-      dispatch(addToast({ text: "Server offline" }));
+      dispatch(addToast({ text: "Check your internet connection" }));
       component.setState({ isLoading: false });
     }
   };
@@ -152,16 +178,23 @@ function addVote(payload) {
   return async dispatch => {
     const { user, roomId, voted } = payload;
     try {
-      await fetch("/api/vote", {
+      const response = await fetch("/api/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, roomId, voted })
       });
-      dispatch({
-        type: ADD_VOTE,
-        payload
-      });
-    } catch (error) {}
+      if (response.ok) {
+        const { id } = await response.json();
+        payload.id = id;
+        socket.send({ action: "USER_VOTED", user, roomId, voted, id });
+        dispatch({
+          type: ADD_VOTE,
+          payload
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 }
 
