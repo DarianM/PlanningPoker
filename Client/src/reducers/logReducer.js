@@ -1,11 +1,12 @@
 import {
   CREATE_ROOM,
+  JOIN_ROOM,
+  REJOIN_ROOM,
   START_GAME,
   USER_VOTE,
   NEW_MEMBER,
   DELETE_VOTES,
-  RESET_TIMER,
-  JOIN_ROOM
+  RESET_TIMER
 } from "../actions/types";
 
 const initialState = {
@@ -31,6 +32,12 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === JOIN_ROOM) {
+    return {
+      ...state,
+      ...action.payload
+    };
+  }
+  if (action.type === REJOIN_ROOM) {
     return {
       ...state,
       ...action.payload

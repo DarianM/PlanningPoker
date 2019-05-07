@@ -20,74 +20,6 @@ import {
 } from "./types";
 import { addToast } from "./toastsActions";
 
-function openWebSocket(user, roomId, dispatch, s) {
-  // return functest => {
-  console.log(`opening web socket for room ${roomId}`);
-  const socket = s;
-  console.log(socket);
-  // const socket = new WebSocket(`ws://192.168.1.105:2345/`);
-  socket.onopen = () => {
-    socket.send(JSON.stringify({ action: "USER_JOINED", id: roomId }));
-  };
-  const pingInterval = setInterval(() => {
-    socket.send("ping");
-  }, 7000);
-  socket.onerror = () => clearInterval(pingInterval);
-  socket.onclose = () => {
-    dispatch(addToast({ text: "Connection lost. Attempting to reconnect..." }));
-    const rejoinInterval = setInterval(() => {
-      dispatch(rejoin({ user, roomId, rejoinInterval }));
-    }, 10000);
-  };
-  socket.onmessage = event => {
-    const data = JSON.parse(event.data);
-    if (data.action === "USER_JOINED") {
-      dispatch({
-        type: NEW_MEMBER,
-        payload: {
-          member: data.user,
-          voted: false,
-          id: data.userId
-        }
-      });
-    }
-    if (data.action === "USER_VOTED") {
-      const { user, roomId, voted, id } = data;
-      dispatch({ type: ADD_VOTE, payload: { user, roomId, voted, id } });
-    }
-  };
-  // };
-}
-
-export function rejoin(payload) {
-  return async dispatch => {
-    const { roomId, user } = payload;
-    try {
-      const response = await fetch(`/api/${roomId}`);
-      if (response.status === 200) {
-        clearInterval(payload.rejoinInterval);
-        dispatch({ type: "WEBSOCKET_CONNECT", payload: { id: roomId } });
-        const data = await response.json();
-        dispatch(addToast({ text: "Reconnecting successful..." }));
-        dispatch({
-          type: JOIN_ROOM,
-          payload: {
-            id: roomId,
-            roomName: data.roomName,
-            user,
-            members: data.members
-            // hasJoined: true
-          }
-        });
-      } else {
-        dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
-      }
-    } catch (error) {
-      dispatch(addToast({ text: "Reconnecting failed..." }));
-    }
-  };
-}
-
 function createRoom(payload) {
   const { user, component } = payload;
   return async dispatch => {
@@ -105,7 +37,7 @@ function createRoom(payload) {
 
         dispatch({
           type: WEBSOCKET_CONNECT,
-          payload: { roomId }
+          payload: `ws://192.168.1.105:2345/${roomId}`
         });
 
         dispatch({
@@ -142,7 +74,10 @@ function joinRoom(payload) {
       });
       if (response.status === 200) {
         const data = await response.json();
-        dispatch({ type: "WEBSOCKET_CONNECT", payload: { id: roomId } });
+        dispatch({
+          type: "WEBSOCKET_CONNECT",
+          payload: `ws://192.168.1.105:2345/${roomId}`
+        });
         dispatch({
           type: JOIN_ROOM,
           payload: {
@@ -150,7 +85,6 @@ function joinRoom(payload) {
             roomName: data.roomName,
             user,
             members: data.roomMembers
-            // hasJoined: true
           }
         });
       } else if (response.status === 400) {
