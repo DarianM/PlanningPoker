@@ -1,4 +1,7 @@
 import {
+  LOGIN,
+  LOGIN_SUCCES,
+  LOGIN_FAILURE,
   CREATE_ROOM,
   JOIN_ROOM,
   START_GAME,
@@ -21,8 +24,9 @@ import {
 import { addToast } from "./toastsActions";
 
 function createRoom(payload) {
-  const { user, component } = payload;
+  const { user } = payload;
   return async dispatch => {
+    dispatch({ type: LOGIN });
     let { roomName } = payload;
     try {
       const response = await fetch("/api/room", {
@@ -52,20 +56,22 @@ function createRoom(payload) {
           type: NEW_MEMBER,
           payload: { member: user, voted: false, id: memberId }
         });
+        dispatch({ type: LOGIN_SUCCES });
       } else {
         dispatch(addToast({ text: "Server offline..." }));
-        component.setState({ isLoading: false });
+        dispatch({ type: LOGIN_FAILURE });
       }
     } catch (error) {
       dispatch(addToast({ text: "Check your internet connection" }));
-      component.setState({ isLoading: false });
+      dispatch({ type: LOGIN_FAILURE });
     }
   };
 }
 
 function joinRoom(payload) {
-  const { user, roomId, component } = payload;
+  const { user, roomId } = payload;
   return async dispatch => {
+    dispatch({ type: LOGIN });
     try {
       const response = await fetch("/api/member", {
         method: "POST",
@@ -87,16 +93,18 @@ function joinRoom(payload) {
             members: data.roomMembers
           }
         });
+        dispatch({ type: LOGIN_SUCCES });
       } else if (response.status === 400) {
         const data = await response.json();
         console.log(data.error);
+        dispatch({ type: LOGIN_FAILURE, payload: data.error });
       } else {
         dispatch(addToast({ text: "Server offline..." }));
-        component.setState({ isLoading: false });
+        dispatch({ type: LOGIN_FAILURE });
       }
     } catch (error) {
       dispatch(addToast({ text: "Check your internet connection" }));
-      component.setState({ isLoading: false });
+      dispatch({ type: LOGIN_FAILURE });
     }
   };
 }

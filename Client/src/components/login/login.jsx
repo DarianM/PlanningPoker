@@ -16,42 +16,38 @@ export class ConnectedLogin extends Component {
     this.state = {
       user: "",
       id: -1,
-      roomName: "ABc",
-      isLoading: false
+      roomName: "ABc"
     };
     this.handleUser = this.handleUser.bind(this);
+    this.handleRoomName = this.handleRoomName.bind(this);
     this.handleJoinId = this.handleJoinId.bind(this);
     this.handleNewSession = this.handleNewSession.bind(this);
     this.handleJoinSession = this.handleJoinSession.bind(this);
   }
 
-  // async componentDidMount() {
-  //   const response = await fetch("/api/recent");
-  //   const data = await response.json();
-  //   console.log(data.ip);
-  // }
-
   async handleNewSession(event) {
     event.preventDefault();
-    this.setState({ isLoading: true });
     const { createRoom } = this.props;
     const { user } = this.state;
     const { roomName } = this.state;
 
-    createRoom({ user, roomName, component: this });
+    createRoom({ user, roomName });
   }
 
   async handleJoinSession(event) {
     event.preventDefault();
-    this.setState({ isLoading: true });
     const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    joinRoom({ user, roomId: id, component: this });
+    joinRoom({ user, roomId: id });
   }
 
   handleUser(event) {
     this.setState({ user: event.target.value });
+  }
+
+  handleRoomName(event) {
+    this.setState({ roomName: event.target.value });
   }
 
   handleJoinId(event) {
@@ -59,7 +55,9 @@ export class ConnectedLogin extends Component {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { connection } = this.props;
+    const { isFetching } = connection;
+    const { error } = connection;
     return (
       <>
         <div className="container">
@@ -75,15 +73,24 @@ export class ConnectedLogin extends Component {
                 onChange={this.handleUser}
               />
             </div>
+            <div>
+              <h4>...optionally room name</h4>
+              <input
+                type="text"
+                placeholder="Room Name"
+                className="sessionId"
+                onChange={this.handleRoomName}
+              />
+            </div>
             <button
               type="button"
               id="startSession"
               className="session-button"
-              disabled={isLoading}
+              disabled={isFetching}
               onClick={this.handleNewSession}
             >
-              {isLoading ? "Processing..." : "Start a Session"}
-                                    </button>
+              {isFetching ? "Processing..." : "Start a Session"}
+            </button>
             <h4>... or ...</h4>
             <div id="joinId">
               <input
@@ -98,11 +105,12 @@ export class ConnectedLogin extends Component {
               type="button"
               id="joinSession"
               className="session-button"
-              disabled={isLoading}
+              disabled={isFetching}
               onClick={this.handleJoinSession}
             >
-              {isLoading ? "Processing..." : "Join a Session"}
+              {isFetching ? "Processing..." : "Join a Session"}
             </button>
+            {`error && <p>${error}</p>`}
           </div>
         </div>
       </>

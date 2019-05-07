@@ -7,13 +7,14 @@ import { Toasts } from "./components/modals";
 
 const mapStateToProps = state => ({
   hasJoined: state.gameRoom.hasJoined,
-  toasts: state.toasts
+  toasts: state.toasts,
+  connection: state.connection
 });
 
-const ConnectedApp = ({ hasJoined, toasts }) => (
+const ConnectedApp = ({ hasJoined, toasts, connection }) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <>
-    <div>{!hasJoined ? <Login /> : <Session />}</div>
+    <div>{!hasJoined ? <Login connection={connection} /> : <Session />}</div>
     <Toasts toasts={toasts} />
   </>
 );
