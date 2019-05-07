@@ -4,6 +4,7 @@ import { createStore, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "./reducers";
 import socketMiddleware from "./websocket";
+import reconnectMiddleware from "./websocketMiddleware";
 
 const initialStore = {
   gameRoom: {
@@ -39,7 +40,7 @@ const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   rootReducer,
   initialStore,
-  storeEnhancers(applyMiddleware(thunk, socketMiddleware))
+  storeEnhancers(applyMiddleware(thunk, socketMiddleware, reconnectMiddleware))
 );
 
 export default store;
