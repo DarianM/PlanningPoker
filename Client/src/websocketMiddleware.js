@@ -2,10 +2,25 @@ import { addToast } from "./actions/toastsActions";
 import {
   REJOIN_ROOM,
   WEBSOCKET_CONNECT,
-  WEBSOCKET_CLOSE
+  WEBSOCKET_CLOSE,
+  WEBSOCKET_MESSAGE
 } from "./actions/types";
 
 const reconnectMiddleware = store => next => action => {
+  if (action.type === WEBSOCKET_MESSAGE) {
+    const { reason, data } = action.payload;
+
+    if (reason === "USER_JOINED") {
+      store.dispatch({
+        type: "NEW_MEMBER",
+        payload: {
+          member: data.user,
+          voted: false,
+          id: data.userId
+        }
+      });
+    }
+  }
   if (action.type === WEBSOCKET_CLOSE) {
     const roomId = store.getState().gameRoom.id;
     store.dispatch(

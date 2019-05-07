@@ -26,7 +26,6 @@ export default function(state = initialState, action) {
   if (action.type === NEW_MEMBER) {
     return {
       ...state,
-      user: action.payload.member,
       members: [...state.members, action.payload]
     };
   }
