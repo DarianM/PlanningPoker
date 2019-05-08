@@ -39,9 +39,7 @@ const socketMiddleware = store => next => action => {
     };
   }
   if (action.type === WEBSOCKET_SEND) {
-    setTimeout(() => {
-      websocket.send(JSON.stringify(action.payload));
-    }, 2000);
+    websocket.send(JSON.stringify(action.payload));
   }
   return next(action);
 };

@@ -23,9 +23,7 @@ import {
 } from "./types";
 import { addToast } from "./toastsActions";
 
-function createRoom(payload) {
-  // first parameter, call number
-  // second parameter, parameter number
+function createRoomF(payload, fetch) {
   const { user } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
@@ -43,7 +41,7 @@ function createRoom(payload) {
 
         dispatch({
           type: WEBSOCKET_CONNECT,
-          payload: `ws://192.168.1.105:2345/${roomId}`
+          payload: `ws://192.168.1.113:2345/${roomId}`
         });
 
         dispatch({
@@ -71,7 +69,11 @@ function createRoom(payload) {
   };
 }
 
-function joinRoom(payload) {
+function createRoom(payload) {
+  return createRoomF(payload, fetch);
+}
+
+function joinRoomF(payload, fetch) {
   const { user, roomId } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
@@ -85,7 +87,7 @@ function joinRoom(payload) {
         const data = await response.json();
         dispatch({
           type: "WEBSOCKET_CONNECT",
-          payload: `ws://192.168.1.105:2345/${roomId}`
+          payload: `ws://192.168.1.113:2345/${roomId}`
         });
         dispatch({
           type: JOIN_ROOM,
@@ -110,6 +112,10 @@ function joinRoom(payload) {
       dispatch({ type: LOGIN_FAILURE });
     }
   };
+}
+
+function joinRoom(payload) {
+  return joinRoomF(payload, fetch);
 }
 
 function startGame(payload) {
@@ -229,7 +235,9 @@ function resetTimer(payload) {
 
 export default {
   createRoom,
+  createRoomF,
   joinRoom,
+  joinRoomF,
   startGame,
   addVote,
   addStory,

@@ -1,63 +1,156 @@
 import actions from "./roomActions";
-import { LOGIN_FAILURE } from "./types";
-import { addToast } from "./toastsActions";
 
-describe("actions creators", () => {
-  describe("create a session when your network is offline", () => {
-    global.fetch = jest.fn(
+describe("create room action", () => {
+  describe("with network offline", () => {
+    const mockFetch = jest.fn(
       () => new Promise((resolve, reject) => reject(new Error("error")))
     );
-    it("should error message with check internet...", async () => {
-      const result = actions.createRoom({ user: "random", roomName: "room" });
+    it("should dispatch LOGIN_FAILURE", async () => {
+      const result = actions.createRoomF(
+        { user: "random", roomName: "room" },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+    });
+  });
+
+  describe("with error from server", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise((resolve, reject) =>
+          resolve({
+            json: () => ({
+              roomName: "randomName",
+              user: "name"
+            }),
+            ok: false
+          })
+        )
+    );
+    it("should dispatch LOGIN_FAILURE", async () => {
+      const result = actions.createRoomF(
+        { user: "random", roomName: "room" },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+    });
+  });
+
+  describe("with server and network online", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise((resolve, reject) =>
+          resolve({
+            json: () => ({
+              roomName: "randomName",
+              user: "aName"
+            }),
+            ok: true
+          })
+        )
+    );
+    it("should dispatch LOGIN_SUCCES", async () => {
+      const result = actions.createRoomF(
+        { user: "random", roomName: "room" },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_SUCCES" }]);
+    });
+  });
+});
+
+describe("join room action", () => {
+  describe("with network offline", () => {
+    const mockFetch = jest.fn(
+      () => new Promise((resolve, reject) => reject(new Error("error")))
+    );
+    it("should dispatch LOGIN_FAILURE", async () => {
+      const result = actions.joinRoomF(
+        { user: "random", roomId: 1 },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+    });
+  });
+
+  describe("with error from server", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise((resolve, reject) =>
+          resolve({
+            json: () => ({
+              roomName: "randomName",
+              user: "name"
+            }),
+            status: 504
+          })
+        )
+    );
+    it("should dispatch LOGIN_FAILURE", async () => {
+      const result = actions.joinRoomF(
+        { user: "random", roomId: 1 },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+    });
+  });
+
+  describe("with working network and server", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise((resolve, reject) =>
+          resolve({
+            json: () => ({
+              roomName: "randomName",
+              user: "name"
+            }),
+            status: 200
+          })
+        )
+    );
+    it("should dispatch LOGIN_SUCCESS", async () => {
+      const result = actions.joinRoomF(
+        { user: "random", roomId: 1 },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_SUCCES" }]);
+    });
+  });
+
+  describe("with error message from server", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise((resolve, reject) =>
+          resolve({
+            json: () => ({
+              error: "some msg..."
+            }),
+            status: 400
+          })
+        )
+    );
+    it("should dispatch LOGIN_FAILURE", async () => {
+      const result = actions.joinRoomF(
+        { user: "random", roomId: 1 },
+        mockFetch
+      );
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls).toContainEqual([
-        {
-          type: "LOGIN_FAILURE"
-        }
+        { payload: "some msg...", type: "LOGIN_FAILURE" }
       ]);
     });
   });
-  // describe("create a session when server is offline", () => {
-  //   global.fetch = jest.fn(
-  //     () =>
-  //       new Promise(resolve => {
-  //         resolve({ ok: false });
-  //       })
-  //   );
-  //   it("should error message server offline", async () => {
-  //     const result = actions.createRoom({ user: "random", roomName: "room" });
-  //     const dispatch = param => {
-  //       expect(param).toBeCalledWith(addToast({ text: "Server offline..." }));
-  //       expect(param).toBeCalledWith({ type: LOGIN_FAILURE });
-  //     };
-  //     result(dispatch);
-  //   });
-  // });
 });
-
-//   describe("actions creators 2.0", () => {
-//     global.fetch = jest.fn(
-//       () =>
-//         new Promise(
-//           (resolve, reject) =>
-//             resolve({
-//               ok: true,
-//               socket: () => "test",
-//               json: () => ({
-//                 roomName: "randomName"
-//               })
-//             })
-//           // reject(new Error("this shitty msg"))
-//         )
-//     );
-//     it("should error message with check internet...", async () => {
-//       const result = actions.createRoom({ user: "random", roomName: "room" });
-//       const dispatch = param => {
-//         console.log(param);
-//       };
-//       result(dispatch);
-//       // expect(typeof result).toBe("function");
-//     });
-//   });
-// });
