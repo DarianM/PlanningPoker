@@ -13,7 +13,6 @@ wss.on("connection", (s, req) => {
   roomsSockets[roomId]
     ? roomsSockets[roomId].push(s)
     : (roomsSockets[roomId] = [s]);
-
   const currentIp = req.connection.remoteAddress;
   console.log(currentIp + " connected");
   s.isAlive = true;
@@ -132,45 +131,41 @@ router.post("/vote", validateMember, async (req, res) => {
 });
 
 router.post("/member", validateMember, async (req, res) => {
-  setTimeout(async () => {
-    const { roomId, user } = req.body;
+  const { roomId, user } = req.body;
 
-    const isRoomAvailable = await db.checkRoomAvailability(roomId);
-    if (isRoomAvailable === undefined) {
-      return res.status(400).send({ error: "Room not available" });
-    }
-    const roomMembers = await db.getRoomMembers(roomId);
+  const isRoomAvailable = await db.checkRoomAvailability(roomId);
+  if (isRoomAvailable === undefined) {
+    return res.status(400).send({ error: "Room not available" });
+  }
+  const roomMembers = await db.getRoomMembers(roomId);
 
-    const isUsernameTaken = await db.checkUserUniquenessWithinRoom(
-      user,
-      roomMembers
-    );
-    if (!isUsernameTaken) {
-      const credentials = await db.addUserToRoom(user, roomId, roomMembers);
-      const { userId } = credentials;
-      roomsSockets[roomId] = roomsSockets[roomId] || [];
-      roomsSockets[roomId].forEach(s => {
-        if (s.readyState === 1)
-          s.send(
-            JSON.stringify({ reason: "USER_JOINED", data: { user, userId } })
-          );
-      });
-      res.send(credentials);
-    } else {
-      res.status(400).send({
-        error: "A user with the same name already exists in the room"
-      });
-    }
-  }, 4000);
+  const isUsernameTaken = await db.checkUserUniquenessWithinRoom(
+    user,
+    roomMembers
+  );
+  if (!isUsernameTaken) {
+    const credentials = await db.addUserToRoom(user, roomId, roomMembers);
+    const { userId } = credentials;
+    roomsSockets[roomId] = roomsSockets[roomId] || [];
+    roomsSockets[roomId].forEach(s => {
+      if (s.readyState === 1)
+        s.send(
+          JSON.stringify({ reason: "USER_JOINED", data: { user, userId } })
+        );
+    });
+    await res.send(credentials);
+  } else {
+    res.status(400).send({
+      error: "A user with the same name already exists in the room"
+    });
+  }
 });
 
 router.post("/room", validateNewRoom, async (req, res) => {
-  setTimeout(async () => {
-    const roomName = req.body.roomName || "NewRoom";
-    const owner = req.body.user;
+  const roomName = req.body.roomName || "NewRoom";
+  const owner = req.body.user;
 
-    res.send(await db.createRoom(owner, roomName));
-  }, 3000);
+  await res.send(await db.createRoom(owner, roomName));
 });
 
 module.exports = router;
