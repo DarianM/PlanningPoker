@@ -31,8 +31,12 @@ const socketMiddleware = store => next => action => {
       store.dispatch({ type: WEBSOCKET_CLOSE });
     };
 
-    websocket.onmessage = event =>
-      store.dispatch({ type: WEBSOCKET_MESSAGE, payload: event });
+    websocket.onmessage = event => {
+      store.dispatch({
+        type: WEBSOCKET_MESSAGE,
+        payload: JSON.parse(event.data)
+      });
+    };
   }
   if (action.type === WEBSOCKET_SEND) {
     setTimeout(() => {

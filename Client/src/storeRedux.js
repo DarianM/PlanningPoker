@@ -13,8 +13,7 @@ const initialStore = {
     roomName: "",
     hasJoined: false,
     members: [],
-    gameStart: null,
-    isLoading: false
+    gameStart: null
   },
   gameHistory: {
     nextStoryId: 1,

@@ -24,6 +24,8 @@ import {
 import { addToast } from "./toastsActions";
 
 function createRoom(payload) {
+  // first parameter, call number
+  // second parameter, parameter number
   const { user } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
@@ -48,7 +50,8 @@ function createRoom(payload) {
           type: CREATE_ROOM,
           payload: {
             id: roomId,
-            roomName
+            roomName,
+            user
           }
         });
 

@@ -110,7 +110,7 @@ export class ConnectedLogin extends Component {
             >
               {isFetching ? "Processing..." : "Join a Session"}
             </button>
-            {`error && <p>${error}</p>`}
+            {error && <p>{error}</p>}
           </div>
         </div>
       </>
