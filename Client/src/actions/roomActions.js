@@ -137,7 +137,14 @@ function addVote(payload) {
       if (response.ok) {
         const { id } = await response.json();
         payload.id = id;
-        socket.send({ action: "USER_VOTED", user, roomId, voted, id });
+
+        dispatch({
+          type: "WEBSOCKET_SEND",
+          payload: {
+            action: "USER_VOTED",
+            data: { user, roomId, voted, id }
+          }
+        });
         dispatch({
           type: ADD_VOTE,
           payload
