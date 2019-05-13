@@ -33,7 +33,7 @@ const reconnectMiddleware = store => next => action => {
           clearInterval(interval);
           store.dispatch({
             type: WEBSOCKET_CONNECT,
-            payload: `ws://192.168.1.105:2345/${roomId}`
+            payload: `ws://${window.location.host}:2345/${roomId}`
           });
           const data = await response.json();
           store.dispatch(addToast({ text: "Reconnecting successful..." }));
