@@ -6,7 +6,7 @@ import {
   WEBSOCKET_MESSAGE
 } from "./actions/types";
 
-const messageMiddleware = store => next => async action => {
+const messageMiddleware = fetch => store => next => async action => {
   if (action.type === WEBSOCKET_MESSAGE) {
     const { reason, data } = action.payload;
 
@@ -24,20 +24,21 @@ const messageMiddleware = store => next => async action => {
   if (action.type === "WEBSOCKET_REJOIN") {
     const roomId = store.getState().gameRoom.id;
     const { dispatch } = store;
-    const { reconnectInterval, fetch } = action.payload;
-    reconnectRoomF(roomId, reconnectInterval, dispatch, fetch);
+    const interval = action.payload;
+    reconnectRoomF(roomId, interval, dispatch, fetch);
   }
 
   return next(action);
 };
 
-export default messageMiddleware;
+export default messageMiddleware(fetch);
+export { messageMiddleware as messageMidTest };
 
-async function reconnectRoomF(roomId, reconnectInterval, dispatch, fetch) {
+async function reconnectRoomF(roomId, interval, dispatch, fetch) {
   try {
     const response = await fetch(`/api/${roomId}`);
     if (response.status === 200) {
-      clearInterval(reconnectInterval);
+      clearInterval(interval);
       const data = await response.json();
       dispatch(addToast({ text: "Reconnecting successful..." }));
       dispatch({

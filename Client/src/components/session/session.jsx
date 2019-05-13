@@ -7,20 +7,17 @@ import PokerTable from "./pokerTable/pokerTable";
 import Chart from "./chart";
 import PokerBets from "./pokerBets/pokerBets";
 import Stories from "./stories";
-import { Toasts } from "../modals";
 
 const mapStateToProps = state => {
   console.log(state);
   return {
     game: state.gameRoom,
     history: state.gameHistory,
-    votes: state.gameVotes,
-    chat: state.chat,
-    
+    votes: state.gameVotes
   };
 };
 
-const ConnectedSession = ({ game, history, votes, chat }) => (
+const ConnectedSession = ({ game, history, votes }) => (
   <div className="body-session">
     <div className="sessionContainer">
       <Header head={game.user} />
@@ -30,7 +27,7 @@ const ConnectedSession = ({ game, history, votes, chat }) => (
         roomHistory={history}
       />
       {!votes.end ? <PokerTable /> : <Chart />}
-      <PokerBets stats={game} results={votes} log={chat} />
+      <PokerBets stats={game} results={votes} />
       <Stories stories={history} />
     </div>
   </div>
@@ -55,9 +52,6 @@ ConnectedSession.propTypes = {
         id: PropTypes.number
       })
     )
-  }).isRequired,
-  chat: PropTypes.shape({
-    messages: PropTypes.arrayOf(PropTypes.object)
   }).isRequired
 };
 

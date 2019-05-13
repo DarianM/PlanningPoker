@@ -1,4 +1,4 @@
-import messageMiddleware from "./messageMiddleware";
+import { messageMidTest } from "./messageMiddleware";
 
 describe("message middleware", () => {
   const next = jest.fn();
@@ -15,6 +15,10 @@ describe("message middleware", () => {
     jest.useRealTimers();
   });
 
+  afterEach(() => {
+    store.dispatch.mockClear();
+  });
+
   describe("onmessage", () => {
     describe("USER_JOINED", () => {
       const reason = "USER_JOINED";
@@ -23,7 +27,7 @@ describe("message middleware", () => {
         payload: { reason, data: { user: "random", userId: 1 } }
       };
       it("creates a new member", () => {
-        messageMiddleware(store)(next)(action);
+        messageMidTest(jest.fn())(store)(next)(action);
         expect(store.dispatch.mock.calls[0][0].type).toEqual("NEW_MEMBER");
         expect(store.dispatch).toHaveBeenCalledWith({
           type: "NEW_MEMBER",
@@ -38,11 +42,11 @@ describe("message middleware", () => {
 
   describe("onerror", () => {
     const mockFetch = jest.fn(
-      roomId =>
+      () =>
         new Promise((resolve, reject) =>
           resolve({
             json: () => ({
-              roomId
+              roomId: 1
             }),
             ok: true
           })
@@ -51,11 +55,11 @@ describe("message middleware", () => {
     const interval = jest.fn();
     const action = {
       type: "WEBSOCKET_REJOIN",
-      payload: { data: mockFetch, interval }
+      payload: interval
     };
     // describe("reconnect", () => {
     it("", () => {
-      messageMiddleware(store)(next)(action);
+      messageMidTest(mockFetch)(store)(next)(action);
       expect(store.dispatch.mock.calls).toEqual([[{ type: "WEBSOCKET_OPEN" }]]);
     });
     // });

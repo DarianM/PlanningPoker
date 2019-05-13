@@ -1,14 +1,13 @@
 import {
   WEBSOCKET_CLOSE,
-  WEBSOCKET_DISCONNECT,
-  WEBSOCKET_ERROR,
   WEBSOCKET_OPEN,
   WEBSOCKET_MESSAGE
 } from "./actions/types";
 
 export default class Wsprops {
-  constructor(URL, dispatch) {
-    this.ws = new WebSocket(URL);
+  constructor(url, dispatch) {
+    this.ws = new WebSocket(url);
+    this.url = url;
     this.dispatch = dispatch;
 
     this.ws.onopen = () => this.open();
@@ -32,11 +31,10 @@ export default class Wsprops {
     clearInterval(this.ws.pingInterval);
     if (this.ws.hasOpened) {
       const reconnectInterval = setInterval(() => {
-        this.ws = new Wsprops(URL);
-        const data = fetch;
+        this.ws = new WebSocket(this.url);
         this.dispatch({
           type: "WEBSOCKET_REJOIN",
-          payload: { reconnectInterval, data }
+          payload: reconnectInterval
         });
       }, 10000);
     }

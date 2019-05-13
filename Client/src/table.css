@@ -9,8 +9,7 @@
     "roomid"
     "game"
     "results"
-    "stories"
-    "chat";
+    "stories";
   grid-gap: 25px;
 }
 
@@ -86,7 +85,7 @@
 }
 
 .header-userImg {
-  content: url(https://www.planitpoker.com/profile/userimage/1214688/);
+  content: url(../root/images/user_logo.png);
   width: 60px;
   border-radius: 50%;
   display: block;
@@ -101,7 +100,7 @@
 }
 
 .header-logo {
-  content: url(https://planitpoker.azureedge.net/Content/logo.png);
+  content: url(../root/images/pokerIT.png);
   padding: 15px 15px;
 }
 
@@ -261,10 +260,6 @@
   grid-area: roomid;
 }
 
-.chat {
-  grid-area: chat;
-}
-
 .vote-point {
   padding: 4px 4px;
   text-align: center;
@@ -364,7 +359,7 @@ p.corner:nth-child(4) {
     display: grid;
     grid-template-columns: minmax(300px, auto) 1fr;
     grid-template-rows: auto;
-    grid-template-areas: "header header" "roomid roomid" "game results" "stories stories" "chat .";
+    grid-template-areas: "header header" "roomid roomid" "game results" "stories stories" ". .";
     grid-gap: 25px;
   }
 }

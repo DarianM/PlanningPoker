@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import StatusMessage from "./statusMessage";
 import GameControls from "./gameControls";
-// import Timer from "./timer";
 import Members from "./members";
-import SessionChat from "./chat";
 
 class PokerBets extends Component {
   constructor(props) {
@@ -43,7 +41,6 @@ class PokerBets extends Component {
   render() {
     const { stats } = this.props;
     const { results } = this.props;
-    const { log } = this.props;
 
     const { seconds } = this.state;
     const { minutes } = this.state;
@@ -70,7 +67,6 @@ class PokerBets extends Component {
           startTimer={this.startTimer}
           stopTimer={this.stopTimer}
         />
-        <SessionChat chat={log} user={stats.user} />
       </div>
     );
   }
@@ -89,9 +85,6 @@ PokerBets.propTypes = {
     flip: PropTypes.bool,
     nextVoteId: PropTypes.number,
     list: PropTypes.arrayOf(PropTypes.object)
-  }).isRequired,
-  log: PropTypes.shape({
-    messages: PropTypes.arrayOf(PropTypes.object)
   }).isRequired
 };
 

@@ -7,7 +7,6 @@ import {
   START_GAME,
   NEW_MEMBER,
   ADD_VOTE,
-  ADD_MESSAGE,
   ADD_STORY,
   DELETE_STORY,
   EDIT_STORY,
@@ -17,8 +16,6 @@ import {
   DELETE_VOTES,
   END_GAME,
   RESET_TIMER,
-  WEBSOCKET_OPEN,
-  WEBSOCKET_SEND,
   WEBSOCKET_CONNECT
 } from "./types";
 import { addToast } from "./toastsActions";
@@ -41,7 +38,7 @@ function createRoomF(payload, fetch) {
 
         dispatch({
           type: WEBSOCKET_CONNECT,
-          payload: `ws://192.168.1.105:2345/${roomId}`
+          payload: `ws://192.168.1.113:2345/${roomId}`
         });
 
         dispatch({
@@ -87,7 +84,7 @@ function joinRoomF(payload, fetch) {
         const data = await response.json();
         dispatch({
           type: "WEBSOCKET_CONNECT",
-          payload: `ws://192.168.1.105:2345/${roomId}`
+          payload: `ws://192.168.1.113:2345/${roomId}`
         });
         dispatch({
           type: JOIN_ROOM,
@@ -216,13 +213,6 @@ function editRoomName(payload) {
   };
 }
 
-function addMessage(payload) {
-  return {
-    type: ADD_MESSAGE,
-    payload
-  };
-}
-
 function memberVoted(payload) {
   return {
     type: USER_VOTE,
@@ -271,7 +261,6 @@ export {
   deleteStory,
   editStory,
   editRoomName,
-  addMessage,
   memberVoted,
   flipCards,
   deleteVotes,
