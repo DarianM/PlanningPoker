@@ -4,67 +4,10 @@ const ws = require("ws").Server;
 const wss = new ws({ host: "192.168.1.105", port: "2345" });
 const joi = require("joi");
 const db = require("../db/db_utils");
+const wsServer = require("../wsServer");
 
-const roomsSockets = {};
-let disconnectedIPs = [];
-
-wss.on("connection", (s, req) => {
-  const roomId = req.url.substring(1);
-  roomsSockets[roomId]
-    ? roomsSockets[roomId].push(s)
-    : (roomsSockets[roomId] = [s]);
-  const currentIp = req.connection.remoteAddress;
-  console.log(currentIp + " connected");
-  s.isAlive = true;
-  const interval = setInterval(() => {
-    wss.clients.forEach(ws => {
-      if (!ws.isAlive) {
-        console.log("terminating");
-        ws.terminate();
-      }
-      ws.isAlive = false;
-      ws.ping("ping", false, err => console.log("--ping sent--"));
-    });
-  }, 7000);
-  s.on("pong", () => {
-    console.log("pong");
-    s.isAlive = true;
-  });
-  s.on("message", m => {
-    console.log("socket onmessage " + m);
-    if (m === "ping") {
-      return;
-    }
-    const data = JSON.parse(m);
-    console.log(data);
-
-    if (data.action === "USER_VOTED") {
-      const { user, roomId, voted, id } = data;
-      roomsSockets[roomId].forEach(s => {
-        if (s.readyState === 1)
-          s.send(
-            JSON.stringify({ action: "USER_VOTED", user, roomId, voted, id })
-          );
-      });
-    }
-  });
-
-  s.on("close", (code, reason) => {
-    roomsSockets[roomId] = roomsSockets[roomId].filter(socket => socket !== s);
-    s.terminate();
-    clearInterval(interval);
-    console.log(roomsSockets);
-    // code 1001 closed connection - 1006 lost connection
-
-    console.log("client lost connection " + currentIp);
-    disconnectedIPs.push(currentIp);
-    setTimeout(() => {
-      disconnectedIPs = disconnectedIPs.filter(ips => ips !== currentIp);
-      console.log(disconnectedIPs);
-    }, 20000);
-  });
-  s.on("error", err => console.log(err.message));
-});
+const server = new wsServer(wss);
+server.listen();
 
 const validateNewRoom = async (req, res, next) => {
   const schema = joi.object().keys({
@@ -80,6 +23,7 @@ const validateNewRoom = async (req, res, next) => {
 };
 
 const validateMember = async (req, res, next) => {
+  console.log(typeof req.body.roomId);
   let schema = joi.object().keys({
     roomId: joi.number().integer(),
     user: joi.string().not("")
@@ -104,21 +48,26 @@ const validateMember = async (req, res, next) => {
     await joi.validate(req.body, schema);
     next();
   } catch (error) {
-    return res.sendStatus(400);
+    return res.status(400).send({ error: "wrong type" });
   }
 };
 
-router.get("/recent", (req, res) => {
-  const ip = req.connection.remoteAddress;
-  if (disconnectedIPs.find(ips => ips === ip)) {
-    res.send({ ip: `${ip}  -->  reconnection possible` });
-  } else {
-    res.send({ ip: "session expired" });
+const validateRoomId = async (req, res, next) => {
+  const schema = joi.number().integer();
+  try {
+    await joi.validate(req.params.roomId, schema);
+    next();
+  } catch (error) {
+    return res.status(400).send({ error: "wrong type" });
   }
-});
+};
 
-router.get("/:roomId", async (req, res) => {
+router.get("/:roomId", validateRoomId, async (req, res) => {
   const roomId = req.params.roomId;
+  const isRoomAvailable = await db.checkRoomAvailability(roomId);
+  if (isRoomAvailable === undefined) {
+    return res.status(400).send({ error: "Room not available" });
+  }
   const members = await db.getRoomMembers(roomId);
   const { roomName } = await db.getRoomName(roomId);
   res.send({ members, roomName });
@@ -138,21 +87,19 @@ router.post("/member", validateMember, async (req, res) => {
     return res.status(400).send({ error: "Room not available" });
   }
   const roomMembers = await db.getRoomMembers(roomId);
-
   const isUsernameTaken = await db.checkUserUniquenessWithinRoom(
     user,
     roomMembers
   );
+
   if (!isUsernameTaken) {
     const credentials = await db.addUserToRoom(user, roomId, roomMembers);
     const { userId } = credentials;
-    roomsSockets[roomId] = roomsSockets[roomId] || [];
-    roomsSockets[roomId].forEach(s => {
-      if (s.readyState === 1)
-        s.send(
-          JSON.stringify({ reason: "USER_JOINED", data: { user, userId } })
-        );
+    const data = JSON.stringify({
+      reason: "USER_JOINED",
+      data: { user, userId }
     });
+    server.broadcast(roomId, data);
     await res.send(credentials);
   } else {
     res.status(400).send({
@@ -165,7 +112,7 @@ router.post("/room", validateNewRoom, async (req, res) => {
   const roomName = req.body.roomName || "NewRoom";
   const owner = req.body.user;
 
-  await res.send(await db.createRoom(owner, roomName));
+  res.send(await db.createRoom(owner, roomName));
 });
 
 module.exports = router;
