@@ -20,13 +20,6 @@ const initialStore = {
     stories: [],
     activeStory: ""
   },
-  chat: {
-    nextId: 3,
-    messages: [
-      { message: "testMsg", user: "testUser", id: 1 },
-      { message: "voted", user: "testUser", id: 2 }
-    ]
-  },
   gameVotes: {
     end: null,
     flip: false,
