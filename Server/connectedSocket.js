@@ -5,10 +5,14 @@ module.exports = class connectedSocket {
     this.roomId = roomId;
     this.isAlive = true;
     socket.on("pong", () => this.pong());
-    socket.on("message", event => this.onmessage(event.data));
+    socket.on("message", message => {
+      typeof message === "string" ? this.noop() : this.onmessage(message);
+    });
     socket.on("close", () => this.onclose());
     socket.on("error", err => console.log(err));
   }
+
+  noop() {}
   onmessage(message) {
     this.broadcastMessage(JSON.parse(message));
   }
@@ -35,9 +39,8 @@ module.exports = class connectedSocket {
     this.isAlive = true;
   }
   broadcastMessage(message) {
-    if (message === "ping") return;
-    const { data } = message;
-    switch (message.action) {
+    const { action, data } = message;
+    switch (action) {
       case "USER_VOTED":
         this.server.broadcast(this.roomId, data);
         break;
