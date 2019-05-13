@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import actions from "../../../actions/roomActions";
+import * as actions from "../../../actions/roomActions";
 
 const mapDispatchToProps = dispatch => ({
   startCurrentGame: game => dispatch(actions.startGame(game)),

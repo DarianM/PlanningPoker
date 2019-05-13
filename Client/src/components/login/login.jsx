@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import actions from "../../actions/roomActions";
+import { createRoom, joinRoom } from "../../actions/roomActions";
 
 function mapDispatchToProps(dispatch) {
   return {
-    createRoom: user => dispatch(actions.createRoom(user)),
-    joinRoom: data => dispatch(actions.joinRoom(data))
+    _createRoom: user => dispatch(createRoom(user)),
+    _joinRoom: data => dispatch(joinRoom(data))
   };
 }
 
@@ -27,19 +27,19 @@ export class ConnectedLogin extends Component {
 
   async handleNewSession(event) {
     event.preventDefault();
-    const { createRoom } = this.props;
+    const { _createRoom } = this.props;
     const { user } = this.state;
     const { roomName } = this.state;
 
-    createRoom({ user, roomName });
+    _createRoom({ user, roomName });
   }
 
   async handleJoinSession(event) {
     event.preventDefault();
-    const { joinRoom } = this.props;
+    const { _joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    joinRoom({ user, roomId: id });
+    _joinRoom({ user, roomId: id });
   }
 
   handleUser(event) {
@@ -119,8 +119,8 @@ export class ConnectedLogin extends Component {
 }
 
 ConnectedLogin.propTypes = {
-  createRoom: PropTypes.func.isRequired,
-  joinRoom: PropTypes.func.isRequired
+  _createRoom: PropTypes.func.isRequired,
+  _joinRoom: PropTypes.func.isRequired
 };
 
 const Login = connect(

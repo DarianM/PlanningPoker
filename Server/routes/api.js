@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ws = require("ws").Server;
-const wss = new ws({ host: "192.168.1.105", port: "2345" });
+const wss = new ws({ host: "192.168.1.2", port: "2345" });
 const joi = require("joi");
 const db = require("../db/db_utils");
 const wsServer = require("../wsServer");

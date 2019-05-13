@@ -1,5 +1,10 @@
 import voteReducer from "./voteReducer";
-import actions from "../actions/roomActions";
+import {
+  addVote,
+  flipCards,
+  deleteVotes,
+  endGame
+} from "../actions/roomActions";
 
 describe("voteReducer", () => {
   describe("player clicks on a card after the game has started", () => {
@@ -16,10 +21,7 @@ describe("voteReducer", () => {
         ]
       };
       expect(
-        voteReducer(
-          initialState,
-          actions.addVote({ user: "Adrian", voted: "40" })
-        )
+        voteReducer(initialState, addVote({ user: "Adrian", voted: "40" }))
       ).toEqual(expected);
     });
   });
@@ -36,10 +38,7 @@ describe("voteReducer", () => {
       };
 
       expect(
-        voteReducer(
-          initialState,
-          actions.addVote({ user: "Kevin", voted: "13" })
-        )
+        voteReducer(initialState, addVote({ user: "Kevin", voted: "13" }))
       ).toEqual(expected);
     });
   });
@@ -49,9 +48,9 @@ describe("voteReducer", () => {
     it("replaces status vote of members with actual vote they chose", () => {
       const expected = { flip: true };
 
-      expect(
-        voteReducer(initialState, actions.flipCards({ flip: true }))
-      ).toEqual(expected);
+      expect(voteReducer(initialState, flipCards({ flip: true }))).toEqual(
+        expected
+      );
     });
   });
 
@@ -65,9 +64,9 @@ describe("voteReducer", () => {
     it("deletes all votes in current story", () => {
       const expected = { list: [] };
 
-      expect(
-        voteReducer(initialState, actions.deleteVotes({ list: [] }))
-      ).toEqual(expected);
+      expect(voteReducer(initialState, deleteVotes({ list: [] }))).toEqual(
+        expected
+      );
     });
   });
 
@@ -76,7 +75,7 @@ describe("voteReducer", () => {
     it("ends current game and display statistics", () => {
       const expected = { end: true };
 
-      expect(voteReducer(initialState, actions.endGame({ end: true }))).toEqual(
+      expect(voteReducer(initialState, endGame({ end: true }))).toEqual(
         expected
       );
     });

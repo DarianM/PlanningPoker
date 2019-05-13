@@ -1,10 +1,10 @@
 import logReducer from "./logReducer";
-import actions from "../actions/roomActions";
+import { startGame, memberVoted, deleteVotes } from "../actions/roomActions";
 import { CREATE_ROOM, NEW_MEMBER } from "../actions/types";
 
 describe("logReducer", () => {
   describe("before assinging a room, login data is required", () => {
-    const login = actions.login({ user: "name" });
+    const login = login({ user: "name" });
     const mockLoginFunc = jest.fn();
     login(mockLoginFunc);
     expect(mockLoginFunc).toBeCalledWith({
@@ -63,10 +63,7 @@ describe("logReducer", () => {
   describe("when admin clicks start game button", () => {
     it("saves starting time & should let members in room pick any card", () => {
       const initialState = { gameStart: null };
-      const newState = logReducer(
-        initialState,
-        actions.startGame({ gameStart: Date })
-      );
+      const newState = logReducer(initialState, startGame({ gameStart: Date }));
 
       expect(newState.gameStart).toBe(Date);
     });
@@ -89,10 +86,7 @@ describe("logReducer", () => {
         };
 
         expect(
-          logReducer(
-            initialState,
-            actions.memberVoted({ user: "John", voted: true })
-          )
+          logReducer(initialState, memberVoted({ user: "John", voted: true }))
         ).toEqual(expected);
       });
     });
@@ -115,7 +109,7 @@ describe("logReducer", () => {
         ]
       };
 
-      expect(logReducer(initialState, actions.deleteVotes())).toEqual(expected);
+      expect(logReducer(initialState, deleteVotes())).toEqual(expected);
     });
   });
 });

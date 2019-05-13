@@ -41,7 +41,7 @@ function createRoomF(payload, fetch) {
 
         dispatch({
           type: WEBSOCKET_CONNECT,
-          payload: `ws://192.168.1.113:2345/${roomId}`
+          payload: `ws://192.168.1.2:2345/${roomId}`
         });
 
         dispatch({
@@ -87,7 +87,7 @@ function joinRoomF(payload, fetch) {
         const data = await response.json();
         dispatch({
           type: "WEBSOCKET_CONNECT",
-          payload: `ws://192.168.1.113:2345/${roomId}`
+          payload: `ws://192.168.1.2:2345/${roomId}`
         });
         dispatch({
           type: JOIN_ROOM,
@@ -116,6 +116,24 @@ function joinRoomF(payload, fetch) {
 
 function joinRoom(payload) {
   return joinRoomF(payload, fetch);
+}
+
+function reconnectRoomF(payload, fetch) {
+  return {
+    type: "RECONNECT",
+    payload: { ...payload, fetch }
+  };
+}
+
+function reconnectRoom(payload) {
+  return reconnectRoomF(payload, fetch);
+}
+
+function newMember(payload) {
+  return {
+    type: NEW_MEMBER,
+    payload
+  };
 }
 
 function startGame(payload) {
@@ -240,11 +258,13 @@ function resetTimer(payload) {
   };
 }
 
-export default {
+export {
   createRoom,
   createRoomF,
   joinRoom,
   joinRoomF,
+  reconnectRoom,
+  newMember,
   startGame,
   addVote,
   addStory,

@@ -6,7 +6,8 @@ import {
   USER_VOTE,
   NEW_MEMBER,
   DELETE_VOTES,
-  RESET_TIMER
+  RESET_TIMER,
+  WEBSOCKET_OPEN
 } from "../actions/types";
 
 const initialState = {
@@ -17,16 +18,17 @@ export default function(state = initialState, action) {
   if (action.type === CREATE_ROOM) {
     return { ...state, ...action.payload };
   }
-  if (action.type === "WEBSOCKET_OPEN") {
+  if (action.type === WEBSOCKET_OPEN) {
     return { ...state, hasJoined: true };
   }
   if (action.type === START_GAME) {
     return { ...state, ...action.payload };
   }
   if (action.type === NEW_MEMBER) {
+    const member = { ...action.payload, voted: false };
     return {
       ...state,
-      members: [...state.members, action.payload]
+      members: [...state.members, member]
     };
   }
 

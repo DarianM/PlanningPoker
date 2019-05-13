@@ -1,4 +1,4 @@
-import actions from "./roomActions";
+import { createRoomF, joinRoomF } from "./roomActions";
 
 describe("create room action", () => {
   describe("with network offline", () => {
@@ -6,7 +6,7 @@ describe("create room action", () => {
       () => new Promise((resolve, reject) => reject(new Error("error")))
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = actions.createRoomF(
+      const result = createRoomF(
         { user: "random", roomName: "room" },
         mockFetch
       );
@@ -30,7 +30,7 @@ describe("create room action", () => {
         )
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = actions.createRoomF(
+      const result = createRoomF(
         { user: "random", roomName: "room" },
         mockFetch
       );
@@ -54,7 +54,7 @@ describe("create room action", () => {
         )
     );
     it("should dispatch LOGIN_SUCCES", async () => {
-      const result = actions.createRoomF(
+      const result = createRoomF(
         { user: "random", roomName: "room" },
         mockFetch
       );
@@ -71,10 +71,7 @@ describe("join room action", () => {
       () => new Promise((resolve, reject) => reject(new Error("error")))
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = actions.joinRoomF(
-        { user: "random", roomId: 1 },
-        mockFetch
-      );
+      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
@@ -95,10 +92,7 @@ describe("join room action", () => {
         )
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = actions.joinRoomF(
-        { user: "random", roomId: 1 },
-        mockFetch
-      );
+      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
@@ -119,10 +113,7 @@ describe("join room action", () => {
         )
     );
     it("should dispatch LOGIN_SUCCESS", async () => {
-      const result = actions.joinRoomF(
-        { user: "random", roomId: 1 },
-        mockFetch
-      );
+      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_SUCCES" }]);
@@ -142,10 +133,7 @@ describe("join room action", () => {
         )
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = actions.joinRoomF(
-        { user: "random", roomId: 1 },
-        mockFetch
-      );
+      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls).toContainEqual([
