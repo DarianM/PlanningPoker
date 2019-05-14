@@ -1,4 +1,10 @@
-import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE, WEBSOCKET_OPEN } from "./types";
+import {
+  WEBSOCKET_CONNECT,
+  WEBSOCKET_CLOSE,
+  WEBSOCKET_OPEN,
+  WEBSOCKET_MESSAGE,
+  WEBSOCKET_ERROR
+} from "./types";
 
 const WEBSOCKET_PORT = 2345;
 const host = () => window.location.host || "localhost";
@@ -16,4 +22,12 @@ export function close() {
 
 export function open() {
   return { type: WEBSOCKET_OPEN };
+}
+
+export function message(data) {
+  return { type: WEBSOCKET_MESSAGE, payload: data };
+}
+
+export function error(exception) {
+  return { type: WEBSOCKET_ERROR, payload: exception };
 }

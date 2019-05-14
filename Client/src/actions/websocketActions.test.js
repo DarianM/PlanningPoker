@@ -1,5 +1,11 @@
-import { connect, close, open } from "./websocketActions";
-import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE, WEBSOCKET_OPEN } from "./types";
+import { connect, close, error, open, message } from "./websocketActions";
+import {
+  WEBSOCKET_CONNECT,
+  WEBSOCKET_CLOSE,
+  WEBSOCKET_OPEN,
+  WEBSOCKET_ERROR,
+  WEBSOCKET_MESSAGE
+} from "./types";
 
 describe("websocket actions", () => {
   it("creates WEBSOCKET_CONNECT with the websocket URL", () => {
@@ -16,5 +22,17 @@ describe("websocket actions", () => {
   it("creates WEBSOCKET_OPEN actions", () => {
     const action = open();
     expect(action.type).toBe(WEBSOCKET_OPEN);
+  });
+
+  it("creates WEBSOCKET_MESSAGE action", () => {
+    const data = { test: 1 };
+    const action = message(data);
+    expect(action.type).toBe(WEBSOCKET_MESSAGE);
+  });
+
+  it("creates WEBSOCKET_ERROR action", () => {
+    const exception = new Error("test");
+    const action = error(exception);
+    expect(action.type).toBe(WEBSOCKET_ERROR);
   });
 });
