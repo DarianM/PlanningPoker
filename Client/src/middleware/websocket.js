@@ -1,6 +1,11 @@
 import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE } from "../actions/types";
+import { open } from "../actions/websocketActions";
 
 let websocket;
+
+const onOpen = dispatch => {
+  dispatch(open());
+};
 
 const websocketMiddleware = store => next => action => {
   switch (action.type) {
@@ -9,6 +14,7 @@ const websocketMiddleware = store => next => action => {
         throw new Error("Websocket already connected");
       }
       websocket = new WebSocket(action.payload);
+      websocket.onopen = () => onOpen(store.dispatch);
       break;
     case WEBSOCKET_CLOSE:
       if (websocket) {

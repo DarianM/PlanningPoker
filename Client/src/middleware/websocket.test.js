@@ -1,4 +1,5 @@
 import websocketMiddleware from "./websocket";
+import { WEBSOCKET_OPEN } from "../actions/types";
 import { close, connect } from "../actions/websocketActions";
 
 const createWebSocket = () => {
@@ -25,7 +26,7 @@ const createMiddleware = () => {
 };
 
 describe("websocket middleware", () => {
-  const { next, invoke } = createMiddleware();
+  const { store, next, invoke } = createMiddleware();
   const { websocketConstructor, websocket } = createWebSocket();
 
   global.WebSocket = websocketConstructor;
@@ -34,6 +35,7 @@ describe("websocket middleware", () => {
     websocketConstructor.mockClear();
     next.mockClear();
     websocket.close.mockClear();
+    websocket.onmessage.mockClear();
   });
 
   describe("on WEBSOCKET_CONNECT action", () => {
@@ -88,6 +90,19 @@ describe("websocket middleware", () => {
     describe("on WEBSOCKET_CONNECT action", () => {
       it("throwns an error", () => {
         expect(() => invoke(connect("roomId"))).toThrow();
+      });
+    });
+
+    describe("on websocket open message", () => {
+      beforeEach(() => {
+        store.dispatch.mockClear();
+        websocket.onopen();
+      });
+
+      it("dispaches the WEBSOCKET_OPEN action", () => {
+        expect(store.dispatch).toHaveBeenCalledWith({
+          type: WEBSOCKET_OPEN
+        });
       });
     });
   });
