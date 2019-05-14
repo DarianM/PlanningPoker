@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import actions from "../../actions/roomActions";
+import * as actions from "../../actions/roomActions";
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -84,9 +84,9 @@ const Header = ({ close }) => (
       role="button"
       tabIndex="0"
     >
-      &times;
+      {`\u00D7`}
     </span>
-    <div>Story Detayls</div>
+    <div>Story Details</div>
   </div>
 );
 

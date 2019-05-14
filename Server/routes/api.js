@@ -24,7 +24,6 @@ const validateNewRoom = async (req, res, next) => {
 };
 
 const validateMember = async (req, res, next) => {
-  console.log(typeof req.body.roomId);
   let schema = joi.object().keys({
     roomId: joi.number().integer(),
     user: joi.string().not("")

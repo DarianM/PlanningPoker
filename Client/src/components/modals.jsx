@@ -33,10 +33,8 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ removeToast }, dispatch)
 });
 
-let timerCount = 0;
 const Toast = ({ text, onDismissClick }) => {
   setTimeout(onDismissClick, 3000);
-  timerCount += 1;
   return (
     <li className="toast">
       <p className="toast__content">{text}</p>

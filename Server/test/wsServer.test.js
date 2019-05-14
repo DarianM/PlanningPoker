@@ -1,6 +1,6 @@
 const wsServer = require("../wsServer");
 const connectedSocket = require("../connectedSocket");
-jest.mock("../connectedSocket");
+// jest.mock("../connectedSocket");
 
 const wss = {
   on: jest.fn(),
@@ -23,20 +23,20 @@ const socket = {
 describe("websocket server", () => {
   beforeAll(() => jest.useFakeTimers());
   afterAll(() => jest.useRealTimers());
-  beforeEach(() => connectedSocket.mockClear());
+  // beforeEach(() => connectedSocket.mockClear());
 
   const server = new wsServer(wss);
   describe("starting listening", () => {
     server.listen();
+    const cbFunc = wss.on.mock.calls[0][1];
     it("server 'on' method should be called", () => {
-      const cbFunc = wss.on.mock.calls[0][1];
       expect(wss.on).toHaveBeenCalledWith("connection", cbFunc);
-      cbFunc(socket, { url: "/1" });
-      expect(connectedSocket).toHaveBeenCalled();
-      expect(connectedSocket.mock.calls[0][0]).toBe(socket);
     });
-    it("should add the new socket in the roomsSockets object", () => {
-      expect(server._roomsSockets).toEqual({ 1: [socket] });
+    describe("new socket connects", () => {
+      cbFunc(socket, { url: "/1" });
+      it("should add the new socket in the roomsSockets object", () => {
+        expect(server._roomsSockets).toEqual({ 1: [socket] });
+      });
     });
   });
 });

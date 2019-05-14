@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import actions from "../../actions/roomActions";
+import * as actions from "../../actions/roomActions";
 import EditableText from "../editableText";
 
 const mapDispatchToProps = dispatch => ({
@@ -22,7 +22,7 @@ export const ConnectedSessionInfo = ({
     <div>
       <EditableText text={roomName} commit={editRoomName} />
       <p className="sessionRoomId">
-        your room ID:
+        {`your room ID:`}
         {roomId}
       </p>
       {roomHistory.activeStory && (
@@ -37,10 +37,12 @@ export const ConnectedSessionInfo = ({
 
 ConnectedSessionInfo.propTypes = {
   roomId: PropTypes.number.isRequired,
+  roomName: PropTypes.string.isRequired,
   roomHistory: PropTypes.shape({
     edit: PropTypes.bool
   }).isRequired,
-  editStory: PropTypes.func.isRequired
+  editStory: PropTypes.func.isRequired,
+  editRoomName: PropTypes.func.isRequired
 };
 
 const SessionInfo = connect(
