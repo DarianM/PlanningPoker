@@ -1,10 +1,10 @@
-import { addToast } from "./actions/toastsActions";
-import { newMember } from "./actions/roomActions";
+import { addToast } from "../actions/toastsActions";
+import { newMember } from "../actions/roomActions";
 import {
   REJOIN_ROOM,
   WEBSOCKET_CLOSE,
   WEBSOCKET_MESSAGE
-} from "./actions/types";
+} from "../actions/types";
 
 async function reconnectRoomF(roomId, interval, dispatch, fetch) {
   try {

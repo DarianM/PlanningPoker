@@ -1,5 +1,5 @@
-import { WEBSOCKET_CONNECT, WEBSOCKET_SEND } from "./actions/types";
-import WS from "./wsProps";
+import { WEBSOCKET_CONNECT, WEBSOCKET_SEND } from "../actions/types";
+import WS from "../wsProps";
 
 let websocket;
 
