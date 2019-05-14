@@ -1,10 +1,14 @@
-import { WEBSOCKET_CONNECT } from "../actions/types";
+import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE } from "../actions/types";
 
 let websocket;
 
 const websocketMiddleware = store => next => action => {
-  if (action.type === WEBSOCKET_CONNECT) {
-    websocket = new WebSocket(action.payload);
+  switch (action.type) {
+    case WEBSOCKET_CONNECT:
+      websocket = new WebSocket(action.payload);
+      break;
+    case WEBSOCKET_CLOSE:
+      websocket.close();
   }
   return next(action);
 };

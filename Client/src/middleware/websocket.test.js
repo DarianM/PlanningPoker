@@ -1,5 +1,5 @@
 import websocketMiddleware from "./websocket";
-import { connect } from "../actions/websocketActions";
+import { close, connect } from "../actions/websocketActions";
 
 const createWebSocket = () => {
   const websocket = {
@@ -7,7 +7,8 @@ const createWebSocket = () => {
     onerror: jest.fn(),
     onclose: jest.fn(),
     onmessage: jest.fn(),
-    send: jest.fn()
+    send: jest.fn(),
+    close: jest.fn()
   };
   const websocketConstructor = jest.fn(() => websocket);
   return { websocketConstructor, websocket };
@@ -25,13 +26,14 @@ const createMiddleware = () => {
 
 describe("websocket middleware", () => {
   const { next, invoke } = createMiddleware();
-  const { websocketConstructor } = createWebSocket();
+  const { websocketConstructor, websocket } = createWebSocket();
 
   global.WebSocket = websocketConstructor;
 
   beforeEach(() => {
-    websocketConstructor.mockReset();
-    next.mockReset();
+    websocketConstructor.mockClear();
+    next.mockClear();
+    websocket.close.mockClear();
   });
 
   describe("on WEBSOCKET_CONNECT action", () => {
@@ -39,14 +41,14 @@ describe("websocket middleware", () => {
       invoke(connect("roomId"));
     });
 
+    afterEach(() => {
+      invoke(close());
+    });
+
     it("creates the websocket", () => {
       expect(websocketConstructor).toHaveBeenCalledWith(
         "ws://localhost:2345/roomId"
       );
-    });
-
-    it("calls the next middleware", () => {
-      expect(next).toHaveBeenCalled();
     });
   });
 
@@ -61,6 +63,22 @@ describe("websocket middleware", () => {
 
     it("calls the next middleware", () => {
       expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("a connected websocket", () => {
+    beforeEach(() => {
+      invoke(connect("roomId"));
+    });
+
+    describe("on WEBSOCKET_CLOSE action", () => {
+      beforeEach(() => {
+        invoke(close());
+      });
+
+      it("closes the websocket", () => {
+        expect(websocket.close).toHaveBeenCalled();
+      });
     });
   });
 });
