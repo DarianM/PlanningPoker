@@ -24,18 +24,43 @@ const createMiddleware = () => {
 };
 
 describe("websocket middleware", () => {
-  const { invoke } = createMiddleware();
+  const { next, invoke } = createMiddleware();
   const { websocketConstructor } = createWebSocket();
 
   global.WebSocket = websocketConstructor;
 
+  beforeEach(() => {
+    websocketConstructor.mockReset();
+    next.mockReset();
+  });
+
   describe("on WEBSOCKET_CONNECT action", () => {
-    invoke(connect("roomId"));
+    beforeEach(() => {
+      invoke(connect("roomId"));
+    });
 
     it("creates the websocket", () => {
       expect(websocketConstructor).toHaveBeenCalledWith(
         "ws://localhost:2345/roomId"
       );
+    });
+
+    it("calls the next middleware", () => {
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("on UNKNOWN_ACTION", () => {
+    beforeEach(() => {
+      invoke({ type: "UNKNOWN_ACTION" });
+    });
+
+    it("does NOT create the websocket", () => {
+      expect(websocketConstructor).not.toHaveBeenCalled();
+    });
+
+    it("calls the next middleware", () => {
+      expect(next).toHaveBeenCalled();
     });
   });
 });
