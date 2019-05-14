@@ -1,5 +1,5 @@
-import { connect, close } from "./websocketActions";
-import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE } from "./types";
+import { connect, close, open } from "./websocketActions";
+import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE, WEBSOCKET_OPEN } from "./types";
 
 describe("websocket actions", () => {
   it("creates WEBSOCKET_CONNECT with the websocket URL", () => {
@@ -11,5 +11,10 @@ describe("websocket actions", () => {
   it("creates WEBSOCKET_CLOSE actions", () => {
     const action = close();
     expect(action.type).toBe(WEBSOCKET_CLOSE);
+  });
+
+  it("creates WEBSOCKET_OPEN actions", () => {
+    const action = open();
+    expect(action.type).toBe(WEBSOCKET_OPEN);
   });
 });
