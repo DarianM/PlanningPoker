@@ -71,6 +71,10 @@ describe("websocket middleware", () => {
       invoke(connect("roomId"));
     });
 
+    afterEach(() => {
+      invoke(close());
+    });
+
     describe("on WEBSOCKET_CLOSE action", () => {
       beforeEach(() => {
         invoke(close());
@@ -78,6 +82,12 @@ describe("websocket middleware", () => {
 
       it("closes the websocket", () => {
         expect(websocket.close).toHaveBeenCalled();
+      });
+    });
+
+    describe("on WEBSOCKET_CONNECT action", () => {
+      it("throwns an error", () => {
+        expect(() => invoke(connect("roomId"))).toThrow();
       });
     });
   });
