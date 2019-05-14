@@ -1,5 +1,9 @@
 import websocketMiddleware from "./websocket";
-import { WEBSOCKET_OPEN } from "../actions/types";
+import {
+  WEBSOCKET_OPEN,
+  WEBSOCKET_MESSAGE,
+  WEBSOCKET_ERROR
+} from "../actions/types";
 import { close, connect } from "../actions/websocketActions";
 
 const createWebSocket = () => {
@@ -35,7 +39,6 @@ describe("websocket middleware", () => {
     websocketConstructor.mockClear();
     next.mockClear();
     websocket.close.mockClear();
-    websocket.onmessage.mockClear();
   });
 
   describe("on WEBSOCKET_CONNECT action", () => {
@@ -102,6 +105,49 @@ describe("websocket middleware", () => {
       it("dispaches the WEBSOCKET_OPEN action", () => {
         expect(store.dispatch).toHaveBeenCalledWith({
           type: WEBSOCKET_OPEN
+        });
+      });
+    });
+
+    describe("on a websocket message with a JSON payload", () => {
+      const dummy = { dummy: 1 };
+      beforeEach(() => {
+        store.dispatch.mockClear();
+        websocket.onmessage({ data: JSON.stringify(dummy) });
+      });
+
+      it("dispaches the WEBSOCKET_MESSAGE action", () => {
+        expect(store.dispatch).toHaveBeenCalledWith({
+          type: WEBSOCKET_MESSAGE,
+          payload: dummy
+        });
+      });
+    });
+
+    describe("on a websocket message with an invalid payload", () => {
+      beforeEach(() => {
+        store.dispatch.mockClear();
+      });
+
+      it("throws an error", () => {
+        expect(() => websocket.onmessage({ data: "invalid" })).toThrow();
+      });
+
+      it("WEBSOCKET_MESSAGE action is NOT dispached", () => {
+        expect(store.dispatch).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("when the socket is broken", () => {
+      beforeEach(() => {
+        store.dispatch.mockClear();
+        websocket.onerror({ currentTarget: { url: "test url" } });
+      });
+
+      it("dispaches an WEBSOCKET_ERROR action", () => {
+        expect(store.dispatch).toHaveBeenCalledWith({
+          type: WEBSOCKET_ERROR,
+          payload: expect.any(Error)
         });
       });
     });

@@ -1,10 +1,18 @@
 import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE } from "../actions/types";
-import { open } from "../actions/websocketActions";
+import { error, open, message } from "../actions/websocketActions";
 
 let websocket;
 
 const onOpen = dispatch => {
   dispatch(open());
+};
+
+const onMessage = (dispatch, data) => {
+  dispatch(message(JSON.parse(data)));
+};
+
+const onError = dispatch => {
+  dispatch(error(new Error("Web socket error")));
 };
 
 const websocketMiddleware = store => next => action => {
@@ -15,6 +23,8 @@ const websocketMiddleware = store => next => action => {
       }
       websocket = new WebSocket(action.payload);
       websocket.onopen = () => onOpen(store.dispatch);
+      websocket.onmessage = e => onMessage(store.dispatch, e.data);
+      websocket.onerror = () => onError(store.dispatch);
       break;
     case WEBSOCKET_CLOSE:
       if (websocket) {
@@ -25,6 +35,7 @@ const websocketMiddleware = store => next => action => {
     default:
       return next(action);
   }
+  return store;
 };
 
 export default websocketMiddleware;
