@@ -7,9 +7,10 @@ import {
 } from "../actions/websocketActions";
 
 class ReduxWebsocket {
-  constructor() {
+  constructor(waitBetweenRetries) {
     this.websocket = null;
     this.lastUrl = null;
+    this.waitBetweenRetries = waitBetweenRetries || 5000;
     this.isReconnecting = false;
   }
 
@@ -17,6 +18,7 @@ class ReduxWebsocket {
     if (this.websocket) {
       this.websocket.close();
       this.websocket = null;
+      this.isReconnecting = false;
     }
   }
 
@@ -25,23 +27,34 @@ class ReduxWebsocket {
       throw new Error("Websocket already connected");
     }
     this.lastUrl = url;
-    this.websocket = new WebSocket(url);
-    this.websocket.onopen = () => this.onOpen(dispatch);
-    this.websocket.onmessage = e => dispatch(message(JSON.parse(e.data)));
-    this.websocket.onerror = () => this.onError(dispatch);
+    try {
+      this.websocket = new WebSocket(url);
+      this.websocket.onopen = () => this.onOpen(dispatch);
+      this.websocket.onmessage = e => dispatch(message(JSON.parse(e.data)));
+      this.websocket.onerror = () => this.onError(dispatch);
+    } catch (e) {
+      this.onError(dispatch);
+    }
   }
 
   onOpen(dispatch) {
     if (this.isReconnecting) {
-      dispatch(reconnected());
       this.isReconnecting = false;
+      dispatch(reconnected());
     }
     dispatch(open());
   }
 
   onError(dispatch) {
     dispatch(error(new Error("Web socket error")));
-    this.reconnect(dispatch);
+    this.handleBroken(dispatch);
+  }
+
+  handleBroken(dispatch) {
+    if (!this.isReconnecting) {
+      this.reconnect(dispatch);
+    }
+    setTimeout(() => this.reconnect(dispatch), this.waitBetweenRetries);
   }
 
   reconnect(dispatch) {

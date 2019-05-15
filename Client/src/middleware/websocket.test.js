@@ -39,8 +39,14 @@ describe("websocket middleware", () => {
 
   beforeEach(() => {
     websocketConstructor.mockClear();
+    websocketConstructor.mockImplementation(() => websocket);
     next.mockClear();
     websocket.close.mockClear();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
   });
 
   describe("on WEBSOCKET_CONNECT action", () => {
@@ -175,10 +181,7 @@ describe("websocket middleware", () => {
     });
 
     it("will reconnect", () => {
-      expect(websocketConstructor).toHaveBeenCalledWith(
-        "ws://localhost:2345/roomId"
-      );
-      expect(() => websocket.onmessage({ data: "invalid" })).toThrow();
+      expect(websocketConstructor).toHaveBeenCalled();
     });
 
     it("triggers WEBSOCKET_RECONNECTING action while reconnecting", () => {
@@ -188,6 +191,50 @@ describe("websocket middleware", () => {
     });
 
     it("triggers WEBSOCKET_RECONNECTED action when the connection is re-established", () => {
+      expect(store.dispatch).toHaveBeenCalledWith({
+        type: WEBSOCKET_RECONNECTED
+      });
+    });
+  });
+
+  describe("a broken websocket which fails to reconnect the first 2 times", () => {
+    beforeEach(() => {
+      let count = 0;
+      invoke(connect("roomId"));
+      websocketConstructor.mockClear();
+      websocketConstructor.mockImplementation(() => {
+        if (count < 2) {
+          count += 1;
+          throw new Error("broken");
+        }
+        return websocket;
+      });
+
+      store.dispatch.mockClear();
+      websocket.onerror({ currentTarget: {} });
+    });
+
+    afterEach(() => {
+      invoke(close());
+    });
+
+    it("will try to reconnect after the re-try interval", () => {
+      store.dispatch.mockClear();
+      jest.runOnlyPendingTimers();
+
+      expect(
+        store.dispatch.mock.calls.filter(
+          c => c[0].type === WEBSOCKET_RECONNECTING
+        ).length
+      ).toBe(2);
+    });
+
+    it("will reconnect the third time", () => {
+      store.dispatch.mockClear();
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
+      websocket.onopen();
+
       expect(store.dispatch).toHaveBeenCalledWith({
         type: WEBSOCKET_RECONNECTED
       });
