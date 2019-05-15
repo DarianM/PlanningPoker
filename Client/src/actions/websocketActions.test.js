@@ -1,10 +1,20 @@
-import { connect, close, error, open, message } from "./websocketActions";
+import {
+  connect,
+  close,
+  error,
+  open,
+  reconnected,
+  reconnecting,
+  message
+} from "./websocketActions";
 import {
   WEBSOCKET_CONNECT,
   WEBSOCKET_CLOSE,
   WEBSOCKET_OPEN,
   WEBSOCKET_ERROR,
-  WEBSOCKET_MESSAGE
+  WEBSOCKET_MESSAGE,
+  WEBSOCKET_RECONNECTED,
+  WEBSOCKET_RECONNECTING
 } from "./types";
 
 describe("websocket actions", () => {
@@ -34,5 +44,15 @@ describe("websocket actions", () => {
     const exception = new Error("test");
     const action = error(exception);
     expect(action.type).toBe(WEBSOCKET_ERROR);
+  });
+
+  it("creates WEBSOCKET_RECONNECTED action", () => {
+    const action = reconnected();
+    expect(action.type).toBe(WEBSOCKET_RECONNECTED);
+  });
+
+  it("creates WEBSOCKET_RECONNECTING action", () => {
+    const action = reconnecting();
+    expect(action.type).toBe(WEBSOCKET_RECONNECTING);
   });
 });

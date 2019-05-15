@@ -3,7 +3,9 @@ import {
   WEBSOCKET_CLOSE,
   WEBSOCKET_OPEN,
   WEBSOCKET_MESSAGE,
-  WEBSOCKET_ERROR
+  WEBSOCKET_ERROR,
+  WEBSOCKET_RECONNECTING,
+  WEBSOCKET_RECONNECTED
 } from "./types";
 
 const WEBSOCKET_PORT = 2345;
@@ -30,4 +32,12 @@ export function message(data) {
 
 export function error(exception) {
   return { type: WEBSOCKET_ERROR, payload: exception };
+}
+
+export function reconnecting() {
+  return { type: WEBSOCKET_RECONNECTING };
+}
+
+export function reconnected() {
+  return { type: WEBSOCKET_RECONNECTED };
 }
