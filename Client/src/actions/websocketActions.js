@@ -5,7 +5,8 @@ import {
   WEBSOCKET_MESSAGE,
   WEBSOCKET_ERROR,
   WEBSOCKET_RECONNECTING,
-  WEBSOCKET_RECONNECTED
+  WEBSOCKET_RECONNECTED,
+  WEBSOCKET_SEND
 } from "./types";
 
 const WEBSOCKET_PORT = 2345;
@@ -40,4 +41,8 @@ export function reconnecting() {
 
 export function reconnected() {
   return { type: WEBSOCKET_RECONNECTED };
+}
+
+export function send(data) {
+  return { type: WEBSOCKET_SEND, payload: data };
 }

@@ -2,10 +2,11 @@ import {
   connect,
   close,
   error,
+  message,
   open,
   reconnected,
   reconnecting,
-  message
+  send
 } from "./websocketActions";
 import {
   WEBSOCKET_CONNECT,
@@ -14,7 +15,8 @@ import {
   WEBSOCKET_ERROR,
   WEBSOCKET_MESSAGE,
   WEBSOCKET_RECONNECTED,
-  WEBSOCKET_RECONNECTING
+  WEBSOCKET_RECONNECTING,
+  WEBSOCKET_SEND
 } from "./types";
 
 describe("websocket actions", () => {
@@ -54,5 +56,12 @@ describe("websocket actions", () => {
   it("creates WEBSOCKET_RECONNECTING action", () => {
     const action = reconnecting();
     expect(action.type).toBe(WEBSOCKET_RECONNECTING);
+  });
+
+  it("creates WEBSOCKET_SEND action", () => {
+    const data = { test: "dummy" };
+    const action = send(data);
+    expect(action.type).toBe(WEBSOCKET_SEND);
+    expect(action.payload).toEqual(data);
   });
 });
