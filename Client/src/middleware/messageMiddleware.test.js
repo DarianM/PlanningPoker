@@ -54,7 +54,7 @@ describe("message middleware", () => {
     );
     const interval = jest.fn();
     const action = {
-      type: "WEBSOCKET_REJOIN",
+      type: "WEBSOCKET_RECONNECTED",
       payload: interval
     };
     // describe("reconnect", () => {
