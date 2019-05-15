@@ -20,7 +20,9 @@ module.exports = class wsServer {
   }
 
   disconnect(client, roomId) {
-    this._roomsSockets[roomId] = this._roomsSockets[roomId].filter(socket => socket !== client);
+    this._roomsSockets[roomId] = this._roomsSockets[roomId].filter(
+      socket => socket !== client
+    );
   }
 
   listen() {

@@ -13,6 +13,27 @@ import {
 const TIMEOUT_BETWEEN_PINGS = 5000;
 
 let pingInterval = null;
+async function reconnectRoomF(roomId, interval, dispatch, fetch) {
+  try {
+    const response = await fetch(`/api/${roomId}`);
+    if (response.status === 200) {
+      clearInterval(interval);
+      const data = await response.json();
+      dispatch(addToast({ text: "Reconnecting successful..." }));
+      dispatch({
+        type: REJOIN_ROOM,
+        payload: {
+          roomName: data.roomName,
+          members: data.members
+        }
+      });
+    } else {
+      dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
+    }
+  } catch (error) {
+    dispatch(addToast({ text: "Reconnecting failed..." }));
+  }
+}
 
 const messageMiddleware = fetch => store => next => async action => {
   if (action.type === WEBSOCKET_MESSAGE) {

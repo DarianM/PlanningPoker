@@ -9,8 +9,7 @@ module.exports = class connectedSocket {
 
     socket.on("pong", () => this.pong());
     socket.on("message", message => {
-      if (message === "string") 
-        this.onmessage(message);
+      if (message === "string") this.onmessage(message);
     });
     socket.on("close", () => this.onclose());
     socket.on("error", err => console.log(err));
@@ -21,7 +20,7 @@ module.exports = class connectedSocket {
   onmessage(message) {
     this.broadcastMessage(JSON.parse(message));
   }
- 
+
   terminate() {
     this.isAlive = false;
     this.clearPing();
@@ -42,8 +41,7 @@ module.exports = class connectedSocket {
   }
 
   send(payload) {
-    if (this.socket.readyState === 1)
-      this.socket.send(payload);
+    if (this.socket.readyState === 1) this.socket.send(payload);
   }
 
   ping() {
@@ -60,8 +58,8 @@ module.exports = class connectedSocket {
   }
 
   broadcastMessage(message) {
-    const { action, data } = message;
-    switch (action) {
+    const { reason, data } = message;
+    switch (reason) {
       case "USER_VOTED":
         this.server.broadcast(this.roomId, data);
         break;

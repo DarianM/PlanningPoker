@@ -1,4 +1,4 @@
-import websocketMiddleware from "./websocket";
+import websocketMiddleware from "./websocketMiddleware";
 import {
   WEBSOCKET_OPEN,
   WEBSOCKET_MESSAGE,
