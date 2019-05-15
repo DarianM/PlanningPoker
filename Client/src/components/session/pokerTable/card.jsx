@@ -1,14 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import actions from "../../../actions/roomActions";
+import { addVote, memberVoted } from "../../../actions/roomActions";
 import { addToast } from "../../../actions/toastsActions";
 
 const mapDispatchToProps = dispatch => ({
   addNewVote: (vote, start) =>
     start
-      ? (dispatch(actions.addVote(vote)),
-        dispatch(actions.memberVoted({ user: vote.user, voted: true })))
+      ? (dispatch(addVote(vote)),
+        dispatch(memberVoted({ user: vote.user, voted: true })))
       : dispatch(addToast({ text: "Press Start..." }))
 });
 
@@ -20,7 +20,13 @@ const mapStateToProps = state => {
   };
 };
 
-export const ConnectedCard = ({ value, addNewVote, loggedUser, room, start }) => (
+export const ConnectedCard = ({
+  value,
+  addNewVote,
+  loggedUser,
+  room,
+  start
+}) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
     <p className="corner" />

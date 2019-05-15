@@ -1,50 +1,59 @@
 import logReducer from "./logReducer";
-import { startGame, memberVoted, deleteVotes } from "../actions/roomActions";
-import { CREATE_ROOM, NEW_MEMBER } from "../actions/types";
+import {
+  CREATE_ROOM,
+  NEW_MEMBER,
+  WEBSOCKET_OPEN,
+  START_GAME,
+  USER_VOTE,
+  DELETE_VOTES
+} from "../actions/types";
 
 describe("logReducer", () => {
-  describe("before assinging a room, login data is required", () => {
-    const login = login({ user: "name" });
-    const mockLoginFunc = jest.fn();
-    login(mockLoginFunc);
-    expect(mockLoginFunc).toBeCalledWith({
-      type: NEW_MEMBER,
-      payload: { member: "name", voted: false }
-    });
-    expect(mockLoginFunc).toBeCalledWith({
-      type: CREATE_ROOM,
-      payload: { user: "name", hasJoined: true }
-    });
-  });
-
-  describe("when receives a create room action", () => {
+  describe("when receives a create room action type", () => {
     const initialState = {
       user: "",
-      hasJoined: false
+      roomName: ""
     };
-    it("sets name for the new user, sets hasJoined to true and assings user a room", () => {
+    it("sets name for the new user, name for the room and assings an id to room", () => {
       const expected = {
         user: "name",
-        hasJoined: true
+        roomName: "room",
+        id: 1
       };
 
       expect(
         logReducer(initialState, {
           type: CREATE_ROOM,
-          payload: { user: "name", hasJoined: true }
+          payload: { user: "name", roomName: "room", id: 1 }
         })
+      ).toEqual(expected);
+    });
+  });
+
+  describe("whten receives that websocket has opened", () => {
+    it("logs the user into his room", () => {
+      const expected = {
+        hasJoined: true
+      };
+
+      expect(
+        logReducer(
+          {},
+          {
+            type: WEBSOCKET_OPEN,
+            payload: { hasJoined: true }
+          }
+        )
       ).toEqual(expected);
     });
   });
 
   describe("in existing poker room", () => {
     const initialState = {
-      nextMemberId: 2,
       members: [{ member: "Adrian", voted: true, id: 1 }]
     };
     it("handles new member by joining him", () => {
       const expected = {
-        nextMemberId: 3,
         members: [
           { member: "Adrian", voted: true, id: 1 },
           { member: "ImNew", voted: false, id: 2 }
@@ -54,7 +63,7 @@ describe("logReducer", () => {
       expect(
         logReducer(initialState, {
           type: NEW_MEMBER,
-          payload: { member: "ImNew", voted: false }
+          payload: { member: "ImNew", voted: false, id: 2 }
         })
       ).toEqual(expected);
     });
@@ -63,7 +72,10 @@ describe("logReducer", () => {
   describe("when admin clicks start game button", () => {
     it("saves starting time & should let members in room pick any card", () => {
       const initialState = { gameStart: null };
-      const newState = logReducer(initialState, startGame({ gameStart: Date }));
+      const newState = logReducer(initialState, {
+        type: START_GAME,
+        payload: { gameStart: Date }
+      });
 
       expect(newState.gameStart).toBe(Date);
     });
@@ -86,7 +98,10 @@ describe("logReducer", () => {
         };
 
         expect(
-          logReducer(initialState, memberVoted({ user: "John", voted: true }))
+          logReducer(initialState, {
+            type: USER_VOTE,
+            payload: { user: "John", voted: true }
+          })
         ).toEqual(expected);
       });
     });
@@ -109,7 +124,9 @@ describe("logReducer", () => {
         ]
       };
 
-      expect(logReducer(initialState, deleteVotes())).toEqual(expected);
+      expect(logReducer(initialState, { type: DELETE_VOTES })).toEqual(
+        expected
+      );
     });
   });
 });

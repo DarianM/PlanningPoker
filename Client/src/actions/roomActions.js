@@ -98,7 +98,6 @@ function joinRoomF(payload, fetch) {
         dispatch({ type: LOGIN_SUCCES });
       } else if (response.status === 400) {
         const data = await response.json();
-        console.log(data.error);
         dispatch({ type: LOGIN_FAILURE, payload: data.error });
       } else {
         dispatch(addToast({ text: "Server offline..." }));
@@ -151,7 +150,7 @@ function addVote(payload) {
       });
       if (response.ok) {
         const { id } = await response.json();
-        payload.id = id;
+        // payload.id = id;
 
         dispatch({
           type: "WEBSOCKET_SEND",
@@ -166,7 +165,7 @@ function addVote(payload) {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 }

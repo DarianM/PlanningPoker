@@ -20,7 +20,17 @@ const ConnectedApp = ({ hasJoined, toasts, connection }) => (
 );
 
 ConnectedApp.propTypes = {
-  hasJoined: PropTypes.bool.isRequired
+  hasJoined: PropTypes.bool.isRequired,
+  toasts: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+      id: PropTypes.number
+    })
+  ).isRequired,
+  connection: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    error: PropTypes.string
+  }).isRequired
 };
 
 const App = connect(mapStateToProps)(ConnectedApp);

@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { createRoom, joinRoom } from "../../actions/roomActions";
+import * as actions from "../../actions/roomActions";
 
 function mapDispatchToProps(dispatch) {
   return {
-    _createRoom: user => dispatch(createRoom(user)),
-    _joinRoom: data => dispatch(joinRoom(data))
+    createRoom: user => dispatch(actions.createRoom(user)),
+    joinRoom: data => dispatch(actions.joinRoom(data))
   };
 }
 
@@ -27,19 +27,19 @@ export class ConnectedLogin extends Component {
 
   async handleNewSession(event) {
     event.preventDefault();
-    const { _createRoom } = this.props;
+    const { createRoom } = this.props;
     const { user } = this.state;
     const { roomName } = this.state;
 
-    _createRoom({ user, roomName });
+    createRoom({ user, roomName });
   }
 
   async handleJoinSession(event) {
     event.preventDefault();
-    const { _joinRoom } = this.props;
+    const { joinRoom } = this.props;
     const { user } = this.state;
     const { id } = this.state;
-    _joinRoom({ user, roomId: id });
+    joinRoom({ user, roomId: id });
   }
 
   handleUser(event) {
@@ -119,8 +119,8 @@ export class ConnectedLogin extends Component {
 }
 
 ConnectedLogin.propTypes = {
-  _createRoom: PropTypes.func.isRequired,
-  _joinRoom: PropTypes.func.isRequired,
+  createRoom: PropTypes.func.isRequired,
+  joinRoom: PropTypes.func.isRequired,
   connection: PropTypes.shape({
     isFetching: PropTypes.bool,
     error: PropTypes.string

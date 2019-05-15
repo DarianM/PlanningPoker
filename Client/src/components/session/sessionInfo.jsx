@@ -21,10 +21,7 @@ export const ConnectedSessionInfo = ({
   return (
     <div>
       <EditableText text={roomName} commit={editRoomName} />
-      <p className="sessionRoomId">
-        {`your room ID:`}
-        {roomId}
-      </p>
+      <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
       {roomHistory.activeStory && (
         <EditableText
           text={roomHistory.activeStory.text}
@@ -36,8 +33,8 @@ export const ConnectedSessionInfo = ({
 };
 
 ConnectedSessionInfo.propTypes = {
-  roomId: PropTypes.number.isRequired,
   roomName: PropTypes.string.isRequired,
+  roomId: PropTypes.number.isRequired,
   roomHistory: PropTypes.shape({
     edit: PropTypes.bool
   }).isRequired,

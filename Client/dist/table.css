@@ -102,7 +102,7 @@
 }
 
 .header-userImg {
-  content: url(https://www.planitpoker.com/profile/userimage/1274166/);
+  content: url(./images/user_logo.png);
   width: 60px;
   border-radius: 50%;
   display: block;
@@ -117,7 +117,7 @@
 }
 
 .header-logo {
-  content: url(https://planitpoker.azureedge.net/Content/logo.png);
+  content: url(./images/pokerIT.png);
   padding: 15px 15px;
 }
 
@@ -245,6 +245,12 @@
 
 .table-title {
   padding: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .table-title :first-child {
@@ -299,7 +305,7 @@
 }
 
 .member-logo {
-  content: url(https://www.planitpoker.com/profile/userimage/1249920);
+  content: url(./images/user_logo.png);
   width: 42px;
   border-radius: 50%;
   padding: 6px;

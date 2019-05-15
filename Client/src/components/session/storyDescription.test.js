@@ -43,7 +43,10 @@ describe("Story Description Component", () => {
           deleteStory={mockDeleteFunc}
         />
       );
-      const storyDetailBtn = wrapper.find("tr").childAt(0);
+      const storyDetailBtn = wrapper
+        .find("tr")
+        .childAt(0)
+        .childAt(0);
       storyDetailBtn.simulate("click", { preventDefault() {} });
       expect(
         wrapper
@@ -57,6 +60,7 @@ describe("Story Description Component", () => {
   describe("admin clicks delete story button from a title, except current active title which hasn't one", () => {
     it("should render an alert with a message before delete action", () => {
       const mockDeleteConfirm = jest.fn(() => true);
+      window.confirm = mockDeleteConfirm;
       const wrapper = shallow(
         <StoryDescription
           key={stories.stories[1].id}
@@ -70,6 +74,7 @@ describe("Story Description Component", () => {
         .find("tr")
         .childAt(1)
         .childAt(0);
+      console.log(storyDeleteBtn.props());
       storyDeleteBtn.simulate("click", { preventDefault() {} });
       expect(mockDeleteConfirm).toBeCalled();
     });

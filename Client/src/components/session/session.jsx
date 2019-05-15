@@ -9,7 +9,6 @@ import PokerBets from "./pokerBets/pokerBets";
 import Stories from "./stories";
 
 const mapStateToProps = state => {
-  console.log(state);
   return {
     game: state.gameRoom,
     history: state.gameHistory,

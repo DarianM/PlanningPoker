@@ -27,8 +27,13 @@ class StoryDescription extends Component {
     return (
       <>
         <tr>
-          <td className="table-title">
-            <button type="button" onClick={onEditStory} tabIndex="0">
+          <td>
+            <button
+              type="button"
+              onClick={onEditStory}
+              tabIndex="0"
+              className="table-title"
+            >
               <i className="fas fa-list-ul" />
               <span>{story}</span>
             </button>
