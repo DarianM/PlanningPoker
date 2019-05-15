@@ -8,6 +8,8 @@ import {
 } from "../actions/types";
 import { close, connect, send } from "../actions/websocketActions";
 
+const ABNORMAL_CLOSURE = 1006;
+
 const createWebSocket = () => {
   const websocket = {
     onopen: jest.fn(),
@@ -178,7 +180,7 @@ describe("websocket middleware", () => {
     describe("when the socket is broken", () => {
       beforeEach(() => {
         store.dispatch.mockClear();
-        websocket.onerror({ currentTarget: {} });
+        websocket.onclose({ code: ABNORMAL_CLOSURE });
       });
 
       it("dispatches an WEBSOCKET_ERROR action", () => {
@@ -195,7 +197,8 @@ describe("websocket middleware", () => {
       invoke(connect("roomId"));
       websocketConstructor.mockClear();
       store.dispatch.mockClear();
-      websocket.onerror({ currentTarget: {} });
+      websocket.onclose({ code: ABNORMAL_CLOSURE });
+      jest.runOnlyPendingTimers();
       websocket.onopen();
     });
 
@@ -203,7 +206,7 @@ describe("websocket middleware", () => {
       invoke(close());
     });
 
-    it("will reconnect", () => {
+    it("will reconnect after a delay", () => {
       expect(websocketConstructor).toHaveBeenCalled();
     });
 
@@ -234,7 +237,7 @@ describe("websocket middleware", () => {
       });
 
       store.dispatch.mockClear();
-      websocket.onerror({ currentTarget: {} });
+      websocket.onclose({ code: ABNORMAL_CLOSURE });
     });
 
     afterEach(() => {
@@ -243,6 +246,7 @@ describe("websocket middleware", () => {
 
     it("will try to reconnect after the re-try interval", () => {
       store.dispatch.mockClear();
+      jest.runOnlyPendingTimers();
       jest.runOnlyPendingTimers();
 
       expect(

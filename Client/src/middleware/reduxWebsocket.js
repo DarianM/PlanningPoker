@@ -6,19 +6,27 @@ import {
   reconnected
 } from "../actions/websocketActions";
 
+const NORMAL_CLOSURE = 1000;
+const ABNORMAL_CLOSURE = 1006;
+
+const ONE_SECOND = 1000;
+const MAX_WAIT = 2 * 60 * ONE_SECOND;
+
 class ReduxWebsocket {
-  constructor(waitBetweenRetries) {
+  constructor(maxWaitPeriodBetweenRetries) {
     this.websocket = null;
     this.lastUrl = null;
-    this.waitBetweenRetries = waitBetweenRetries || 5000;
+    this.maxWaitPeriodBetweenRetries = maxWaitPeriodBetweenRetries || MAX_WAIT;
     this.isReconnecting = false;
+    this.reconnectTries = 0;
   }
 
   close() {
     if (this.websocket) {
-      this.websocket.close();
+      this.websocket.close(NORMAL_CLOSURE, "Websocket is closing");
       this.websocket = null;
       this.isReconnecting = false;
+      this.reconnectTries = 0;
     }
   }
 
@@ -33,35 +41,40 @@ class ReduxWebsocket {
       this.websocket = new WebSocket(url);
       this.websocket.onopen = () => this.onOpen(dispatch);
       this.websocket.onmessage = e => dispatch(message(JSON.parse(e.data)));
-      this.websocket.onerror = () => this.onError(dispatch);
+      this.websocket.onclose = e => this.onClose(dispatch, e.code, e.reason);
     } catch (e) {
-      this.onError(dispatch);
+      this.onClose(dispatch, 1006, ABNORMAL_CLOSURE);
     }
   }
 
   onOpen(dispatch) {
     if (this.isReconnecting) {
       this.isReconnecting = false;
+      this.reconnectTries = 0;
       dispatch(reconnected());
     }
     dispatch(open());
   }
 
-  onError(dispatch) {
-    dispatch(error(new Error("Web socket error")));
-    this.handleBroken(dispatch);
-  }
-
-  handleBroken(dispatch) {
-    if (!this.isReconnecting) {
-      this.reconnect(dispatch);
+  onClose(dispatch, code, reason) {
+    if (code === NORMAL_CLOSURE) {
+      return;
     }
-    setTimeout(() => this.reconnect(dispatch), this.waitBetweenRetries);
+    dispatch(error(new Error(reason)));
+    this.isReconnecting = true;
+    setTimeout(
+      () => this.reconnect(dispatch),
+      Math.min(
+        this.reconnectTries * ONE_SECOND,
+        this.maxWaitPeriodBetweenRetries
+      )
+    );
   }
 
   reconnect(dispatch) {
     this.websocket = null;
     this.isReconnecting = true;
+    this.reconnectTries += 1;
     dispatch(reconnecting());
     this.connect(this.lastUrl, dispatch);
   }
