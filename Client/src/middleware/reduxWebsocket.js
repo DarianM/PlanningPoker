@@ -26,7 +26,9 @@ class ReduxWebsocket {
     if (this.websocket) {
       throw new Error("Websocket already connected");
     }
+
     this.lastUrl = url;
+
     try {
       this.websocket = new WebSocket(url);
       this.websocket.onopen = () => this.onOpen(dispatch);
@@ -62,6 +64,13 @@ class ReduxWebsocket {
     this.isReconnecting = true;
     dispatch(reconnecting());
     this.connect(this.lastUrl, dispatch);
+  }
+
+  send(data) {
+    if (!this.websocket) {
+      return;
+    }
+    this.websocket.send(JSON.stringify(data));
   }
 }
 

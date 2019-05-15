@@ -6,7 +6,7 @@ import {
   WEBSOCKET_RECONNECTING,
   WEBSOCKET_RECONNECTED
 } from "../actions/types";
-import { close, connect } from "../actions/websocketActions";
+import { close, connect, send } from "../actions/websocketActions";
 
 const createWebSocket = () => {
   const websocket = {
@@ -79,6 +79,17 @@ describe("websocket middleware", () => {
     });
   });
 
+  describe("on WEBSOCKET_SEND", () => {
+    beforeEach(() => {
+      websocket.send.mockClear();
+      invoke(send({}));
+    });
+
+    it("does NOT call send on the socket since the websocket is not connected", () => {
+      expect(websocket.send).not.toHaveBeenCalled();
+    });
+  });
+
   describe("a connected websocket", () => {
     beforeEach(() => {
       invoke(connect("roomId"));
@@ -101,6 +112,18 @@ describe("websocket middleware", () => {
     describe("on WEBSOCKET_CONNECT action", () => {
       it("throws an error", () => {
         expect(() => invoke(connect("roomId"))).toThrow();
+      });
+    });
+
+    describe("on WEBSOCKET_SEND", () => {
+      const data = { test: "dummy" };
+      beforeEach(() => {
+        websocket.send.mockClear();
+        invoke(send(data));
+      });
+
+      it("calls send on the socket", () => {
+        expect(websocket.send).toHaveBeenCalledWith(JSON.stringify(data));
       });
     });
 
