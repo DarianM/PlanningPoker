@@ -91,7 +91,7 @@ describe("websocket middleware", () => {
     });
 
     describe("on WEBSOCKET_CONNECT action", () => {
-      it("throwns an error", () => {
+      it("throws an error", () => {
         expect(() => invoke(connect("roomId"))).toThrow();
       });
     });
@@ -102,7 +102,7 @@ describe("websocket middleware", () => {
         websocket.onopen();
       });
 
-      it("dispaches the WEBSOCKET_OPEN action", () => {
+      it("dispatches the WEBSOCKET_OPEN action", () => {
         expect(store.dispatch).toHaveBeenCalledWith({
           type: WEBSOCKET_OPEN
         });
@@ -116,7 +116,7 @@ describe("websocket middleware", () => {
         websocket.onmessage({ data: JSON.stringify(dummy) });
       });
 
-      it("dispaches the WEBSOCKET_MESSAGE action", () => {
+      it("dispatches the WEBSOCKET_MESSAGE action", () => {
         expect(store.dispatch).toHaveBeenCalledWith({
           type: WEBSOCKET_MESSAGE,
           payload: dummy
@@ -133,7 +133,7 @@ describe("websocket middleware", () => {
         expect(() => websocket.onmessage({ data: "invalid" })).toThrow();
       });
 
-      it("WEBSOCKET_MESSAGE action is NOT dispached", () => {
+      it("WEBSOCKET_MESSAGE action is NOT dispatches", () => {
         expect(store.dispatch).not.toHaveBeenCalled();
       });
     });
@@ -141,15 +141,35 @@ describe("websocket middleware", () => {
     describe("when the socket is broken", () => {
       beforeEach(() => {
         store.dispatch.mockClear();
-        websocket.onerror({ currentTarget: { url: "test url" } });
+        websocket.onerror({ currentTarget: {} });
       });
 
-      it("dispaches an WEBSOCKET_ERROR action", () => {
+      it("dispatches an WEBSOCKET_ERROR action", () => {
         expect(store.dispatch).toHaveBeenCalledWith({
           type: WEBSOCKET_ERROR,
           payload: expect.any(Error)
         });
       });
+    });
+  });
+
+  describe("a broken websocket", () => {
+    beforeEach(() => {
+      invoke(connect("roomId"));
+      websocketConstructor.mockClear();
+      websocket.onerror({ currentTarget: {} });
+      store.dispatch.mockClear();
+    });
+
+    afterEach(() => {
+      invoke(close());
+    });
+
+    it("will reconnect", () => {
+      expect(websocketConstructor).toHaveBeenCalledWith(
+        "ws://localhost:2345/roomId"
+      );
+      expect(() => websocket.onmessage({ data: "invalid" })).toThrow();
     });
   });
 });

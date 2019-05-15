@@ -1,36 +1,53 @@
 import { WEBSOCKET_CONNECT, WEBSOCKET_CLOSE } from "../actions/types";
 import { error, open, message } from "../actions/websocketActions";
 
-let websocket;
+class ReduxWebsocket {
+  constructor() {
+    this.websocket = null;
+    this.lastUrl = null;
+  }
 
-const onOpen = dispatch => {
-  dispatch(open());
-};
+  close() {
+    if (this.websocket) {
+      this.websocket.close();
+      this.websocket = null;
+    }
+  }
 
-const onMessage = (dispatch, data) => {
-  dispatch(message(JSON.parse(data)));
-};
+  connect(url, dispatch) {
+    if (this.websocket) {
+      throw new Error("Websocket already connected");
+    }
+    this.lastUrl = url;
+    this.websocket = new WebSocket(url);
+    this.websocket.onopen = () => this.onOpen(dispatch);
+    this.websocket.onmessage = e => dispatch(message(JSON.parse(e.data)));
+    this.websocket.onerror = () => this.onError(dispatch);
+  }
 
-const onError = dispatch => {
-  dispatch(error(new Error("Web socket error")));
-};
+  onOpen(dispatch) {
+    dispatch(open());
+  }
 
+  onError(dispatch) {
+    dispatch(error(new Error("Web socket error")));
+    this.reconnect(dispatch);
+  }
+
+  reconnect(dispatch) {
+    this.websocket = null;
+    this.connect(this.lastUrl, dispatch);
+  }
+}
+
+const reduxWebsocket = new ReduxWebsocket();
 const websocketMiddleware = store => next => action => {
   switch (action.type) {
     case WEBSOCKET_CONNECT:
-      if (websocket) {
-        throw new Error("Websocket already connected");
-      }
-      websocket = new WebSocket(action.payload);
-      websocket.onopen = () => onOpen(store.dispatch);
-      websocket.onmessage = e => onMessage(store.dispatch, e.data);
-      websocket.onerror = () => onError(store.dispatch);
+      reduxWebsocket.connect(action.payload, store.dispatch);
       break;
     case WEBSOCKET_CLOSE:
-      if (websocket) {
-        websocket.close();
-        websocket = null;
-      }
+      reduxWebsocket.close();
       break;
     default:
       return next(action);
