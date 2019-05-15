@@ -10,6 +10,7 @@ class ReduxWebsocket {
   constructor() {
     this.websocket = null;
     this.lastUrl = null;
+    this.isReconnecting = false;
   }
 
   close() {
@@ -31,7 +32,10 @@ class ReduxWebsocket {
   }
 
   onOpen(dispatch) {
-    dispatch(reconnected());
+    if (this.isReconnecting) {
+      dispatch(reconnected());
+      this.isReconnecting = false;
+    }
     dispatch(open());
   }
 
@@ -42,6 +46,7 @@ class ReduxWebsocket {
 
   reconnect(dispatch) {
     this.websocket = null;
+    this.isReconnecting = true;
     dispatch(reconnecting());
     this.connect(this.lastUrl, dispatch);
   }

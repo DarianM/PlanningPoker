@@ -109,6 +109,12 @@ describe("websocket middleware", () => {
           type: WEBSOCKET_OPEN
         });
       });
+
+      it("does NOT dispatch WEBSOCKET_RECONNECTED", () => {
+        expect(store.dispatch).not.toHaveBeenCalledWith({
+          type: WEBSOCKET_RECONNECTED
+        });
+      });
     });
 
     describe("on a websocket message with a JSON payload", () => {
