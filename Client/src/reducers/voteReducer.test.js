@@ -1,44 +1,40 @@
 import voteReducer from "./voteReducer";
-import {
-  addVote,
-  flipCards,
-  deleteVotes,
-  endGame
-} from "../actions/roomActions";
 
 describe("voteReducer", () => {
   describe("player clicks on a card after the game has started", () => {
     const initialState = {
-      nextVoteId: 2,
       list: [{ user: "John", voted: "1/3", id: 1 }]
     };
     it("stores value picked by user and player name", () => {
       const expected = {
-        nextVoteId: 3,
         list: [
           { user: "John", voted: "1/3", id: 1 },
           { user: "Adrian", voted: "40", id: 2 }
         ]
       };
       expect(
-        voteReducer(initialState, addVote({ user: "Adrian", voted: "40" }))
+        voteReducer(initialState, {
+          type: "ADD_VOTE",
+          payload: { user: "Adrian", voted: "40", id: 2 }
+        })
       ).toEqual(expected);
     });
   });
 
   describe("same player clicks another card", () => {
     const initialState = {
-      nextVoteId: 2,
       list: [{ user: "Kevin", voted: "100", id: 1 }]
     };
     it("stores new value replacing the old one alongside the coresponding player", () => {
       const expected = {
-        nextVoteId: 2,
         list: [{ user: "Kevin", voted: "13", id: 1 }]
       };
 
       expect(
-        voteReducer(initialState, addVote({ user: "Kevin", voted: "13" }))
+        voteReducer(initialState, {
+          type: "ADD_VOTE",
+          payload: { user: "Kevin", voted: "13", id: 1 }
+        })
       ).toEqual(expected);
     });
   });
@@ -48,9 +44,12 @@ describe("voteReducer", () => {
     it("replaces status vote of members with actual vote they chose", () => {
       const expected = { flip: true };
 
-      expect(voteReducer(initialState, flipCards({ flip: true }))).toEqual(
-        expected
-      );
+      expect(
+        voteReducer(initialState, {
+          type: "FLIP_CARDS",
+          payload: { flip: true }
+        })
+      ).toEqual(expected);
     });
   });
 
@@ -64,9 +63,12 @@ describe("voteReducer", () => {
     it("deletes all votes in current story", () => {
       const expected = { list: [] };
 
-      expect(voteReducer(initialState, deleteVotes({ list: [] }))).toEqual(
-        expected
-      );
+      expect(
+        voteReducer(initialState, {
+          type: "DELETE_VOTES",
+          payload: { list: [] }
+        })
+      ).toEqual(expected);
     });
   });
 
@@ -75,9 +77,21 @@ describe("voteReducer", () => {
     it("ends current game and display statistics", () => {
       const expected = { end: true };
 
-      expect(voteReducer(initialState, endGame({ end: true }))).toEqual(
-        expected
-      );
+      expect(
+        voteReducer(initialState, { type: "END_GAME", payload: { end: true } })
+      ).toEqual(expected);
+    });
+  });
+
+  describe("action type is not recognized", () => {
+    const initialState = {};
+    it("should return initial state", () => {
+      expect(
+        voteReducer(initialState, {
+          type: "I_DON'T_KNOW_THIS_ACTION",
+          payload: { property: true }
+        })
+      ).toEqual(initialState);
     });
   });
 });

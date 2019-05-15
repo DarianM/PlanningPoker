@@ -42,7 +42,7 @@ class NewStory extends Component {
               this.handleSaveStory();
             }}
           >
-            Save &amp; Add New
+            {`Save \u0026 Add New`}
           </button>
           <button
             className="votes-blue"
@@ -53,7 +53,7 @@ class NewStory extends Component {
               addMany(false);
             }}
           >
-            Save &amp; Close
+            {`Save \u0026 Close`}
           </button>
           <button
             className="votes-option"
@@ -63,7 +63,7 @@ class NewStory extends Component {
               addMany(false);
             }}
           >
-            Cancel
+            {`Cancel`}
           </button>
         </div>
       </React.Fragment>

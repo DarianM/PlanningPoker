@@ -6,7 +6,12 @@ describe("Sessioninfo Component", () => {
   it("renders without crashing", () => {
     const mockFunc = jest.fn();
     mount(
-      <ConnectedSessionInfo roomId={-1} roomHistory={{}} editStory={mockFunc} />
+      <ConnectedSessionInfo
+        roomId={-1}
+        roomName="name"
+        roomHistory={{}}
+        editStory={mockFunc}
+      />
     );
   });
 
@@ -30,7 +35,12 @@ describe("Sessioninfo Component", () => {
         infoComponent.setProps({
           roomHistory: { activeStory: { text: "testStory", id: 1 } }
         });
-        expect(infoComponent.find(".activestory").text()).toEqual("testStory");
+        expect(
+          infoComponent
+            .find(".activestory")
+            .at(1)
+            .text()
+        ).toEqual("testStory");
       });
     });
   });

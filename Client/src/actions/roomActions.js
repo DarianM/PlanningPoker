@@ -38,7 +38,7 @@ function createRoomF(payload, fetch) {
 
         dispatch({
           type: WEBSOCKET_CONNECT,
-          payload: `ws://192.168.1.113:2345/${roomId}`
+          payload: `ws://192.168.1.105:2345/${roomId}`
         });
 
         dispatch({
@@ -84,7 +84,7 @@ function joinRoomF(payload, fetch) {
         const data = await response.json();
         dispatch({
           type: "WEBSOCKET_CONNECT",
-          payload: `ws://192.168.1.113:2345/${roomId}`
+          payload: `ws://192.168.1.105:2345/${roomId}`
         });
         dispatch({
           type: JOIN_ROOM,

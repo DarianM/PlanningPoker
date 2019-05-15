@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import StoryDescription from "./storyDescription";
 import { Modal } from "../modals";
 import NewStory from "./storyNew";
-import actions from "../../actions/roomActions";
+import * as actions from "../../actions/roomActions";
 
 function mapDispatchToProps(dispatch) {
   return {

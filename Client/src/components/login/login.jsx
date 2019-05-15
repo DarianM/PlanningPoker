@@ -120,7 +120,11 @@ export class ConnectedLogin extends Component {
 
 ConnectedLogin.propTypes = {
   _createRoom: PropTypes.func.isRequired,
-  _joinRoom: PropTypes.func.isRequired
+  _joinRoom: PropTypes.func.isRequired,
+  connection: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    error: PropTypes.string
+  }).isRequired
 };
 
 const Login = connect(

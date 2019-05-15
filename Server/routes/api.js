@@ -2,8 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 const ws = require("ws").Server;
-
-const wss = new ws({ host: "192.168.1.113", port: "2345" });
+const wss = new ws({ host: "192.168.1.105", port: "2345" });
 const joi = require("joi");
 const db = require("../db/db_utils");
 const wsServer = require("../wsServer");
@@ -25,7 +24,6 @@ const validateNewRoom = async (req, res, next) => {
 };
 
 const validateMember = async (req, res, next) => {
-  console.log(typeof req.body.roomId);
   let schema = joi.object().keys({
     roomId: joi.number().integer(),
     user: joi.string().not("")

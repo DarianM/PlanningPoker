@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const Story = ({ close }) => (
   <React.Fragment>
@@ -21,10 +22,17 @@ const Header = ({ close }) => (
       role="button"
       tabIndex="0"
     >
-      &times;
+      {`\u00D7`}
     </span>
-    <div>Story Detayls</div>
+    <div>Story Details</div>
   </div>
 );
+
+Story.propTypes = {
+  close: PropTypes.func.isRequired
+};
+Header.propTypes = {
+  close: PropTypes.func.isRequired
+};
 
 export default Story;

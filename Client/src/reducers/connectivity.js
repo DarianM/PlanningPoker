@@ -1,4 +1,4 @@
-import * as types from "../actions/types";
+import { LOGIN, LOGIN_SUCCES, LOGIN_FAILURE } from "../actions/types";
 
 const initialState = {
   isFetching: false,
@@ -7,14 +7,14 @@ const initialState = {
 
 export default function connection(state = initialState, action) {
   switch (action.type) {
-    case types.LOGIN: {
+    case LOGIN: {
       return { ...state, isFetching: true };
     }
 
-    case types.LOGIN_SUCCES:
+    case LOGIN_SUCCES:
       return { ...state, isFetching: false, error: null };
 
-    case types.LOGIN_FAILURE:
+    case LOGIN_FAILURE:
       return { ...state, isFetching: false, error: action.payload };
 
     default:
