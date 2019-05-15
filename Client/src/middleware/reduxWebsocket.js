@@ -1,4 +1,10 @@
-import { error, open, message } from "../actions/websocketActions";
+import {
+  error,
+  open,
+  message,
+  reconnecting,
+  reconnected
+} from "../actions/websocketActions";
 
 class ReduxWebsocket {
   constructor() {
@@ -25,6 +31,7 @@ class ReduxWebsocket {
   }
 
   onOpen(dispatch) {
+    dispatch(reconnected());
     dispatch(open());
   }
 
@@ -35,6 +42,7 @@ class ReduxWebsocket {
 
   reconnect(dispatch) {
     this.websocket = null;
+    dispatch(reconnecting());
     this.connect(this.lastUrl, dispatch);
   }
 }

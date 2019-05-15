@@ -2,7 +2,9 @@ import websocketMiddleware from "./websocket";
 import {
   WEBSOCKET_OPEN,
   WEBSOCKET_MESSAGE,
-  WEBSOCKET_ERROR
+  WEBSOCKET_ERROR,
+  WEBSOCKET_RECONNECTING,
+  WEBSOCKET_RECONNECTED
 } from "../actions/types";
 import { close, connect } from "../actions/websocketActions";
 
@@ -157,8 +159,9 @@ describe("websocket middleware", () => {
     beforeEach(() => {
       invoke(connect("roomId"));
       websocketConstructor.mockClear();
-      websocket.onerror({ currentTarget: {} });
       store.dispatch.mockClear();
+      websocket.onerror({ currentTarget: {} });
+      websocket.onopen();
     });
 
     afterEach(() => {
@@ -170,6 +173,18 @@ describe("websocket middleware", () => {
         "ws://localhost:2345/roomId"
       );
       expect(() => websocket.onmessage({ data: "invalid" })).toThrow();
+    });
+
+    it("triggers WEBSOCKET_RECONNECTING action while reconnecting", () => {
+      expect(store.dispatch).toHaveBeenCalledWith({
+        type: WEBSOCKET_RECONNECTING
+      });
+    });
+
+    it("triggers WEBSOCKET_RECONNECTED action when the connection is re-established", () => {
+      expect(store.dispatch).toHaveBeenCalledWith({
+        type: WEBSOCKET_RECONNECTED
+      });
     });
   });
 });
