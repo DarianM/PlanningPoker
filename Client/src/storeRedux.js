@@ -3,8 +3,8 @@ import { createStore, compose, applyMiddleware } from "redux";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from "redux-thunk";
 import rootReducer from "./reducers";
-import socketMiddleware from "./websocket";
-import messageMiddleware from "./messageMiddleware";
+import websocketMiddleware from "./middleware/websocket";
+import messageMiddleware from "./middleware/messageMiddleware";
 
 const initialStore = {
   gameRoom: {
@@ -32,7 +32,7 @@ const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   rootReducer,
   initialStore,
-  storeEnhancers(applyMiddleware(thunk, socketMiddleware, messageMiddleware))
+  storeEnhancers(applyMiddleware(thunk, websocketMiddleware, messageMiddleware))
 );
 
 export default store;
