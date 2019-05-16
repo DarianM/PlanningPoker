@@ -59,10 +59,10 @@ module.exports = class connectedSocket {
 
   broadcastMessage(message) {
     if (message === "ping") return;
-    const { reason, data } = message;
+    const { reason } = message;
     switch (reason) {
       case "USER_VOTED":
-        this.server.broadcast(this.roomId, data);
+        this.server.broadcast(this.roomId, message);
         break;
       default:
         break;
