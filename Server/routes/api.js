@@ -96,10 +96,10 @@ router.post("/member", validateMember, async (req, res) => {
   if (!isUsernameTaken) {
     const credentials = await db.addUserToRoom(user, roomId, roomMembers);
     const { userId } = credentials;
-    const data = JSON.stringify({
+    const data = {
       reason: "USER_JOINED",
       data: { user, userId }
-    });
+    };
     server.broadcast(roomId, data);
     await res.send(credentials);
   } else {
