@@ -41,7 +41,7 @@ module.exports = class connectedSocket {
   }
 
   send(payload) {
-    if (this.socket.readyState === 1) this.socket.send(payload);
+    if (this.socket.readyState === WebSocket.OPEN) this.socket.send(payload);
   }
 
   ping() {
