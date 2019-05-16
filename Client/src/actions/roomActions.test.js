@@ -157,10 +157,7 @@ describe("add vote action", () => {
         })
     );
     it("should dispatch websocket send", async () => {
-      const result = addVoteF(
-        { user: "me", roomId: 1, voted: "20" },
-        mockFetch
-      );
+      const result = addVoteF({ user: "me", voted: "20", id: 1 }, mockFetch);
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls[0][0].type).toBe("WEBSOCKET_SEND");

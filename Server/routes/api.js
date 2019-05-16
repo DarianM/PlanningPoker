@@ -77,6 +77,11 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
 router.post("/vote", validateMember, async (req, res) => {
   const { user, roomId, voted } = req.body;
   const id = await db.addMemberVote(user, roomId, voted);
+  const data = {
+    reason: "USER_VOTED",
+    data: { user, roomId, voted, id }
+  };
+  server.broadcast(roomId, data);
   res.send({ id });
 });
 
@@ -96,10 +101,10 @@ router.post("/member", validateMember, async (req, res) => {
   if (!isUsernameTaken) {
     const credentials = await db.addUserToRoom(user, roomId, roomMembers);
     const { userId } = credentials;
-    const data = JSON.stringify({
+    const data = {
       reason: "USER_JOINED",
       data: { user, userId }
-    });
+    };
     server.broadcast(roomId, data);
     await res.send(credentials);
   } else {

@@ -19,6 +19,7 @@ import {
   WEBSOCKET_CONNECT
 } from "./types";
 import { addToast } from "./toastsActions";
+import * as Api from "../Api";
 
 function createRoomF(payload, fetch) {
   const { user } = payload;
@@ -114,6 +115,13 @@ function joinRoom(payload) {
   return joinRoomF(payload, fetch);
 }
 
+function pushVote(payload) {
+  return {
+    type: ADD_VOTE,
+    payload
+  };
+}
+
 function newMember(payload) {
   return {
     type: NEW_MEMBER,
@@ -122,46 +130,21 @@ function newMember(payload) {
 }
 
 function startGame(payload) {
-  return {
-    type: START_GAME,
-    payload
-  };
-}
-
-function addVoteF(payload, fetch) {
-  return async dispatch => {
-    const { user, roomId, voted } = payload;
-    try {
-      const response = await fetch("/api/vote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, roomId, voted })
-      });
-      if (response.ok) {
-        const { id } = await response.json();
-
-        dispatch({
-          type: "WEBSOCKET_SEND",
-          payload: {
-            reason: "USER_VOTED",
-            data: { user, roomId, voted, id }
-          }
-        });
-        dispatch({
-          type: ADD_VOTE,
-          payload
-        });
-      } else {
-        dispatch(addToast({ text: "Server offline..." }));
-      }
-    } catch (error) {
-      dispatch(addToast({ text: "Check your internet connection" }));
-    }
+  return dispatch => {
+    dispatch({
+      type: "WEBSOCKET_SEND",
+      payload: { reason: "GAME_STARTED", data: payload }
+    });
   };
 }
 
 function addVote(payload) {
-  return addVoteF(payload, fetch);
+  return async dispatch => {
+    const { user, roomId, voted } = payload;
+    Api.vote(user, roomId, voted).catch(err =>
+      dispatch(addToast({ text: err.message }))
+    );
+  };
 }
 
 function addStory(payload) {
@@ -250,6 +233,7 @@ export {
   newMember,
   startGame,
   addVote,
+  pushVote,
   addStory,
   deleteStory,
   editStory,
