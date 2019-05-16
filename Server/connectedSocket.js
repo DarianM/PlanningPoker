@@ -9,7 +9,7 @@ module.exports = class connectedSocket {
 
     socket.on("pong", () => this.pong());
     socket.on("message", message => {
-      if (message === "string") this.onmessage(message);
+      if (typeof message === "string") this.onmessage(message);
     });
     socket.on("close", () => this.onclose());
     socket.on("error", err => console.log(err));
@@ -58,6 +58,7 @@ module.exports = class connectedSocket {
   }
 
   broadcastMessage(message) {
+    if (message === "ping") return;
     const { reason, data } = message;
     switch (reason) {
       case "USER_VOTED":
