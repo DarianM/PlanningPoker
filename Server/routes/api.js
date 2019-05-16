@@ -6,7 +6,7 @@ const ws = require("ws").Server;
 const wss = new ws({ port: "2345" });
 const joi = require("joi");
 const db = require("../db/db_utils");
-const wsServer = require("../wsServer");
+const wsServer = require("../ws/wsServer");
 
 const server = new wsServer(wss);
 server.listen();

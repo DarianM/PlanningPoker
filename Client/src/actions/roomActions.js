@@ -114,17 +114,6 @@ function joinRoom(payload) {
   return joinRoomF(payload, fetch);
 }
 
-function reconnectRoomF(payload, fetch) {
-  return {
-    type: "RECONNECT",
-    payload: { ...payload, fetch }
-  };
-}
-
-function reconnectRoom(payload) {
-  return reconnectRoomF(payload, fetch);
-}
-
 function newMember(payload) {
   return {
     type: NEW_MEMBER,
@@ -139,7 +128,7 @@ function startGame(payload) {
   };
 }
 
-function addVote(payload) {
+function addVoteF(payload, fetch) {
   return async dispatch => {
     const { user, roomId, voted } = payload;
     try {
@@ -150,12 +139,11 @@ function addVote(payload) {
       });
       if (response.ok) {
         const { id } = await response.json();
-        // payload.id = id;
 
         dispatch({
           type: "WEBSOCKET_SEND",
           payload: {
-            action: "USER_VOTED",
+            reason: "USER_VOTED",
             data: { user, roomId, voted, id }
           }
         });
@@ -163,11 +151,17 @@ function addVote(payload) {
           type: ADD_VOTE,
           payload
         });
+      } else {
+        dispatch(addToast({ text: "Server offline..." }));
       }
     } catch (error) {
-      // console.log(error);
+      dispatch(addToast({ text: "Check your internet connection" }));
     }
   };
+}
+
+function addVote(payload) {
+  return addVoteF(payload, fetch);
 }
 
 function addStory(payload) {
@@ -252,7 +246,7 @@ export {
   createRoomF,
   joinRoom,
   joinRoomF,
-  reconnectRoom,
+  addVoteF,
   newMember,
   startGame,
   addVote,

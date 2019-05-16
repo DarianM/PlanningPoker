@@ -1,4 +1,4 @@
-import { createRoomF, joinRoomF } from "./roomActions";
+import { createRoomF, joinRoomF, addVoteF } from "./roomActions";
 
 describe("create room action", () => {
   describe("with network offline", () => {
@@ -139,6 +139,31 @@ describe("join room action", () => {
       expect(dispatch.mock.calls).toContainEqual([
         { payload: "some msg...", type: "LOGIN_FAILURE" }
       ]);
+    });
+  });
+});
+
+describe("add vote action", () => {
+  describe("with connection ok and valid vote", () => {
+    const mockFetch = jest.fn(
+      () =>
+        new Promise(resolve => {
+          resolve({
+            json: () => ({
+              id: 5
+            }),
+            ok: true
+          });
+        })
+    );
+    it("should dispatch websocket send", async () => {
+      const result = addVoteF(
+        { user: "me", roomId: 1, voted: "20" },
+        mockFetch
+      );
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch.mock.calls[0][0].type).toBe("WEBSOCKET_SEND");
     });
   });
 });
