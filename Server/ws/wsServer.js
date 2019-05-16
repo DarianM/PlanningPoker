@@ -15,7 +15,7 @@ module.exports = class wsServer {
   broadcast(roomId, data) {
     this._roomsSockets[roomId] = this._roomsSockets[roomId] || [];
     this._roomsSockets[roomId].forEach(s => {
-      s.send(data);
+      s.send(JSON.stringify(data));
     });
   }
 
