@@ -21,73 +21,9 @@ import {
 import { addToast } from "./toastsActions";
 import * as Api from "../Api";
 
-function createRoom(payload) {
-  let { user, roomName } = payload;
-  return async dispatch => {
-    dispatch({ type: LOGIN });
-    Api.create(user, roomName)
-      .then(data => {
-        const { roomId, memberId } = data;
-        ({ roomName } = data);
-        dispatch({
-          type: WEBSOCKET_CONNECT,
-          payload: `ws://localhost:2345/${roomId}`
-        });
-        dispatch({
-          type: CREATE_ROOM,
-          payload: {
-            id: roomId,
-            roomName,
-            user
-          }
-        });
-        dispatch({
-          type: NEW_MEMBER,
-          payload: { member: user, voted: false, id: memberId }
-        });
-        dispatch({ type: LOGIN_SUCCES });
-      })
-      .catch(err => {
-        dispatch(addToast({ text: err.message }));
-        dispatch({ type: LOGIN_FAILURE });
-      });
-  };
-}
-
-function joinRoom(payload) {
-  const { user, roomId } = payload;
-  return async dispatch => {
-    dispatch({ type: LOGIN });
-    Api.join(user, roomId)
-      .then(data => {
-        const { roomName, roomMembers } = data;
-        dispatch({
-          type: "WEBSOCKET_CONNECT",
-          payload: `ws://localhost:2345/${roomId}`
-        });
-        dispatch({
-          type: JOIN_ROOM,
-          payload: {
-            id: roomId,
-            roomName,
-            user,
-            members: roomMembers
-          }
-        });
-        dispatch({ type: LOGIN_SUCCES });
-      })
-      .catch(err => {
-        if (err instanceof Error) {
-          dispatch(addToast({ text: err.message }));
-          dispatch({ type: LOGIN_FAILURE }); // sets isFetching back to false
-        } else dispatch({ type: LOGIN_FAILURE, payload: err }); // same + renders error
-      });
-  };
-}
-
-function pushVote(payload) {
+function connectToRoom(payload) {
   return {
-    type: ADD_VOTE,
+    type: WEBSOCKET_CONNECT,
     payload
   };
 }
@@ -95,6 +31,78 @@ function pushVote(payload) {
 function newMember(payload) {
   return {
     type: NEW_MEMBER,
+    payload
+  };
+}
+
+function createRoom(payload) {
+  let { user, roomName } = payload;
+  return async dispatch => {
+    dispatch({ type: LOGIN });
+    try {
+      const data = await Api.create(user, roomName);
+      const { roomId, memberId } = data;
+      ({ roomName } = data);
+      // dispatch({
+      //   type: WEBSOCKET_CONNECT,
+      //   payload: `ws://localhost:2345/${roomId}`
+      // });
+      dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
+      dispatch({
+        type: CREATE_ROOM,
+        payload: {
+          id: roomId,
+          roomName,
+          user
+        }
+      });
+      // dispatch({
+      //   type: NEW_MEMBER,
+      //   payload: { member: user, voted: false, id: memberId }
+      // });
+      dispatch(newMember({ member: user, voted: false, id: memberId }));
+      dispatch({ type: LOGIN_SUCCES });
+    } catch (err) {
+      dispatch(addToast({ text: err.message }));
+      dispatch({ type: LOGIN_FAILURE });
+    }
+  };
+}
+
+function joinRoom(payload) {
+  const { user, roomId } = payload;
+  return async dispatch => {
+    dispatch({ type: LOGIN });
+    try {
+      const data = await Api.join(user, roomId);
+      const { roomName, roomMembers } = data;
+      // dispatch({
+      //   type: "WEBSOCKET_CONNECT",
+      //   payload: `ws://localhost:2345/${roomId}`
+      // });
+      dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
+      dispatch({
+        type: JOIN_ROOM,
+        payload: {
+          id: roomId,
+          roomName,
+          user,
+          members: roomMembers
+        }
+      });
+      dispatch({ type: LOGIN_SUCCES });
+    } catch (err) {
+      if (err instanceof Error) {
+        dispatch(addToast({ text: err.message }));
+        dispatch({ type: LOGIN_FAILURE }); // sets isFetching back to false
+      } else dispatch({ type: LOGIN_FAILURE, payload: err }); // same + renders error
+    }
+  };
+}
+
+function pushVote(payload) {
+  return {
+    type: ADD_VOTE,
     payload
   };
 }

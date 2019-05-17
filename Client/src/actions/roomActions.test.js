@@ -1,47 +1,27 @@
-import { createRoomF, joinRoomF, addVoteF } from "./roomActions";
+import { createRoom, joinRoom, addVote } from "./roomActions";
+import * as Api from "../Api";
+
+jest.mock("../Api", () => ({
+  create: jest.fn(),
+  join: jest.fn(),
+  vote: jest.fn()
+}));
 
 describe("create room action", () => {
+  Api.create.mockImplementationOnce(
+    () => new Promise((resolve, reject) => reject(new Error("error")))
+  );
   describe("with network offline", () => {
-    const mockFetch = jest.fn(
-      () => new Promise((resolve, reject) => reject(new Error("error")))
-    );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = createRoomF(
-        { user: "random", roomName: "room" },
-        mockFetch
-      );
+      const result = createRoom({ user: "random", roomName: "room" });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
-    });
-  });
-
-  describe("with error from server", () => {
-    const mockFetch = jest.fn(
-      () =>
-        new Promise((resolve, reject) =>
-          resolve({
-            json: () => ({
-              roomName: "randomName",
-              user: "name"
-            }),
-            ok: false
-          })
-        )
-    );
-    it("should dispatch LOGIN_FAILURE", async () => {
-      const result = createRoomF(
-        { user: "random", roomName: "room" },
-        mockFetch
-      );
-      const dispatch = jest.fn();
-      await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+      expect(dispatch).toBeCalledWith({ type: "LOGIN_FAILURE" });
     });
   });
 
   describe("with server and network online", () => {
-    const mockFetch = jest.fn(
+    Api.create.mockImplementationOnce(
       () =>
         new Promise((resolve, reject) =>
           resolve({
@@ -54,53 +34,29 @@ describe("create room action", () => {
         )
     );
     it("should dispatch LOGIN_SUCCES", async () => {
-      const result = createRoomF(
-        { user: "random", roomName: "room" },
-        mockFetch
-      );
+      const result = createRoom({ user: "random", roomName: "room" });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_SUCCES" }]);
+      expect(dispatch.mock.calls.pop()).toEqual([{ type: "LOGIN_SUCCES" }]);
     });
   });
 });
 
 describe("join room action", () => {
   describe("with network offline", () => {
-    const mockFetch = jest.fn(
+    Api.join.mockImplementationOnce(
       () => new Promise((resolve, reject) => reject(new Error("error")))
     );
     it("should dispatch LOGIN_FAILURE", async () => {
-      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
+      const result = joinRoom({ user: "random", roomId: 1 });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
-    });
-  });
-
-  describe("with error from server", () => {
-    const mockFetch = jest.fn(
-      () =>
-        new Promise((resolve, reject) =>
-          resolve({
-            json: () => ({
-              roomName: "randomName",
-              user: "name"
-            }),
-            status: 504
-          })
-        )
-    );
-    it("should dispatch LOGIN_FAILURE", async () => {
-      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
-      const dispatch = jest.fn();
-      await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_FAILURE" }]);
+      expect(dispatch).toBeCalledWith({ type: "LOGIN_FAILURE" });
     });
   });
 
   describe("with working network and server", () => {
-    const mockFetch = jest.fn(
+    Api.join.mockImplementationOnce(
       () =>
         new Promise((resolve, reject) =>
           resolve({
@@ -113,39 +69,17 @@ describe("join room action", () => {
         )
     );
     it("should dispatch LOGIN_SUCCESS", async () => {
-      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
+      const result = joinRoom({ user: "random", roomId: 1 });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([{ type: "LOGIN_SUCCES" }]);
-    });
-  });
-
-  describe("with error message from server", () => {
-    const mockFetch = jest.fn(
-      () =>
-        new Promise((resolve, reject) =>
-          resolve({
-            json: () => ({
-              error: "some msg..."
-            }),
-            status: 400
-          })
-        )
-    );
-    it("should dispatch LOGIN_FAILURE", async () => {
-      const result = joinRoomF({ user: "random", roomId: 1 }, mockFetch);
-      const dispatch = jest.fn();
-      await result(dispatch);
-      expect(dispatch.mock.calls).toContainEqual([
-        { payload: "some msg...", type: "LOGIN_FAILURE" }
-      ]);
+      expect(dispatch.mock.calls.pop()).toEqual([{ type: "LOGIN_SUCCES" }]);
     });
   });
 });
 
 describe("add vote action", () => {
   describe("with connection ok and valid vote", () => {
-    const mockFetch = jest.fn(
+    Api.vote.mockImplementationOnce(
       () =>
         new Promise(resolve => {
           resolve({
@@ -157,10 +91,27 @@ describe("add vote action", () => {
         })
     );
     it("should dispatch websocket send", async () => {
-      const result = addVoteF({ user: "me", voted: "20", id: 1 }, mockFetch);
+      const result = addVote({ user: "me", voted: "20", id: 1 });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch.mock.calls[0][0].type).toBe("WEBSOCKET_SEND");
+      expect(Api.vote).toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("with connection ok and valid vote", () => {
+    Api.vote.mockImplementationOnce(
+      () => new Promise((resolve, reject) => reject(new Error("error")))
+    );
+    it("should dispatch websocket send", async () => {
+      const result = addVote({ user: "me", voted: "20", id: 1 });
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch).toBeCalledWith({
+        id: 3,
+        type: "ADD_TOAST",
+        payload: { text: "error" }
+      });
     });
   });
 });
