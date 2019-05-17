@@ -21,27 +21,18 @@ import {
 import { addToast } from "./toastsActions";
 import * as Api from "../Api";
 
-function createRoomF(payload, fetch) {
-  const { user } = payload;
+function createRoom(payload) {
+  let { user, roomName } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
-    let { roomName } = payload;
-    try {
-      const response = await fetch("/api/room", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, roomName })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        ({ roomName } = data);
+    Api.create(user, roomName)
+      .then(data => {
         const { roomId, memberId } = data;
-
+        ({ roomName } = data);
         dispatch({
           type: WEBSOCKET_CONNECT,
           payload: `ws://localhost:2345/${roomId}`
         });
-
         dispatch({
           type: CREATE_ROOM,
           payload: {
@@ -50,39 +41,26 @@ function createRoomF(payload, fetch) {
             user
           }
         });
-
         dispatch({
           type: NEW_MEMBER,
           payload: { member: user, voted: false, id: memberId }
         });
         dispatch({ type: LOGIN_SUCCES });
-      } else {
-        dispatch(addToast({ text: "Server offline..." }));
+      })
+      .catch(err => {
+        dispatch(addToast({ text: err.message }));
         dispatch({ type: LOGIN_FAILURE });
-      }
-    } catch (error) {
-      dispatch(addToast({ text: "Check your internet connection" }));
-      dispatch({ type: LOGIN_FAILURE });
-    }
+      });
   };
 }
 
-function createRoom(payload) {
-  return createRoomF(payload, fetch);
-}
-
-function joinRoomF(payload, fetch) {
+function joinRoom(payload) {
   const { user, roomId } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
-    try {
-      const response = await fetch("/api/member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, roomId })
-      });
-      if (response.status === 200) {
-        const data = await response.json();
+    Api.join(user, roomId)
+      .then(data => {
+        const { roomName, roomMembers } = data;
         dispatch({
           type: "WEBSOCKET_CONNECT",
           payload: `ws://localhost:2345/${roomId}`
@@ -91,28 +69,20 @@ function joinRoomF(payload, fetch) {
           type: JOIN_ROOM,
           payload: {
             id: roomId,
-            roomName: data.roomName,
+            roomName,
             user,
-            members: data.roomMembers
+            members: roomMembers
           }
         });
         dispatch({ type: LOGIN_SUCCES });
-      } else if (response.status === 400) {
-        const data = await response.json();
-        dispatch({ type: LOGIN_FAILURE, payload: data.error });
-      } else {
-        dispatch(addToast({ text: "Server offline..." }));
-        dispatch({ type: LOGIN_FAILURE });
-      }
-    } catch (error) {
-      dispatch(addToast({ text: "Check your internet connection" }));
-      dispatch({ type: LOGIN_FAILURE });
-    }
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          dispatch(addToast({ text: err.message }));
+          dispatch({ type: LOGIN_FAILURE }); // sets isFetching back to false
+        } else dispatch({ type: LOGIN_FAILURE, payload: err }); // same + renders error
+      });
   };
-}
-
-function joinRoom(payload) {
-  return joinRoomF(payload, fetch);
 }
 
 function pushVote(payload) {
@@ -226,10 +196,7 @@ function resetTimer(payload) {
 
 export {
   createRoom,
-  createRoomF,
   joinRoom,
-  joinRoomF,
-  addVoteF,
   newMember,
   startGame,
   addVote,
