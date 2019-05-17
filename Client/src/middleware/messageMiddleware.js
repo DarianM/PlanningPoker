@@ -1,5 +1,5 @@
 import { addToast } from "../actions/toastsActions";
-import { newMember, pushVote } from "../actions/roomActions";
+import { newMember, pushVote, memberVoted } from "../actions/roomActions";
 import { send } from "../actions/websocketActions";
 import {
   REJOIN_ROOM,
@@ -47,6 +47,7 @@ const messageMiddleware = fetch => store => next => async action => {
       store.dispatch(
         pushVote({ user: data.user, voted: data.voted, id: data.id })
       );
+      store.dispatch(memberVoted({ user: data.user, voted: true }));
     }
 
     if (reason === "GAME_STARTED") {

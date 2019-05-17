@@ -1,14 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { addVote, memberVoted } from "../../../actions/roomActions";
+import { addVote } from "../../../actions/roomActions";
 import { addToast } from "../../../actions/toastsActions";
 
 const mapDispatchToProps = dispatch => ({
   addNewVote: (vote, start) =>
     start
-      ? (dispatch(addVote(vote)),
-        dispatch(memberVoted({ user: vote.user, voted: true })))
+      ? dispatch(addVote(vote))
       : dispatch(addToast({ text: "Press Start..." }))
 });
 
@@ -47,6 +46,7 @@ export const ConnectedCard = ({
 
 ConnectedCard.propTypes = {
   start: PropTypes.instanceOf(Date),
+  room: PropTypes.number.isRequired,
   value: PropTypes.string.isRequired,
   loggedUser: PropTypes.string.isRequired,
   addNewVote: PropTypes.func.isRequired
