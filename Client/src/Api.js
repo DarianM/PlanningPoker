@@ -1,4 +1,4 @@
-function post(url, payload, receivedFetch) {
+export default function post(url, payload, receivedFetch) {
   const fetch = receivedFetch || window.fetch;
   return new Promise(async (resolve, reject) => {
     try {
@@ -7,27 +7,17 @@ function post(url, payload, receivedFetch) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         resolve(data);
       } else {
-        handleError(response, reject);
+        reject(data.error ? data.error : new Error("error on server"));
       }
     } catch (error) {
       reject(new Error("Check your internet connection"));
     }
   });
 }
-
-const handleError = (response, reject) => {
-  if (response.status === 504) reject(new Error("Server offline"));
-  if (response.status === 400) {
-    response
-      .json()
-      .then(data => reject(data.error))
-      .catch(() => reject(new Error("Bad request")));
-  }
-};
 
 const vote = (user, roomId, voted) =>
   post("/api/vote", { user, roomId, voted });
