@@ -80,11 +80,11 @@ const messageMiddleware = fetch => store => next => async action => {
     const roomId = store.getState().gameRoom.id;
     const { dispatch } = store;
     const interval = action.payload;
-    reconnectRoomF(roomId, interval, dispatch, fetch);
+    await reconnectRoomF(roomId, interval, dispatch, fetch);
   }
 
   return next(action);
 };
 
-export default messageMiddleware(fetch);
+export default messageMiddleware(window.fetch);
 export { messageMiddleware as messageMidTest };
