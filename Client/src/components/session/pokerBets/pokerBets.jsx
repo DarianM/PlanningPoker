@@ -17,6 +17,13 @@ class PokerBets extends Component {
     this.stopTimer = this.stopTimer.bind(this);
   }
 
+  componentDidMount() {
+    const { stats } = this.props;
+    if (stats.gameStart) {
+      this.startTimer(stats.gameStart);
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { stats } = this.props;
     if (prevProps.stats.gameStart !== stats.gameStart) {

@@ -2,9 +2,16 @@ const knex = require("./config.js");
 
 const getRoomMembers = async roomId => {
   return await knex("members")
-    .select(["name as member", "id"])
+    .select(["name as member", "id", "vote as voted"])
     .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
     .where({ roomId });
+};
+
+const getGameStart = async id => {
+  return await knex("rooms")
+    .select("started")
+    .where({ id })
+    .first();
 };
 
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
@@ -73,8 +80,6 @@ const addMemberVote = async (user, roomId, vote) => {
 };
 
 const startGame = async (started, id) => {
-  console.log(started);
-  console.log(id);
   await knex("rooms")
     .update({ started })
     .where({ id });
@@ -88,5 +93,6 @@ module.exports = {
   createRoom,
   addUserToRoom,
   addMemberVote,
-  startGame
+  startGame,
+  getGameStart
 };

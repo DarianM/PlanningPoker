@@ -55,8 +55,19 @@ const validateMember = async (req, res, next) => {
 
 const validateRoomId = async (req, res, next) => {
   const schema = joi.number().integer();
+  const { roomId } = req.params || req.body;
   try {
-    await joi.validate(req.params.roomId, schema);
+    await joi.validate(roomId, schema);
+    next();
+  } catch (error) {
+    return res.status(400).send({ error: "wrong type" });
+  }
+};
+
+const validateDate = async (req, res, next) => {
+  const { date } = req.body;
+  try {
+    new Date(date);
     next();
   } catch (error) {
     return res.status(400).send({ error: "wrong type" });
@@ -71,7 +82,8 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
   }
   const members = await db.getRoomMembers(roomId);
   const { roomName } = await db.getRoomName(roomId);
-  res.send({ members, roomName });
+  const { started } = await db.getGameStart(roomId);
+  res.send({ members, roomName, started });
 });
 
 router.post("/vote", validateMember, async (req, res) => {
@@ -85,7 +97,7 @@ router.post("/vote", validateMember, async (req, res) => {
   res.send({}).status(204);
 });
 
-router.post("/start", async (req, res) => {
+router.post("/start", validateDate, validateRoomId, async (req, res) => {
   const { date, roomId } = req.body;
   await db.startGame(date, roomId);
 
@@ -112,14 +124,16 @@ router.post("/member", validateMember, async (req, res) => {
   );
 
   if (!isUsernameTaken) {
-    const credentials = await db.addUserToRoom(user, roomId, roomMembers);
-    const { userId } = credentials;
+    const roomInfo = await db.addUserToRoom(user, roomId, roomMembers);
+    const { started } = await db.getGameStart(roomId);
+    roomInfo.started = started;
+    const { userId } = roomInfo;
     const data = {
       reason: "USER_JOINED",
       data: { user, userId }
     };
     server.broadcast(roomId, data);
-    await res.send(credentials);
+    await res.send({ roomInfo });
   } else {
     res.status(400).send({
       error: "A user with the same name already exists in the room"

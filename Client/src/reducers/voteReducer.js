@@ -21,6 +21,13 @@ export default function(state = initialState, action) {
     return { ...state, list: [...newList, updatedVote] };
   }
 
+  if (action.type === "UPDATE_VOTES") {
+    return {
+      ...state,
+      list: [...state.list, ...action.payload]
+    };
+  }
+
   if (action.type === FLIP_CARDS) {
     return { ...state, ...action.payload };
   }
