@@ -36,17 +36,14 @@ function newMember(payload) {
 }
 
 function createRoom(payload) {
-  let { user, roomName } = payload;
+  const { user } = payload;
+  let { roomName } = payload;
   return async dispatch => {
     dispatch({ type: LOGIN });
     try {
       const data = await Api.create(user, roomName);
       const { roomId, memberId } = data;
       ({ roomName } = data);
-      // dispatch({
-      //   type: WEBSOCKET_CONNECT,
-      //   payload: `ws://localhost:2345/${roomId}`
-      // });
       dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
       dispatch({
         type: CREATE_ROOM,
@@ -56,10 +53,6 @@ function createRoom(payload) {
           user
         }
       });
-      // dispatch({
-      //   type: NEW_MEMBER,
-      //   payload: { member: user, voted: false, id: memberId }
-      // });
       dispatch(newMember({ member: user, voted: false, id: memberId }));
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
@@ -76,10 +69,6 @@ function joinRoom(payload) {
     try {
       const data = await Api.join(user, roomId);
       const { roomName, roomMembers } = data;
-      // dispatch({
-      //   type: "WEBSOCKET_CONNECT",
-      //   payload: `ws://localhost:2345/${roomId}`
-      // });
       dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
       dispatch({
         type: JOIN_ROOM,
@@ -100,28 +89,12 @@ function joinRoom(payload) {
   };
 }
 
-function pushVote(payload) {
-  return {
-    type: ADD_VOTE,
-    payload
-  };
-}
-
 function startGame(payload) {
   return dispatch => {
     dispatch({
       type: "WEBSOCKET_SEND",
       payload: { reason: "GAME_STARTED", data: payload }
     });
-  };
-}
-
-function addVote(payload) {
-  return async dispatch => {
-    const { user, roomId, voted } = payload;
-    Api.vote(user, roomId, voted).catch(err =>
-      dispatch(addToast({ text: err.message }))
-    );
   };
 }
 
@@ -167,27 +140,6 @@ function editRoomName(payload) {
   };
 }
 
-function memberVoted(payload) {
-  return {
-    type: USER_VOTE,
-    payload
-  };
-}
-
-function flipCards(payload) {
-  return {
-    type: FLIP_CARDS,
-    payload
-  };
-}
-
-function deleteVotes(payload) {
-  return {
-    type: DELETE_VOTES,
-    payload
-  };
-}
-
 function endGame(payload) {
   return {
     type: END_GAME,
@@ -207,15 +159,10 @@ export {
   joinRoom,
   newMember,
   startGame,
-  addVote,
-  pushVote,
   addStory,
   deleteStory,
   editStory,
   editRoomName,
-  memberVoted,
-  flipCards,
-  deleteVotes,
   endGame,
   resetTimer
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { addVote } from "../../../actions/roomActions";
+import { addVote } from "../../../actions/voteActions";
 import { addToast } from "../../../actions/toastsActions";
 
 const mapDispatchToProps = dispatch => ({

@@ -1,5 +1,6 @@
 import { addToast } from "../actions/toastsActions";
-import { newMember, pushVote, memberVoted } from "../actions/roomActions";
+import { newMember } from "../actions/roomActions";
+import { pushVote, memberVoted, pushFlipCards } from "../actions/voteActions";
 import { send } from "../actions/websocketActions";
 import {
   REJOIN_ROOM,
@@ -50,6 +51,10 @@ const messageMiddleware = fetch => store => next => async action => {
       store.dispatch(memberVoted({ user: data.user, voted: true }));
     }
 
+    if (reason === "FLIP_CARDS") {
+      store.dispatch(pushFlipCards({ flip: data.flip }));
+    }
+
     if (reason === "GAME_STARTED") {
       store.dispatch({
         type: "START_GAME",
@@ -80,11 +85,11 @@ const messageMiddleware = fetch => store => next => async action => {
     const roomId = store.getState().gameRoom.id;
     const { dispatch } = store;
     const interval = action.payload;
-    reconnectRoomF(roomId, interval, dispatch, fetch);
+    await reconnectRoomF(roomId, interval, dispatch, fetch);
   }
 
   return next(action);
 };
 
-export default messageMiddleware(fetch);
+export default messageMiddleware(window.fetch);
 export { messageMiddleware as messageMidTest };

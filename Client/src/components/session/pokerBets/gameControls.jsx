@@ -1,14 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../../actions/roomActions";
+import * as room from "../../../actions/roomActions";
+import * as vote from "../../../actions/voteActions";
 
 const mapDispatchToProps = dispatch => ({
-  startCurrentGame: game => dispatch(actions.startGame(game)),
-  deleteVotes: votes => dispatch(actions.deleteVotes(votes)),
-  flipCards: cards => dispatch(actions.flipCards(cards)),
-  endCurrentGame: game => dispatch(actions.endGame(game)),
-  resetTimer: time => dispatch(actions.resetTimer(time))
+  startCurrentGame: game => dispatch(room.startGame(game)),
+  deleteVotes: votes => dispatch(vote.deleteVotes(votes)),
+  flipCards: cards => dispatch(vote.flipCards(cards)),
+  endCurrentGame: game => dispatch(room.endGame(game)),
+  resetTimer: time => dispatch(room.resetTimer(time))
 });
 
 const startButton = startCurrentGame => {
