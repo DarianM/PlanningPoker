@@ -82,7 +82,20 @@ router.post("/vote", validateMember, async (req, res) => {
     data: { user, roomId, voted, id }
   };
   server.broadcast(roomId, data);
-  res.sendStatus(204);
+  res.send({}).status(204);
+});
+
+router.post("/start", async (req, res) => {
+  const { date, roomId } = req.body;
+  await db.startGame(date, roomId);
+
+  const data = {
+    reason: "GAME_STARTED",
+    data: { date }
+  };
+
+  server.broadcast(roomId, data);
+  res.send({}).status(200);
 });
 
 router.post("/member", validateMember, async (req, res) => {

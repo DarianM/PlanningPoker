@@ -90,11 +90,9 @@ function joinRoom(payload) {
 }
 
 function startGame(payload) {
+  const { gameStart, roomId } = payload;
   return dispatch => {
-    dispatch({
-      type: "WEBSOCKET_SEND",
-      payload: { reason: "GAME_STARTED", data: payload }
-    });
+    Api.start(gameStart, roomId);
   };
 }
 

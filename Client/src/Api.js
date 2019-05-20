@@ -2,14 +2,12 @@ export default function post(url, payload, receivedFetch) {
   const fetch = receivedFetch || window.fetch;
   return new Promise(async (resolve, reject) => {
     try {
-      let data = null;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      const text = await response.text();
-      data = text.length ? JSON.parse(text) : {};
+      const data = await response.json();
       if (response.ok) {
         resolve(data);
       } else {
@@ -28,4 +26,6 @@ const join = (user, roomId) => post("/api/member", { user, roomId });
 
 const create = (user, roomName) => post("/api/room", { user, roomName });
 
-export { vote, join, create };
+const start = (date, roomId) => post("/api/start", { date, roomId });
+
+export { vote, join, create, start };

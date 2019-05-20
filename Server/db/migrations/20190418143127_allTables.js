@@ -7,6 +7,7 @@ exports.up = async knex => {
   await knex.schema.createTable("rooms", table => {
     table.increments("id").primary();
     table.string("name").notNullable();
+    table.dateTime("started");
   });
   await knex.schema.createTable("roomsMembers", table => {
     table.integer("userId").notNullable();
