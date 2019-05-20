@@ -12,11 +12,12 @@ const mapStateToProps = state => {
   return {
     game: state.gameRoom,
     history: state.gameHistory,
-    votes: state.gameVotes
+    votes: state.gameVotes,
+    connection: state.connection
   };
 };
 
-const ConnectedSession = ({ game, history, votes }) => (
+const ConnectedSession = ({ game, history, votes, connection }) => (
   <div className="body-session">
     <div className="sessionContainer">
       <Header head={game.user} />
@@ -26,7 +27,7 @@ const ConnectedSession = ({ game, history, votes }) => (
         roomHistory={history}
       />
       {!votes.end ? <PokerTable /> : <Chart />}
-      <PokerBets stats={game} results={votes} />
+      <PokerBets stats={game} results={votes} connection={connection} />
       <Stories stories={history} />
     </div>
   </div>
@@ -51,6 +52,11 @@ ConnectedSession.propTypes = {
         id: PropTypes.number
       })
     )
+  }).isRequired,
+  connection: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    isStarting: PropTypes.bool,
+    error: PropTypes.string
   }).isRequired
 };
 

@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => ({
   resetTimer: time => dispatch(room.resetTimer(time))
 });
 
-const startButton = (startCurrentGame, roomId) => {
+const startButton = (startCurrentGame, isStarting, roomId) => {
   return (
     <div className="startgame-control">
       <button
@@ -23,7 +23,7 @@ const startButton = (startCurrentGame, roomId) => {
           startCurrentGame({ gameStart: new Date(), roomId });
         }}
       >
-        {`Start`}
+        {isStarting ? `Starting...` : `Start`}
       </button>
     </div>
   );
@@ -109,6 +109,7 @@ const nextStoryButton = () => {
 export const ConnectedGameControls = ({
   game,
   results,
+  connection,
   startCurrentGame,
   flipCards,
   endCurrentGame,
@@ -118,11 +119,12 @@ export const ConnectedGameControls = ({
   startTimer
 }) => {
   const { gameStart, id } = game;
+  const { isStarting } = connection;
 
   return (
     <>
       {!gameStart ? (
-        startButton(startCurrentGame, id)
+        startButton(startCurrentGame, isStarting, id)
       ) : (
         <div className="controls">
           {!results.flip
@@ -152,6 +154,11 @@ ConnectedGameControls.propTypes = {
     gameStart: PropTypes.instanceOf(Date),
     id: PropTypes.number
   }),
+  connection: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    isStarting: PropTypes.bool,
+    error: PropTypes.string
+  }).isRequired,
   startCurrentGame: PropTypes.func.isRequired,
   endCurrentGame: PropTypes.func.isRequired,
   flipCards: PropTypes.func.isRequired,

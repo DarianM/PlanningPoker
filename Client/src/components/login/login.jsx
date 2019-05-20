@@ -16,7 +16,7 @@ export class ConnectedLogin extends Component {
     this.state = {
       user: "",
       id: -1,
-      roomName: "ABc"
+      roomName: ""
     };
     this.handleUser = this.handleUser.bind(this);
     this.handleRoomName = this.handleRoomName.bind(this);
@@ -110,7 +110,7 @@ export class ConnectedLogin extends Component {
             >
               {isFetching ? "Processing..." : "Join a Session"}
             </button>
-            {error && <p>{error}</p>}
+            {error && <p className="loginError">{error}</p>}
           </div>
         </div>
       </>

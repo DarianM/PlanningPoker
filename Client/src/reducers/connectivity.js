@@ -1,7 +1,14 @@
-import { LOGIN, LOGIN_SUCCES, LOGIN_FAILURE } from "../actions/types";
+import {
+  LOGIN,
+  LOGIN_SUCCES,
+  LOGIN_FAILURE,
+  GAME_STARTING,
+  GAME_STARTED
+} from "../actions/types";
 
 const initialState = {
   isFetching: false,
+  isStarting: false,
   error: ""
 };
 
@@ -16,6 +23,12 @@ export default function connection(state = initialState, action) {
 
     case LOGIN_FAILURE:
       return { ...state, isFetching: false, error: action.payload };
+
+    case GAME_STARTING:
+      return { ...state, isStarting: true };
+
+    case GAME_STARTED:
+      return { ...state, isStarting: false };
 
     default:
       return state;

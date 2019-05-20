@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { ConnectedGameControls } from "./gameControls";
 
 describe("Poker results Component", () => {
-  const start = null;
+  const game = { gameStart: null, id: -1 };
   const gameVotes = { end: null, flip: false };
   const mockStartGame = jest.fn();
   const mockFlipCards = jest.fn();
@@ -16,7 +16,7 @@ describe("Poker results Component", () => {
   describe("renders without crashing, after room has been created", () => {
     const wrapper = mount(
       <ConnectedGameControls
-        startGame={start}
+        game={game}
         results={gameVotes}
         startCurrentGame={mockStartGame}
         flipCards={mockFlipCards}
@@ -39,7 +39,7 @@ describe("Poker results Component", () => {
     it("should display 4 buttons: Flip Cards, Clear Votes, Reset Timer, Next Story", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -49,7 +49,7 @@ describe("Poker results Component", () => {
           stopTimer={mockStopTimer}
           startTimer={mockStartTimer}
         />
-      ).setProps({ startGame: new Date() });
+      ).setProps({ game: { gameStart: new Date() } });
       const controls = wrapper.find(".votes-option");
       expect(controls).toHaveLength(4);
     });
@@ -59,7 +59,7 @@ describe("Poker results Component", () => {
     it("should display instead Finish Voting button as an option", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -69,7 +69,7 @@ describe("Poker results Component", () => {
           stopTimer={mockStopTimer}
           startTimer={mockStartTimer}
         />
-      ).setProps({ startGame: new Date(), results: { flip: true } });
+      ).setProps({ game: { gameStart: new Date() }, results: { flip: true } });
       const control = wrapper.find(".votes-blue");
       expect(control.text()).toEqual("Finish Voting");
     });
@@ -79,7 +79,7 @@ describe("Poker results Component", () => {
     it("should display Flip Cards again as an option", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -89,7 +89,7 @@ describe("Poker results Component", () => {
           stopTimer={mockStopTimer}
           startTimer={mockStartTimer}
         />
-      ).setProps({ startGame: new Date(), results: { flip: false } });
+      ).setProps({ game: { gameStart: new Date() }, results: { flip: false } });
       const control = wrapper.find("button").map(node => node.text());
       expect(control.includes("Flip Cards")).toBeTruthy();
     });
@@ -99,7 +99,7 @@ describe("Poker results Component", () => {
     it("should call stopTimer first and then resetTimer func", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -109,7 +109,7 @@ describe("Poker results Component", () => {
           stopTimer={mockStopTimer}
           startTimer={mockStartTimer}
         />
-      ).setProps({ startGame: new Date() });
+      ).setProps({ game: { gameStart: new Date() } });
       const control = wrapper.find(".controls").childAt(2);
       control.simulate("click", { preventDefault() {} });
       expect(mockStopTimer).toBeCalled();
@@ -121,7 +121,7 @@ describe("Poker results Component", () => {
     it("should call endCurrentGame & stopTimer functions and let only Clear Votes & Next Story buttons as options", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -131,7 +131,7 @@ describe("Poker results Component", () => {
           stopTimer={mockStopTimer}
           startTimer={mockStartTimer}
         />
-      ).setProps({ startGame: new Date(), results: { flip: true } });
+      ).setProps({ game: { gameStart: new Date() }, results: { flip: true } });
       const finish = wrapper.find(".controls").childAt(0);
       finish.simulate("click", { preventDefault() {} });
 
@@ -150,7 +150,7 @@ describe("Poker results Component", () => {
     it("should see all 4 option button that he had at the start of the game", () => {
       const wrapper = mount(
         <ConnectedGameControls
-          startGame={start}
+          game={game}
           results={gameVotes}
           startCurrentGame={mockStartGame}
           flipCards={mockFlipCards}
@@ -161,7 +161,7 @@ describe("Poker results Component", () => {
           startTimer={mockStartTimer}
         />
       ).setProps({
-        startGame: new Date(),
+        game: { gameStart: new Date() },
         results: { flip: true, end: new Date() }
       });
       const control = wrapper.find(".controls").childAt(0);

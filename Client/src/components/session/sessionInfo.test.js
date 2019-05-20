@@ -27,7 +27,7 @@ describe("Sessioninfo Component", () => {
     const infoComponent = mount(<ConnectedSessionInfo {...props} />);
     it("should render only room ID", () => {
       expect(infoComponent.find(".sessionRoomId").text()).toEqual(
-        "your room ID:-1"
+        "your room ID: -1"
       );
     });
     describe("after admin enters first story of the game", () => {

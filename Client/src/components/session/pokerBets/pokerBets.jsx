@@ -41,6 +41,7 @@ class PokerBets extends Component {
   render() {
     const { stats } = this.props;
     const { results } = this.props;
+    const { connection } = this.props;
 
     const { seconds } = this.state;
     const { minutes } = this.state;
@@ -64,6 +65,7 @@ class PokerBets extends Component {
         <GameControls
           game={stats}
           results={results}
+          connection={connection}
           startTimer={this.startTimer}
           stopTimer={this.stopTimer}
         />
@@ -85,6 +87,11 @@ PokerBets.propTypes = {
     flip: PropTypes.bool,
     nextVoteId: PropTypes.number,
     list: PropTypes.arrayOf(PropTypes.object)
+  }).isRequired,
+  connection: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    isStarting: PropTypes.bool,
+    error: PropTypes.string
   }).isRequired
 };
 

@@ -27,6 +27,8 @@ export const REMOVE_TOAST = "REMOVE_TOAST";
 export const LOGIN = "LOGIN";
 export const LOGIN_SUCCES = "LOGIN_SUCCES";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
+export const GAME_STARTING = "GAME_STARTING";
+export const GAME_STARTED = "GAME_STARTED";
 
 export {
   CREATE_ROOM,
