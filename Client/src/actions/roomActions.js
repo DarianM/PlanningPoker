@@ -49,7 +49,7 @@ function createRoom(payload) {
           user
         }
       });
-      dispatch(newMember({ member: user, voted: false, id: memberId }));
+      dispatch(newMember({ member: user, id: memberId }));
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
       dispatch(addToast({ text: err.message }));
@@ -64,7 +64,18 @@ function joinRoom(payload) {
     dispatch({ type: LOGIN });
     try {
       const data = await Api.join(user, roomId);
+      const gameRoom = [];
+      const gameVotes = [];
       const { roomName, roomMembers, started } = data.roomInfo;
+      roomMembers.forEach(m => {
+        const { member, id, voted } = m;
+        if (voted) {
+          gameRoom.push({ member, voted: true, id });
+          gameVotes.push(m);
+        } else {
+          gameRoom.push({ member, voted: false, id });
+        }
+      });
       dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
       dispatch({
         type: JOIN_ROOM,
@@ -72,19 +83,20 @@ function joinRoom(payload) {
           id: roomId,
           roomName,
           user,
-          members: roomMembers
+          members: gameRoom
         }
       });
       dispatch({
         type: START_GAME,
         payload: { gameStart: new Date(started) }
       });
+      dispatch({ type: "UPDATE_VOTES", payload: gameVotes });
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
       if (err instanceof Error) {
         dispatch(addToast({ text: err.message }));
-        dispatch({ type: LOGIN_FAILURE }); // sets isFetching back to false
-      } else dispatch({ type: LOGIN_FAILURE, payload: err }); // same + renders error
+        dispatch({ type: LOGIN_FAILURE });
+      } else dispatch({ type: LOGIN_FAILURE, payload: err });
     }
   };
 }

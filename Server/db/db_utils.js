@@ -2,7 +2,7 @@ const knex = require("./config.js");
 
 const getRoomMembers = async roomId => {
   return await knex("members")
-    .select(["name as member", "id"])
+    .select(["name as member", "id", "vote as voted"])
     .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
     .where({ roomId });
 };

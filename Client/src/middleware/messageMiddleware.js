@@ -1,6 +1,11 @@
 import { addToast } from "../actions/toastsActions";
 import { newMember } from "../actions/roomActions";
-import { pushVote, memberVoted, pushFlipCards } from "../actions/voteActions";
+import {
+  pushVote,
+  updateVotes,
+  memberVoted,
+  pushFlipCards
+} from "../actions/voteActions";
 import { send } from "../actions/websocketActions";
 import {
   REJOIN_ROOM,
@@ -34,6 +39,7 @@ async function reconnectRoomF(roomId, interval, dispatch, fetch) {
         type: "START_GAME",
         payload: { gameStart: new Date(started) }
       });
+      updateVotes(members, dispatch);
     } else {
       dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
     }
