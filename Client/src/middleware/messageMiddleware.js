@@ -20,13 +20,19 @@ async function reconnectRoomF(roomId, interval, dispatch, fetch) {
     if (response.status === 200) {
       clearInterval(interval);
       const data = await response.json();
+      const { members, roomName, started } = data;
+
       dispatch(addToast({ text: "Reconnecting successful..." }));
       dispatch({
         type: REJOIN_ROOM,
         payload: {
-          roomName: data.roomName,
-          members: data.members
+          roomName,
+          members
         }
+      });
+      dispatch({
+        type: "START_GAME",
+        payload: { gameStart: new Date(started) }
       });
     } else {
       dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));

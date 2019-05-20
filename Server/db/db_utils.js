@@ -7,6 +7,13 @@ const getRoomMembers = async roomId => {
     .where({ roomId });
 };
 
+const getGameStart = async id => {
+  return await knex("rooms")
+    .select("started")
+    .where({ id })
+    .first();
+};
+
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
   return roomMembers.find(m => {
     const userToCompare = `^${m.member}$`;
@@ -73,8 +80,6 @@ const addMemberVote = async (user, roomId, vote) => {
 };
 
 const startGame = async (started, id) => {
-  console.log(started);
-  console.log(id);
   await knex("rooms")
     .update({ started })
     .where({ id });
@@ -88,5 +93,6 @@ module.exports = {
   createRoom,
   addUserToRoom,
   addMemberVote,
-  startGame
+  startGame,
+  getGameStart
 };

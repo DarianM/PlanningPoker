@@ -6,14 +6,10 @@ import {
   JOIN_ROOM,
   START_GAME,
   NEW_MEMBER,
-  ADD_VOTE,
   ADD_STORY,
   DELETE_STORY,
   EDIT_STORY,
   EDIT_HISTORY,
-  USER_VOTE,
-  FLIP_CARDS,
-  DELETE_VOTES,
   END_GAME,
   RESET_TIMER,
   WEBSOCKET_CONNECT
@@ -68,7 +64,7 @@ function joinRoom(payload) {
     dispatch({ type: LOGIN });
     try {
       const data = await Api.join(user, roomId);
-      const { roomName, roomMembers } = data;
+      const { roomName, roomMembers, started } = data.roomInfo;
       dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
       dispatch({
         type: JOIN_ROOM,
@@ -78,6 +74,10 @@ function joinRoom(payload) {
           user,
           members: roomMembers
         }
+      });
+      dispatch({
+        type: START_GAME,
+        payload: { gameStart: new Date(started) }
       });
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
