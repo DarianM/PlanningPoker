@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => ({
   resetTimer: time => dispatch(room.resetTimer(time))
 });
 
-const startButton = startCurrentGame => {
+const startButton = (startCurrentGame, roomId) => {
   return (
     <div className="startgame-control">
       <button
@@ -20,7 +20,7 @@ const startButton = startCurrentGame => {
         className="votes-blue"
         onClick={e => {
           e.preventDefault();
-          startCurrentGame({ gameStart: new Date() });
+          startCurrentGame({ gameStart: new Date(), roomId });
         }}
       >
         {`Start`}
@@ -107,7 +107,7 @@ const nextStoryButton = () => {
 };
 
 export const ConnectedGameControls = ({
-  startGame,
+  game,
   results,
   startCurrentGame,
   flipCards,
@@ -117,16 +117,18 @@ export const ConnectedGameControls = ({
   stopTimer,
   startTimer
 }) => {
+  const { gameStart, id } = game;
+
   return (
     <>
-      {!startGame ? (
-        startButton(startCurrentGame)
+      {!gameStart ? (
+        startButton(startCurrentGame, id)
       ) : (
         <div className="controls">
           {!results.flip
             ? flipCardsButton(flipCards)
             : !results.end && endVoteButton(endCurrentGame, stopTimer)}
-          {clearVotesButton(deleteVotes, startTimer, startGame)}
+          {clearVotesButton(deleteVotes, startTimer, gameStart)}
           {!results.end && resetTimerButton(resetTimer, stopTimer)}
           {nextStoryButton()}
         </div>
@@ -146,7 +148,10 @@ ConnectedGameControls.propTypes = {
     end: PropTypes.instanceOf(Date),
     flip: PropTypes.bool
   }).isRequired,
-  startGame: PropTypes.instanceOf(Date),
+  game: PropTypes.shape({
+    gameStart: PropTypes.instanceOf(Date),
+    id: PropTypes.number
+  }),
   startCurrentGame: PropTypes.func.isRequired,
   endCurrentGame: PropTypes.func.isRequired,
   flipCards: PropTypes.func.isRequired,
@@ -157,5 +162,8 @@ ConnectedGameControls.propTypes = {
 };
 
 ConnectedGameControls.defaultProps = {
-  startGame: PropTypes.instanceOf(undefined)
+  game: PropTypes.shape({
+    gameStart: PropTypes.instanceOf(undefined),
+    id: PropTypes.number
+  })
 };

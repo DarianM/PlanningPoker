@@ -74,7 +74,7 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
   res.send({ members, roomName });
 });
 
-router.post("/vote", validateMember, async req => {
+router.post("/vote", validateMember, async (req, res) => {
   const { user, roomId, voted } = req.body;
   const id = await db.addMemberVote(user, roomId, voted);
   const data = {
@@ -82,6 +82,20 @@ router.post("/vote", validateMember, async req => {
     data: { user, roomId, voted, id }
   };
   server.broadcast(roomId, data);
+  res.send({}).status(204);
+});
+
+router.post("/start", async (req, res) => {
+  const { date, roomId } = req.body;
+  await db.startGame(date, roomId);
+
+  const data = {
+    reason: "GAME_STARTED",
+    data: { date }
+  };
+
+  server.broadcast(roomId, data);
+  res.send({}).status(200);
 });
 
 router.post("/member", validateMember, async (req, res) => {

@@ -72,6 +72,14 @@ const addMemberVote = async (user, roomId, vote) => {
   return id;
 };
 
+const startGame = async (started, id) => {
+  console.log(started);
+  console.log(id);
+  await knex("rooms")
+    .update({ started })
+    .where({ id });
+};
+
 module.exports = {
   getRoomMembers,
   checkUserUniquenessWithinRoom,
@@ -79,5 +87,6 @@ module.exports = {
   getRoomName,
   createRoom,
   addUserToRoom,
-  addMemberVote
+  addMemberVote,
+  startGame
 };

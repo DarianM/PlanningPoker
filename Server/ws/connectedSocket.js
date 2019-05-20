@@ -33,7 +33,7 @@ module.exports = class connectedSocket {
   }
 
   schedulePing() {
-    this.interval = setTimeout(() => this.ping(), PING_INTERVAL);
+    this.interval = setInterval(() => this.ping(), PING_INTERVAL);
   }
 
   clearPing() {

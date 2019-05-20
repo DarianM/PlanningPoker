@@ -26,4 +26,6 @@ const join = (user, roomId) => post("/api/member", { user, roomId });
 
 const create = (user, roomName) => post("/api/room", { user, roomName });
 
-export { vote, join, create };
+const start = (date, roomId) => post("/api/start", { date, roomId });
+
+export { vote, join, create, start };

@@ -58,7 +58,7 @@ const messageMiddleware = fetch => store => next => async action => {
     if (reason === "GAME_STARTED") {
       store.dispatch({
         type: "START_GAME",
-        payload: { gameStart: new Date(data.gameStart) }
+        payload: { gameStart: new Date(data.date) }
       });
     }
   }

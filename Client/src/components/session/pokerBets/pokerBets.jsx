@@ -62,7 +62,7 @@ class PokerBets extends Component {
         </div>
         <Members members={stats.members} votes={results} />
         <GameControls
-          startGame={stats.gameStart}
+          game={stats}
           results={results}
           startTimer={this.startTimer}
           stopTimer={this.stopTimer}
