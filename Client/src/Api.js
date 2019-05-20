@@ -2,12 +2,14 @@ export default function post(url, payload, receivedFetch) {
   const fetch = receivedFetch || window.fetch;
   return new Promise(async (resolve, reject) => {
     try {
+      let data = null;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      const data = await response.json();
+      const text = await response.text();
+      data = text.length ? JSON.parse(text) : {};
       if (response.ok) {
         resolve(data);
       } else {
