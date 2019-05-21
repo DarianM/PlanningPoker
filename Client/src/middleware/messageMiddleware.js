@@ -56,6 +56,13 @@ const messageMiddleware = fetch => store => next => async action => {
         payload: { gameStart: new Date(data.date) }
       });
     }
+    if (reason === "CLEAR_VOTES") {
+      store.dispatch({
+        type: "DELETE_VOTES",
+        payload: data
+      });
+    }
+    return {};
   }
 
   if (action.type === WEBSOCKET_OPEN) {

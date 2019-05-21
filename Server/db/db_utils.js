@@ -2,9 +2,13 @@ const knex = require("./config.js");
 
 const getRoomMembers = async roomId => {
   return await knex("members")
-    .select(["name as member", "id", "vote as voted"])
+    .select(["name as member", "vote as voted", "id"])
     .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
     .where({ roomId });
+};
+
+const getRoomVotes = async roomId => {
+  const votes = await getRoomMembers(roomId);
 };
 
 const getGameStart = async id => {
@@ -87,6 +91,7 @@ const startGame = async (started, id) => {
 
 module.exports = {
   getRoomMembers,
+  getRoomVotes,
   checkUserUniquenessWithinRoom,
   checkRoomAvailability,
   getRoomName,

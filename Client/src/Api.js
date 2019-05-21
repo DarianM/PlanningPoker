@@ -11,7 +11,7 @@ export default function post(url, payload, receivedFetch) {
       if (response.ok) {
         resolve(data);
       } else {
-        reject(data.error ? data.error : new Error("error on server"));
+        reject(new Error(data.error));
       }
     } catch (error) {
       reject(new Error("Check your internet connection"));

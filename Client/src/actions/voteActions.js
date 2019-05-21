@@ -1,4 +1,4 @@
-import { ADD_VOTE, USER_VOTE, FLIP_CARDS, DELETE_VOTES } from "./types";
+import { ADD_VOTE, USER_VOTE, FLIP_CARDS } from "./types";
 import { addToast } from "./toastsActions";
 import * as Api from "../Api";
 
@@ -19,9 +19,14 @@ function pushVote(payload) {
 }
 
 function memberVoted(payload) {
-  return {
-    type: USER_VOTE,
-    payload
+  return async (dispatch, getState) => {
+    await dispatch({ type: USER_VOTE, payload });
+
+    const { members } = getState().gameRoom;
+    const remainingVotes = members.find(m => !m.voted);
+    if (!remainingVotes) {
+      dispatch({ type: "FLIP_CARDS", payload: { flip: true } });
+    }
   };
 }
 
@@ -42,9 +47,11 @@ function pushFlipCards(payload) {
 }
 
 function deleteVotes(payload) {
-  return {
-    type: DELETE_VOTES,
-    payload
+  return dispatch => {
+    dispatch({
+      type: "WEBSOCKET_SEND",
+      payload: { reason: "CLEAR_VOTES", data: payload }
+    });
   };
 }
 

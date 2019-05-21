@@ -70,6 +70,9 @@ module.exports = class connectedSocket {
       case "FLIP_CARDS":
         this.server.broadcast(this.roomId, message);
         break;
+      case "CLEAR_VOTES":
+        this.server.broadcast(this.roomId, message);
+        break;
       default:
         break;
     }

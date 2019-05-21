@@ -234,4 +234,12 @@ describe("Routes: Room", () => {
       });
     });
   });
+
+  describe("/api/votes/:roomId route", () => {
+    let result;
+    beforeEach(async () => {
+      result = await request(app).get("/api/votes/1");
+    });
+    it("should return votes", () => {});
+  });
 });
