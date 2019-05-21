@@ -3,8 +3,7 @@ import {
   LOGIN_SUCCES,
   LOGIN_FAILURE,
   CREATE_ROOM,
-  JOIN_ROOM,
-  START_GAME,
+  UPDATE_ROOM,
   NEW_MEMBER,
   ADD_STORY,
   DELETE_STORY,
@@ -64,33 +63,11 @@ function joinRoom(payload) {
     dispatch({ type: LOGIN });
     try {
       const data = await Api.join(user, roomId);
-      const gameRoom = [];
-      const gameVotes = [];
-      const { roomName, roomMembers, started } = data.roomInfo;
-      roomMembers.forEach(m => {
-        const { member, id, voted } = m;
-        if (voted) {
-          gameRoom.push({ member, voted: true, id });
-          gameVotes.push(m);
-        } else {
-          gameRoom.push({ member, voted: false, id });
-        }
-      });
+
       dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
-      dispatch({
-        type: JOIN_ROOM,
-        payload: {
-          id: roomId,
-          roomName,
-          user,
-          members: gameRoom
-        }
-      });
-      dispatch({
-        type: START_GAME,
-        payload: { gameStart: new Date(started) }
-      });
-      dispatch({ type: "UPDATE_VOTES", payload: gameVotes });
+
+      dispatch({ type: UPDATE_ROOM, payload: data.roomInfo });
+
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
       if (err instanceof Error) {

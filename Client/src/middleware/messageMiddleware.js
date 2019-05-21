@@ -1,14 +1,9 @@
 import { addToast } from "../actions/toastsActions";
 import { newMember } from "../actions/roomActions";
-import {
-  pushVote,
-  updateVotes,
-  memberVoted,
-  pushFlipCards
-} from "../actions/voteActions";
+import { pushVote, memberVoted, pushFlipCards } from "../actions/voteActions";
 import { send } from "../actions/websocketActions";
 import {
-  REJOIN_ROOM,
+  UPDATE_ROOM,
   WEBSOCKET_ERROR,
   WEBSOCKET_MESSAGE,
   WEBSOCKET_RECONNECTING,
@@ -19,27 +14,15 @@ import {
 const TIMEOUT_BETWEEN_PINGS = 5000;
 
 let pingInterval = null;
-async function reconnectRoomF(roomId, interval, dispatch, fetch) {
+async function reconnectRoomF(roomId, user, interval, dispatch, fetch) {
   try {
     const response = await fetch(`/api/${roomId}`);
     if (response.status === 200) {
       clearInterval(interval);
       const data = await response.json();
-      const { members, roomName, started } = data;
+      dispatch({ type: UPDATE_ROOM, payload: { ...data, roomId, user } });
 
       dispatch(addToast({ text: "Reconnecting successful..." }));
-      dispatch({
-        type: REJOIN_ROOM,
-        payload: {
-          roomName,
-          members
-        }
-      });
-      dispatch({
-        type: "START_GAME",
-        payload: { gameStart: new Date(started) }
-      });
-      updateVotes(members, dispatch);
     } else {
       dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
     }
@@ -94,10 +77,10 @@ const messageMiddleware = fetch => store => next => async action => {
   }
 
   if (action.type === WEBSOCKET_RECONNECTED) {
-    const roomId = store.getState().gameRoom.id;
+    const { id, user } = store.getState().gameRoom;
     const { dispatch } = store;
     const interval = action.payload;
-    await reconnectRoomF(roomId, interval, dispatch, fetch);
+    await reconnectRoomF(id, user, interval, dispatch, fetch);
   }
 
   return next(action);

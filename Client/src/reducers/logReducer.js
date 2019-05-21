@@ -1,6 +1,6 @@
 import {
   CREATE_ROOM,
-  JOIN_ROOM,
+  UPDATE_ROOM,
   REJOIN_ROOM,
   START_GAME,
   USER_VOTE,
@@ -32,12 +32,22 @@ export default function(state = initialState, action) {
     };
   }
 
-  if (action.type === JOIN_ROOM) {
+  if (action.type === UPDATE_ROOM) {
+    const { user, roomId, roomName, roomMembers, started } = action.payload;
     return {
       ...state,
-      ...action.payload
+      user,
+      id: roomId,
+      roomName,
+      gameStart: started ? new Date(started) : null,
+      members: roomMembers.map(m =>
+        m.voted
+          ? { member: m.member, voted: true, id: m.id }
+          : { member: m.member, voted: false, id: m.id }
+      )
     };
   }
+
   if (action.type === REJOIN_ROOM) {
     return {
       ...state,

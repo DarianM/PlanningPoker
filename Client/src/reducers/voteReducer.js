@@ -1,4 +1,10 @@
-import { ADD_VOTE, FLIP_CARDS, DELETE_VOTES, END_GAME } from "../actions/types";
+import {
+  ADD_VOTE,
+  FLIP_CARDS,
+  DELETE_VOTES,
+  END_GAME,
+  UPDATE_ROOM
+} from "../actions/types";
 
 const initialState = {
   votes: {}
@@ -21,10 +27,14 @@ export default function(state = initialState, action) {
     return { ...state, list: [...newList, updatedVote] };
   }
 
-  if (action.type === "UPDATE_VOTES") {
+  if (action.type === UPDATE_ROOM) {
+    const { roomMembers } = action.payload;
+    const voted = roomMembers
+      .filter(member => member.voted)
+      .map(m => ({ user: m.member, voted: m.voted, id: m.id }));
     return {
       ...state,
-      list: [...state.list, ...action.payload]
+      list: voted
     };
   }
 

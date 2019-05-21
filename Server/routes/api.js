@@ -80,10 +80,10 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
   if (isRoomAvailable === undefined) {
     return res.status(400).send({ error: "Room not available" });
   }
-  const members = await db.getRoomMembers(roomId);
+  const roomMembers = await db.getRoomMembers(roomId);
   const { roomName } = await db.getRoomName(roomId);
   const { started } = await db.getGameStart(roomId);
-  res.send({ members, roomName, started });
+  res.send({ roomMembers, roomName, started });
 });
 
 router.post("/vote", validateMember, async (req, res) => {
