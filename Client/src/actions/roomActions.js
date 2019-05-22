@@ -10,18 +10,11 @@ import {
   EDIT_STORY,
   EDIT_HISTORY,
   END_GAME,
-  RESET_TIMER,
-  WEBSOCKET_CONNECT
+  RESET_TIMER
 } from "./types";
 import { addToast } from "./toastsActions";
+import { connect } from "./websocketActions";
 import * as Api from "../Api";
-
-function connectToRoom(payload) {
-  return {
-    type: WEBSOCKET_CONNECT,
-    payload
-  };
-}
 
 function newMember(payload) {
   return {
@@ -39,7 +32,7 @@ function createRoom(payload) {
       const data = await Api.create(user, roomName);
       const { roomId, memberId } = data;
       ({ roomName } = data);
-      dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
+      dispatch(connect(roomId));
       dispatch({
         type: CREATE_ROOM,
         payload: {
@@ -64,16 +57,14 @@ function joinRoom(payload) {
     try {
       const data = await Api.join(user, roomId);
 
-      dispatch(connectToRoom(`ws://localhost:2345/${roomId}`));
+      dispatch(connect(roomId));
 
       dispatch({ type: UPDATE_ROOM, payload: data.roomInfo });
 
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
-      if (err instanceof Error) {
-        dispatch(addToast({ text: err.message }));
-        dispatch({ type: LOGIN_FAILURE });
-      } else dispatch({ type: LOGIN_FAILURE, payload: err });
+      dispatch(addToast({ text: err.message }));
+      dispatch({ type: LOGIN_FAILURE });
     }
   };
 }

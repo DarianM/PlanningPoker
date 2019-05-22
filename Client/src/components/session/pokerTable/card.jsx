@@ -15,7 +15,8 @@ const mapStateToProps = state => {
   return {
     loggedUser: state.gameRoom.user,
     room: state.gameRoom.id,
-    start: state.gameRoom.gameStart
+    start: state.gameRoom.gameStart,
+    flipped: state.gameVotes.flip
   };
 };
 
@@ -24,7 +25,8 @@ export const ConnectedCard = ({
   addNewVote,
   loggedUser,
   room,
-  start
+  start,
+  flipped
 }) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
@@ -38,7 +40,8 @@ export const ConnectedCard = ({
       value={value}
       onClick={e => {
         e.preventDefault();
-        addNewVote({ user: loggedUser, roomId: room, voted: value }, start);
+        if (!flipped)
+          addNewVote({ user: loggedUser, roomId: room, voted: value }, start);
       }}
     />
   </div>
@@ -49,7 +52,8 @@ ConnectedCard.propTypes = {
   room: PropTypes.number.isRequired,
   value: PropTypes.string.isRequired,
   loggedUser: PropTypes.string.isRequired,
-  addNewVote: PropTypes.func.isRequired
+  addNewVote: PropTypes.func.isRequired,
+  flipped: PropTypes.bool.isRequired
 };
 
 ConnectedCard.defaultProps = {

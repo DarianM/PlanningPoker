@@ -86,12 +86,17 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
   res.send({ roomMembers, roomName, started });
 });
 
+router.get("/votes/:roomId", validateRoomId, async (req, res) => {
+  const { roomId } = req.params;
+  console.log(await db.getRoomVotes(roomId));
+});
+
 router.post("/vote", validateMember, async (req, res) => {
   const { user, roomId, voted } = req.body;
   const id = await db.addMemberVote(user, roomId, voted);
   const data = {
     reason: "USER_VOTED",
-    data: { user, roomId, voted, id }
+    data: { user, voted, id }
   };
   server.broadcast(roomId, data);
   res.send({}).status(204);

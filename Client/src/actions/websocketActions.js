@@ -10,7 +10,7 @@ import {
 } from "./types";
 
 const WEBSOCKET_PORT = 2345;
-const host = () => window.location.host || "localhost";
+const host = () => window.location.hostname || "localhost";
 
 export function connect(roomId) {
   return {
