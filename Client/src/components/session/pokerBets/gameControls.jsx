@@ -60,14 +60,14 @@ const endVoteButton = (endCurrentGame, stopTimer) => {
   );
 };
 
-const clearVotesButton = (deleteVotes, startTimer, startGame) => {
+const clearVotesButton = (deleteVotes, startTimer, startGame, roomId) => {
   return (
     <button
       type="button"
       className="votes-option"
       onClick={e => {
         e.preventDefault();
-        deleteVotes({ flip: false, list: [], end: undefined });
+        deleteVotes({ flip: false, list: [], end: undefined, roomId });
         startTimer(startGame);
       }}
     >
@@ -130,7 +130,7 @@ export const ConnectedGameControls = ({
           {!results.flip
             ? flipCardsButton(flipCards)
             : !results.end && endVoteButton(endCurrentGame, stopTimer)}
-          {clearVotesButton(deleteVotes, startTimer, gameStart)}
+          {clearVotesButton(deleteVotes, startTimer, gameStart, id)}
           {!results.end && resetTimerButton(resetTimer, stopTimer)}
           {nextStoryButton()}
         </div>

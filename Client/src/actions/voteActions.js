@@ -19,15 +19,7 @@ function pushVote(payload) {
 }
 
 function memberVoted(payload) {
-  return async (dispatch, getState) => {
-    await dispatch({ type: USER_VOTE, payload });
-
-    const { members } = getState().gameRoom;
-    const remainingVotes = members.find(m => !m.voted);
-    if (!remainingVotes) {
-      dispatch({ type: "FLIP_CARDS", payload: { flip: true } });
-    }
-  };
+  return { type: USER_VOTE, payload };
 }
 
 function flipCards(payload) {
@@ -47,7 +39,9 @@ function pushFlipCards(payload) {
 }
 
 function deleteVotes(payload) {
-  return dispatch => {
+  const { roomId } = payload;
+  return async dispatch => {
+    Api.clearVotes(roomId);
     dispatch({
       type: "WEBSOCKET_SEND",
       payload: { reason: "CLEAR_VOTES", data: payload }

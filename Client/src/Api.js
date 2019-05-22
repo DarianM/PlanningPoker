@@ -1,9 +1,12 @@
-export default function post(url, payload, receivedFetch) {
+const POST = "POST";
+const DELETE = "DELETE";
+
+export default function fetchMethod(method, url, payload, receivedFetch) {
   const fetch = receivedFetch || window.fetch;
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch(url, {
-        method: "POST",
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
@@ -20,12 +23,17 @@ export default function post(url, payload, receivedFetch) {
 }
 
 const vote = (user, roomId, voted) =>
-  post("/api/vote", { user, roomId, voted });
+  fetchMethod(POST, "/api/vote", { user, roomId, voted });
 
-const join = (user, roomId) => post("/api/member", { user, roomId });
+const join = (user, roomId) =>
+  fetchMethod(POST, "/api/member", { user, roomId });
 
-const create = (user, roomName) => post("/api/room", { user, roomName });
+const create = (user, roomName) =>
+  fetchMethod(POST, "/api/room", { user, roomName });
 
-const start = (date, roomId) => post("/api/start", { date, roomId });
+const start = (date, roomId) =>
+  fetchMethod(POST, "/api/start", { date, roomId });
 
-export { vote, join, create, start };
+const clearVotes = roomId => fetchMethod(DELETE, `/api/votes/${roomId}`, {});
+
+export { vote, join, create, start, clearVotes };

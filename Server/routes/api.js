@@ -43,7 +43,7 @@ const validateMember = async (req, res, next) => {
       "40",
       "100"
     ];
-    schema = schema.keys({ voted: joi.string().allow(allowedVotes) });
+    schema = schema.keys({ voted: joi.string().valid(allowedVotes) });
   }
   try {
     await joi.validate(req.body, schema);
@@ -66,13 +66,18 @@ const validateRoomId = async (req, res, next) => {
 
 const validateDate = async (req, res, next) => {
   const { date } = req.body;
-  try {
-    new Date(date);
-    next();
-  } catch (error) {
+  const dateInstance = new Date(date);
+  if (dateInstance instanceof Date && !isNaN(dateInstance)) next();
+  else {
     return res.status(400).send({ error: "wrong type" });
   }
 };
+
+router.delete("/votes/:roomId", validateRoomId, async (req, res) => {
+  const { roomId } = req.params;
+  await db.deleteRoomVotes(roomId);
+  res.send({}).status(200);
+});
 
 router.get("/:roomId", validateRoomId, async (req, res) => {
   const roomId = req.params.roomId;
@@ -86,11 +91,6 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
   res.send({ roomMembers, roomName, started });
 });
 
-router.get("/votes/:roomId", validateRoomId, async (req, res) => {
-  const { roomId } = req.params;
-  console.log(await db.getRoomVotes(roomId));
-});
-
 router.post("/vote", validateMember, async (req, res) => {
   const { user, roomId, voted } = req.body;
   const id = await db.addMemberVote(user, roomId, voted);
@@ -99,7 +99,12 @@ router.post("/vote", validateMember, async (req, res) => {
     data: { user, voted, id }
   };
   server.broadcast(roomId, data);
-  res.send({}).status(204);
+
+  const nullVotes = await db.checkUserVotes(roomId);
+  if (nullVotes.length === 0) {
+    server.broadcast(roomId, { reason: "FLIP_CARDS", data: { flip: true } });
+  }
+  res.send({}).status(200);
 });
 
 router.post("/start", validateDate, validateRoomId, async (req, res) => {
@@ -133,9 +138,14 @@ router.post("/member", validateMember, async (req, res) => {
     const { started } = await db.getGameStart(roomId);
     roomInfo.started = started;
     const { userId } = roomInfo;
-    const data = {
+    let data = {
       reason: "USER_JOINED",
       data: { user, userId }
+    };
+    server.broadcast(roomId, data);
+    data = {
+      reason: "FLIP_CARDS",
+      data: { flip: false }
     };
     server.broadcast(roomId, data);
     await res.send({ roomInfo });
