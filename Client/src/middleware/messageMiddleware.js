@@ -1,6 +1,11 @@
 import { addToast } from "../actions/toastsActions";
-import { newMember } from "../actions/roomActions";
-import { pushVote, memberVoted, pushFlipCards } from "../actions/voteActions";
+import { startingGame, newMember } from "../actions/roomActions";
+import {
+  addingVote,
+  memberVoted,
+  flippingCards,
+  deletingVotes
+} from "../actions/voteActions";
 import { send } from "../actions/websocketActions";
 import {
   UPDATE_ROOM,
@@ -41,26 +46,20 @@ const messageMiddleware = fetch => store => next => async action => {
 
     if (reason === "USER_VOTED") {
       store.dispatch(
-        pushVote({ user: data.user, voted: data.voted, id: data.id })
+        addingVote({ user: data.user, voted: data.voted, id: data.id })
       );
       store.dispatch(memberVoted({ user: data.user, voted: true }));
     }
 
     if (reason === "FLIP_CARDS") {
-      store.dispatch(pushFlipCards({ flip: data.flip }));
+      store.dispatch(flippingCards({ flip: data.flip }));
     }
 
     if (reason === "GAME_STARTED") {
-      store.dispatch({
-        type: "START_GAME",
-        payload: { gameStart: new Date(data.date) }
-      });
+      store.dispatch(startingGame({ gameStart: new Date(data.date) }));
     }
     if (reason === "CLEAR_VOTES") {
-      store.dispatch({
-        type: "DELETE_VOTES",
-        payload: data
-      });
+      store.dispatch(deletingVotes(data));
     }
     return {};
   }

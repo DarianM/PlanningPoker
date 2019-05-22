@@ -76,6 +76,10 @@ const validateDate = async (req, res, next) => {
 router.delete("/votes/:roomId", validateRoomId, async (req, res) => {
   const { roomId } = req.params;
   await db.deleteRoomVotes(roomId);
+  server.broadcast(roomId, {
+    reason: "CLEAR_VOTES",
+    data: { flip: false, list: [], end: undefined }
+  });
   res.send({}).status(200);
 });
 

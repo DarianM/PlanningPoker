@@ -2,6 +2,8 @@ import {
   LOGIN,
   LOGIN_SUCCES,
   LOGIN_FAILURE,
+  GAME_STARTING,
+  GAME_STARTED,
   CREATE_ROOM,
   UPDATE_ROOM,
   NEW_MEMBER,
@@ -10,7 +12,8 @@ import {
   EDIT_STORY,
   EDIT_HISTORY,
   END_GAME,
-  RESET_TIMER
+  RESET_TIMER,
+  START_GAME
 } from "./types";
 import { addToast } from "./toastsActions";
 import { connect } from "./websocketActions";
@@ -71,8 +74,17 @@ function joinRoom(payload) {
 
 function startGame(payload) {
   const { gameStart, roomId } = payload;
-  return dispatch => {
-    Api.start(gameStart, roomId);
+  return async dispatch => {
+    dispatch({ type: GAME_STARTING });
+    await Api.start(gameStart, roomId);
+    dispatch({ type: GAME_STARTED });
+  };
+}
+
+function startingGame(payload) {
+  return {
+    type: START_GAME,
+    payload
   };
 }
 
@@ -137,6 +149,7 @@ export {
   joinRoom,
   newMember,
   startGame,
+  startingGame,
   addStory,
   deleteStory,
   editStory,

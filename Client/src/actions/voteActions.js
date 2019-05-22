@@ -1,4 +1,10 @@
-import { ADD_VOTE, USER_VOTE, FLIP_CARDS } from "./types";
+import {
+  ADD_VOTE,
+  USER_VOTE,
+  FLIP_CARDS,
+  DELETE_VOTES,
+  WEBSOCKET_SEND
+} from "./types";
 import { addToast } from "./toastsActions";
 import * as Api from "../Api";
 
@@ -11,7 +17,7 @@ function addVote(payload) {
   };
 }
 
-function pushVote(payload) {
+function addingVote(payload) {
   return {
     type: ADD_VOTE,
     payload
@@ -25,13 +31,13 @@ function memberVoted(payload) {
 function flipCards(payload) {
   return dispatch => {
     dispatch({
-      type: "WEBSOCKET_SEND",
+      type: WEBSOCKET_SEND,
       payload: { reason: "FLIP_CARDS", data: payload }
     });
   };
 }
 
-function pushFlipCards(payload) {
+function flippingCards(payload) {
   return {
     type: FLIP_CARDS,
     payload
@@ -42,18 +48,22 @@ function deleteVotes(payload) {
   const { roomId } = payload;
   return async dispatch => {
     Api.clearVotes(roomId);
-    dispatch({
-      type: "WEBSOCKET_SEND",
-      payload: { reason: "CLEAR_VOTES", data: payload }
-    });
+  };
+}
+
+function deletingVotes(payload) {
+  return {
+    type: DELETE_VOTES,
+    payload
   };
 }
 
 export {
   addVote,
-  pushVote,
+  addingVote,
   memberVoted,
   flipCards,
-  pushFlipCards,
-  deleteVotes
+  flippingCards,
+  deleteVotes,
+  deletingVotes
 };

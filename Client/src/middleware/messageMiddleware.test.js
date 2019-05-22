@@ -1,12 +1,14 @@
 import { messageMidTest } from "./messageMiddleware";
 import {
   ADD_TOAST,
-  REJOIN_ROOM,
+  UPDATE_ROOM,
   NEW_MEMBER,
   ADD_VOTE,
+  FLIP_CARDS,
   USER_VOTE,
   START_GAME
 } from "../actions/types";
+import { memberVoted } from "../actions/voteActions";
 
 describe("message middleware", () => {
   const next = jest.fn();
@@ -62,6 +64,18 @@ describe("message middleware", () => {
       });
     });
 
+    describe("FLIP_CARDS", () => {
+      const reason = "FLIP_CARDS";
+      const action = {
+        type: "WEBSOCKET_MESSAGE",
+        payload: { reason, data: { flip: true } }
+      };
+      it("stores flip cards property", () => {
+        messageMidTest(jest.fn())(store)(next)(action);
+        expect(store.dispatch.mock.calls[0][0].type).toEqual(FLIP_CARDS);
+      });
+    });
+
     describe("GAME_STARTED", () => {
       const reason = "GAME_STARTED";
       const action = {
@@ -101,8 +115,8 @@ describe("message middleware", () => {
       };
       it("reconnects to room and displays a toast with msg great success", async () => {
         await messageMidTest(mockFetch)(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toBe(ADD_TOAST);
-        expect(store.dispatch.mock.calls[1][0].type).toBe(REJOIN_ROOM);
+        expect(store.dispatch.mock.calls[0][0].type).toBe(UPDATE_ROOM);
+        expect(store.dispatch.mock.calls[1][0].type).toBe(ADD_TOAST);
       });
     });
 
