@@ -1,6 +1,4 @@
-const wsServer = require("../wsServer");
-const connectedSocket = require("../connectedSocket");
-// jest.mock("../connectedSocket");
+const wsServer = require("../ws/wsServer");
 
 const wss = {
   on: jest.fn(),

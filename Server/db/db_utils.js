@@ -83,6 +83,27 @@ const addMemberVote = async (user, roomId, vote) => {
   return id;
 };
 
+const deleteRoomVotes = async roomId => {
+  const ids = await knex("members")
+    .select("id")
+    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
+    .where({ roomId });
+  ids.forEach(
+    async id =>
+      await knex("members")
+        .update({ vote: null })
+        .where(id)
+  );
+};
+
+const checkUserVotes = async roomId => {
+  return await knex("members")
+    .select("vote")
+    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
+    .where({ roomId })
+    .whereNull("vote");
+};
+
 const startGame = async (started, id) => {
   await knex("rooms")
     .update({ started })
@@ -94,10 +115,12 @@ module.exports = {
   getRoomVotes,
   checkUserUniquenessWithinRoom,
   checkRoomAvailability,
+  checkUserVotes,
   getRoomName,
   createRoom,
   addUserToRoom,
   addMemberVote,
   startGame,
-  getGameStart
+  getGameStart,
+  deleteRoomVotes
 };

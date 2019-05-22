@@ -130,7 +130,7 @@ describe("Routes: Room", () => {
         expect(socket.send).toHaveBeenCalledWith(
           JSON.stringify({
             reason: "USER_JOINED",
-            data: { user: "me", userId: result.body.userId }
+            data: { user: "me", userId: result.body.roomInfo.userId }
           })
         );
       });
@@ -208,7 +208,11 @@ describe("Routes: Room", () => {
         result = await request(app).get("/api/1");
       });
       it("should return room's members list and status 200", () => {
-        expect(result.body.members).toContainEqual({ member: "test", id: 1 });
+        expect(result.body.roomMembers).toContainEqual({
+          member: "test",
+          voted: null,
+          id: 1
+        });
         expect(result.body.roomName).toBe("NewRoom");
         expect(result.statusCode).toBe(200);
       });
@@ -235,11 +239,78 @@ describe("Routes: Room", () => {
     });
   });
 
-  describe("/api/votes/:roomId route", () => {
-    let result;
-    beforeEach(async () => {
-      result = await request(app).get("/api/votes/1");
+  describe("/api/start route", () => {
+    describe("starting a game with a valid date", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room")
+          .send({ user: "test" });
+        result = await request(app)
+          .post("/api/start")
+          .send({ date: "2019-05-22T07:41:17.882Z", roomId: 1 });
+      });
+      it("should return 200 and broadcast game start", () => {
+        expect(result.statusCode).toBe(200);
+        expect(socket.send).toHaveBeenCalledWith(
+          JSON.stringify({
+            reason: "GAME_STARTED",
+            data: { date: "2019-05-22T07:41:17.882Z" }
+          })
+        );
+      });
     });
-    it("should return votes", () => {});
+    describe("starting a game with an invalid date", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room")
+          .send({ user: "test" });
+        result = await request(app)
+          .post("/api/start")
+          .send({ date: "2019-05-35", roomId: 1 });
+      });
+      it("should return 400, wrong type", () => {
+        expect(result.statusCode).toBe(400);
+        expect(result.body.error).toBe("wrong type");
+      });
+    });
+  });
+  describe("/api/vote route", () => {
+    describe("providing a valid vote", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room")
+          .send({ user: "test" });
+        result = await request(app)
+          .post("/api/vote")
+          .send({ user: "test", roomId: 1, voted: "20" });
+      });
+      it("should return 200 and broadcast the vote", () => {
+        expect(result.statusCode).toBe(200);
+        expect(socket.send).toHaveBeenCalledWith(
+          JSON.stringify({
+            reason: "USER_VOTED",
+            data: { user: "test", voted: "20", id: 1 }
+          })
+        );
+        expect(result.body).toEqual({});
+      });
+    });
+    describe("providing an invalid vote", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room")
+          .send({ user: "test" });
+        result = await request(app)
+          .post("/api/vote")
+          .send({ user: "test", roomId: 1, voted: "33" });
+      });
+      it("should return 400, wrong type", () => {
+        expect(result.statusCode).toBe(400);
+      });
+    });
   });
 });
