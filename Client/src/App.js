@@ -8,13 +8,15 @@ import { Toasts } from "./components/modals";
 const mapStateToProps = state => ({
   hasJoined: state.gameRoom.hasJoined,
   toasts: state.toasts,
-  connection: state.connection
+  connection: state.connection,
+  hash: window.location.hash
 });
 
-const ConnectedApp = ({ hasJoined, toasts, connection }) => (
-  // eslint-disable-next-line react/jsx-filename-extension
+const ConnectedApp = ({ hasJoined, toasts, connection, hash }) => (
   <>
-    <div>{!hasJoined ? <Login connection={connection} /> : <Session />}</div>
+    <div>
+      {!hasJoined ? <Login connection={connection} hash={hash} /> : <Session />}
+    </div>
     <Toasts toasts={toasts} />
   </>
 );
@@ -30,7 +32,8 @@ ConnectedApp.propTypes = {
   connection: PropTypes.shape({
     isFetching: PropTypes.bool,
     error: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  hash: PropTypes.string.isRequired
 };
 
 const App = connect(mapStateToProps)(ConnectedApp);

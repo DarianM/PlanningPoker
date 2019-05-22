@@ -55,10 +55,10 @@ export class ConnectedLogin extends Component {
   }
 
   render() {
-    const { connection } = this.props;
+    const { connection, hash } = this.props;
     const { isFetching } = connection;
     const { error } = connection;
-    return (
+    return !hash ? (
       <>
         <div className="container">
           <div className="log-session">
@@ -114,7 +114,8 @@ export class ConnectedLogin extends Component {
           </div>
         </div>
       </>
-    );
+    ) : (<> <div>
+      <h1>...HASH...</h1></div> </>);
   }
 }
 
