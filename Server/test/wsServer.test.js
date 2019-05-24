@@ -21,10 +21,9 @@ const socket = {
 describe("websocket server", () => {
   beforeAll(() => jest.useFakeTimers());
   afterAll(() => jest.useRealTimers());
-  // beforeEach(() => connectedSocket.mockClear());
 
-  const server = new wsServer(wss);
   describe("starting listening", () => {
+    const server = new wsServer(wss);
     server.listen();
     const cbFunc = wss.on.mock.calls[0][1];
     it("server 'on' method should be called", () => {
@@ -35,6 +34,31 @@ describe("websocket server", () => {
       it("should add the new socket in the roomsSockets object", () => {
         expect(server._roomsSockets).toEqual({ 1: [socket] });
       });
+    });
+  });
+
+  describe("broadcasting", () => {
+    const server = new wsServer(wss);
+    server._roomsSockets = { 1: [socket, socket] };
+    server.broadcast(1, { voted: "1/2" });
+
+    it("should broadcast message to all sockets", () => {
+      expect(socket.send).toHaveBeenCalledTimes(2);
+      expect(socket.send).toHaveBeenCalledWith(
+        JSON.stringify({ voted: "1/2" })
+      );
+    });
+  });
+
+  describe("disconnect", () => {
+    const server = new wsServer(wss);
+    const terminatedSocket = { terminated: jest.fn() };
+    server._roomsSockets = { 1: [socket, terminatedSocket] };
+    const roomId = 1;
+
+    server.disconnect(terminatedSocket, roomId);
+    it("should remove terminated socket from room", () => {
+      expect(server._roomsSockets[1]).toEqual([socket]);
     });
   });
 });
