@@ -7,6 +7,7 @@ import {
   CREATE_ROOM,
   UPDATE_ROOM,
   NEW_MEMBER,
+  REMOVE_MEMBER,
   ADD_STORY,
   DELETE_STORY,
   EDIT_STORY,
@@ -35,7 +36,12 @@ function createRoom(payload) {
       const data = await Api.create(user, roomName);
       const { roomId, memberId } = data;
       ({ roomName } = data);
-      dispatch(connect(roomId));
+      dispatch(
+        connect(
+          roomId,
+          memberId
+        )
+      );
       dispatch({
         type: CREATE_ROOM,
         payload: {
@@ -59,10 +65,16 @@ function joinRoom(payload) {
     dispatch({ type: LOGIN });
     try {
       const data = await Api.join(user, roomId);
+      const { roomInfo } = data;
 
-      dispatch(connect(roomId));
+      dispatch(
+        connect(
+          roomId,
+          roomInfo.userId
+        )
+      );
 
-      dispatch({ type: UPDATE_ROOM, payload: data.roomInfo });
+      dispatch({ type: UPDATE_ROOM, payload: roomInfo });
 
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
@@ -72,12 +84,19 @@ function joinRoom(payload) {
   };
 }
 
+function removeMember(payload) {
+  return dispatch => {
+    const { name } = payload;
+    dispatch({ type: REMOVE_MEMBER, payload });
+    dispatch(addToast({ text: `${name} has left the room` }));
+  };
+}
+
 function startGame(payload) {
   const { gameStart, roomId } = payload;
   return async dispatch => {
     dispatch({ type: GAME_STARTING });
     await Api.start(gameStart, roomId);
-    dispatch({ type: GAME_STARTED });
   };
 }
 
@@ -124,9 +143,18 @@ function editStory(payload) {
 }
 
 function editRoomName(payload) {
+  return async dispatch => {
+    const { roomName, roomId } = payload;
+    if (new RegExp(/\S{3,}/, "g").test(roomName)) {
+      await Api.updateRoomName(roomId, roomName);
+    } else dispatch(addToast({ text: "Please provide a valid room name" }));
+  };
+}
+
+function renameRoom(payload) {
   return {
-    type: CREATE_ROOM,
-    payload: { roomName: payload.value }
+    type: "RENAME_ROOM",
+    payload
   };
 }
 
@@ -146,8 +174,10 @@ function resetTimer(payload) {
 
 export {
   createRoom,
+  renameRoom,
   joinRoom,
   newMember,
+  removeMember,
   startGame,
   startingGame,
   addStory,

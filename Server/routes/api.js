@@ -73,9 +73,27 @@ const validateDate = async (req, res, next) => {
   }
 };
 
+router.put("/rename/:roomId", validateRoomId, async (req, res) => {
+  const { roomName } = req.body;
+  const { roomId } = req.params;
+  await db.update("rooms", "name", roomName, { id: roomId });
+  server.broadcast(roomId, { reason: "ROOM_NAME_UPDATED", data: { roomName } });
+  res.send({}).status(200);
+});
+
+router.delete("/user/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const { roomId } = req.body;
+  const { name } = await db.getUserById(userId);
+  await db.deleteUser(userId);
+  server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
+  res.sendStatus(200);
+});
+
 router.delete("/votes/:roomId", validateRoomId, async (req, res) => {
   const { roomId } = req.params;
   await db.deleteRoomVotes(roomId);
+  await db.flipVotes(roomId, false);
   server.broadcast(roomId, {
     reason: "CLEAR_VOTES",
     data: { flip: false, list: [], end: undefined }
@@ -90,9 +108,16 @@ router.get("/:roomId", validateRoomId, async (req, res) => {
     return res.status(400).send({ error: "Room not available" });
   }
   const roomMembers = await db.getRoomMembers(roomId);
-  const { roomName } = await db.getRoomName(roomId);
-  const { started } = await db.getGameStart(roomId);
-  res.send({ roomMembers, roomName, started });
+  let { roomName, started, flipped } = await db.getRoomStats(roomId);
+  flipped = flipped === 1;
+  res.send({ roomMembers, roomName, started, flipped });
+});
+
+router.put("/forceflip/:roomId", validateRoomId, async (req, res) => {
+  const { roomId } = req.params;
+  await db.flipVotes(roomId, true);
+  server.broadcast(roomId, { reason: "FLIP_CARDS", data: { flip: true } });
+  res.send({}).status(200);
 });
 
 router.post("/vote", validateMember, async (req, res) => {
@@ -106,6 +131,7 @@ router.post("/vote", validateMember, async (req, res) => {
 
   const nullVotes = await db.checkUserVotes(roomId);
   if (nullVotes.length === 0) {
+    await db.flipVotes(roomId, true);
     server.broadcast(roomId, { reason: "FLIP_CARDS", data: { flip: true } });
   }
   res.send({}).status(200);
@@ -138,9 +164,10 @@ router.post("/member", validateMember, async (req, res) => {
   );
 
   if (!isUsernameTaken) {
-    const roomInfo = await db.addUserToRoom(user, roomId, roomMembers);
-    const { started } = await db.getGameStart(roomId);
-    roomInfo.started = started;
+    let roomInfo = await db.addUserToRoom(user, roomId, roomMembers);
+    let { started, flipped } = await db.getRoomStats(roomId);
+    flipped = flipped === 1;
+    roomInfo = { ...roomInfo, started, flipped };
     const { userId } = roomInfo;
     let data = {
       reason: "USER_JOINED",

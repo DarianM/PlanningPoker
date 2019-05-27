@@ -7,13 +7,9 @@ const getRoomMembers = async roomId => {
     .where({ roomId });
 };
 
-const getRoomVotes = async roomId => {
-  const votes = await getRoomMembers(roomId);
-};
-
-const getGameStart = async id => {
-  return await knex("rooms")
-    .select("started")
+const getUserById = async id => {
+  return await knex("members")
+    .select("name")
     .where({ id })
     .first();
 };
@@ -32,11 +28,17 @@ const checkRoomAvailability = async id => {
   return roomId;
 };
 
-const getRoomName = async roomId => {
+const getRoomStats = async id => {
   return await knex("rooms")
-    .select("name as roomName")
-    .where({ id: roomId })
+    .select("name as roomName", "started", "flipped")
+    .where({ id })
     .first();
+};
+
+const update = async (table, column, value, whereClause) => {
+  await knex(table)
+    .update(column, value)
+    .where(whereClause);
 };
 
 async function createRoom(owner, roomName) {
@@ -67,9 +69,22 @@ const addUserToRoom = async (user, roomId, roomMembers) => {
   });
 
   roomMembers.push({ member: user, id: userId });
-  const { roomName } = await getRoomName(roomId);
+  const { roomName } = await getRoomStats(roomId);
 
   return { user, userId, roomId, roomMembers, roomName };
+};
+
+const deleteUser = async userId => {
+  await knex.transaction(async trx => {
+    await knex("members")
+      .transacting(trx)
+      .where({ id: userId })
+      .del();
+    await knex("roomsMembers")
+      .transacting(trx)
+      .where({ userId })
+      .del();
+  });
 };
 
 const addMemberVote = async (user, roomId, vote) => {
@@ -104,6 +119,12 @@ const checkUserVotes = async roomId => {
     .whereNull("vote");
 };
 
+const flipVotes = async (id, value) => {
+  await knex("rooms")
+    .update({ flipped: value })
+    .where({ id });
+};
+
 const startGame = async (started, id) => {
   await knex("rooms")
     .update({ started })
@@ -112,15 +133,17 @@ const startGame = async (started, id) => {
 
 module.exports = {
   getRoomMembers,
-  getRoomVotes,
+  getUserById,
+  getRoomStats,
   checkUserUniquenessWithinRoom,
   checkRoomAvailability,
   checkUserVotes,
-  getRoomName,
   createRoom,
   addUserToRoom,
   addMemberVote,
   startGame,
-  getGameStart,
-  deleteRoomVotes
+  deleteRoomVotes,
+  deleteUser,
+  flipVotes,
+  update
 };

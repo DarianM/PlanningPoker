@@ -6,7 +6,7 @@ import {
   reconnected
 } from "../actions/websocketActions";
 
-const NORMAL_CLOSURE = 1000;
+const NORMAL_CLOSURE = 1001;
 const ABNORMAL_CLOSURE = 1006;
 
 const ONE_SECOND = 1000;

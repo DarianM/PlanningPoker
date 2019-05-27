@@ -1,10 +1,12 @@
 import {
   CREATE_ROOM,
   UPDATE_ROOM,
+  REMOVE_MEMBER,
   START_GAME,
   USER_VOTE,
   NEW_MEMBER,
   DELETE_VOTES,
+  RENAME_ROOM,
   RESET_TIMER,
   WEBSOCKET_OPEN
 } from "../actions/types";
@@ -15,6 +17,9 @@ const initialState = {
 
 export default function(state = initialState, action) {
   if (action.type === CREATE_ROOM) {
+    return { ...state, ...action.payload };
+  }
+  if (action.type === RENAME_ROOM) {
     return { ...state, ...action.payload };
   }
   if (action.type === WEBSOCKET_OPEN) {
@@ -28,6 +33,13 @@ export default function(state = initialState, action) {
     return {
       ...state,
       members: [...state.members, member]
+    };
+  }
+  if (action.type === REMOVE_MEMBER) {
+    const { name } = action.payload;
+    return {
+      ...state,
+      members: state.members.filter(m => m.member !== name)
     };
   }
 
