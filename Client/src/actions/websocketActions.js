@@ -12,10 +12,10 @@ import {
 const WEBSOCKET_PORT = 2345;
 const host = () => window.location.hostname || "localhost";
 
-export function connect(roomId) {
+export function connect(roomId, userId) {
   return {
     type: WEBSOCKET_CONNECT,
-    payload: `ws://${host()}:${WEBSOCKET_PORT}/${roomId}`
+    payload: `ws://${host()}:${WEBSOCKET_PORT}/${roomId}/${userId}`
   };
 }
 

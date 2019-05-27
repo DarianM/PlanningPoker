@@ -29,14 +29,14 @@ const startButton = (startCurrentGame, isStarting, roomId) => {
   );
 };
 
-const flipCardsButton = flipCards => {
+const flipCardsButton = (flipCards, roomId) => {
   return (
     <button
       type="button"
       className="votes-option"
       onClick={e => {
         e.preventDefault();
-        flipCards({ flip: true });
+        flipCards({ roomId });
       }}
     >
       {`Flip Cards`}
@@ -128,7 +128,7 @@ export const ConnectedGameControls = ({
       ) : (
         <div className="controls">
           {!results.flip
-            ? flipCardsButton(flipCards)
+            ? flipCardsButton(flipCards, id)
             : !results.end && endVoteButton(endCurrentGame, stopTimer)}
           {clearVotesButton(deleteVotes, startTimer, gameStart, id)}
           {!results.end && resetTimerButton(resetTimer, stopTimer)}

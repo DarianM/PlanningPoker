@@ -1,5 +1,6 @@
 const POST = "POST";
 const DELETE = "DELETE";
+const PUT = "PUT";
 
 export default function fetchMethod(method, url, payload, receivedFetch) {
   const fetch = receivedFetch || window.fetch;
@@ -36,4 +37,9 @@ const start = (date, roomId) =>
 
 const clearVotes = roomId => fetchMethod(DELETE, `/api/votes/${roomId}`, {});
 
-export { vote, join, create, start, clearVotes };
+const flip = roomId => fetchMethod(PUT, `/api/forceflip/${roomId}`, {});
+
+const updateRoomName = (roomId, roomName) =>
+  fetchMethod(PUT, `/api/rename/${roomId}`, { roomName });
+
+export { vote, join, create, start, clearVotes, flip, updateRoomName };

@@ -6,7 +6,7 @@ import EditableText from "../editableText";
 
 const mapDispatchToProps = dispatch => ({
   editStory: story => dispatch(actions.editStory(story)),
-  editRoomName: roomName => dispatch(actions.editRoomName(roomName))
+  editRoomName: payload => dispatch(actions.editRoomName(payload))
 });
 
 export const ConnectedSessionInfo = ({
@@ -20,7 +20,7 @@ export const ConnectedSessionInfo = ({
     editStory({ value, id: roomHistory.activeStory.id });
   return (
     <div>
-      <EditableText text={roomName} commit={editRoomName} />
+      <EditableText text={roomName} commit={editRoomName} roomId={roomId} />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
       {roomHistory.activeStory && (
         <EditableText

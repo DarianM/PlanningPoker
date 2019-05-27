@@ -1,4 +1,5 @@
 const PING_INTERVAL = 7000;
+const NORMAL_CLOSE = 1001;
 
 module.exports = class connectedSocket {
   constructor(socket, roomId, server) {
@@ -11,7 +12,7 @@ module.exports = class connectedSocket {
     socket.on("message", message => {
       if (typeof message === "string") this.onmessage(message);
     });
-    socket.on("close", () => this.onclose());
+    socket.on("close", event => this.onclose(event));
     socket.on("error", err => console.log(err));
 
     this.schedulePing();
@@ -28,7 +29,10 @@ module.exports = class connectedSocket {
     this.server.disconnect(this.socket, this.roomId);
   }
 
-  onclose() {
+  onclose(event) {
+    if (event === NORMAL_CLOSE) {
+      this.server.fetchNormalClosure(this.socket, this.roomId);
+    }
     this.terminate();
   }
 
