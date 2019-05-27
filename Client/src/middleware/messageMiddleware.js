@@ -1,5 +1,10 @@
 import { addToast } from "../actions/toastsActions";
-import { startingGame, newMember } from "../actions/roomActions";
+import {
+  startingGame,
+  newMember,
+  renameRoom,
+  removeMember
+} from "../actions/roomActions";
 import {
   addingVote,
   memberVoted,
@@ -60,6 +65,12 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "CLEAR_VOTES") {
       store.dispatch(deletingVotes(data));
+    }
+    if (reason === "ROOM_NAME_UPDATED") {
+      store.dispatch(renameRoom(data));
+    }
+    if (reason === "USER_LEFT") {
+      store.dispatch(removeMember(data));
     }
     return {};
   }

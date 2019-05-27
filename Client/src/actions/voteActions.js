@@ -29,11 +29,9 @@ function memberVoted(payload) {
 }
 
 function flipCards(payload) {
-  return dispatch => {
-    dispatch({
-      type: WEBSOCKET_SEND,
-      payload: { reason: "FLIP_CARDS", data: payload }
-    });
+  const { roomId } = payload;
+  return async dispatch => {
+    Api.flip(roomId);
   };
 }
 

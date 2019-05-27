@@ -3,7 +3,8 @@ import {
   FLIP_CARDS,
   DELETE_VOTES,
   END_GAME,
-  UPDATE_ROOM
+  UPDATE_ROOM,
+  REMOVE_MEMBER
 } from "../actions/types";
 
 const initialState = {
@@ -28,14 +29,21 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === UPDATE_ROOM) {
-    const { roomMembers } = action.payload;
+    const { roomMembers, flipped } = action.payload;
+    console.log(action.payload);
     const voted = roomMembers
       .filter(member => member.voted)
       .map(m => ({ user: m.member, voted: m.voted, id: m.id }));
     return {
       ...state,
-      list: voted
+      list: voted,
+      flip: flipped
     };
+  }
+
+  if (action.type === REMOVE_MEMBER) {
+    const { name } = action.payload;
+    return { ...state, list: state.list.filter(m => m.user !== name) };
   }
 
   if (action.type === FLIP_CARDS) {

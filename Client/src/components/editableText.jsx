@@ -56,7 +56,8 @@ class EditableText extends Component {
           onClick={e => {
             e.preventDefault();
             const { value } = this.state;
-            commit({ value });
+            const { roomId } = this.props;
+            commit({ roomName: value, roomId });
             this.editText(false);
           }}
         >
@@ -78,7 +79,8 @@ class EditableText extends Component {
 
 EditableText.propTypes = {
   text: PropTypes.string.isRequired,
-  commit: PropTypes.func.isRequired
+  commit: PropTypes.func.isRequired,
+  roomId: PropTypes.number.isRequired
 };
 
 export default EditableText;
