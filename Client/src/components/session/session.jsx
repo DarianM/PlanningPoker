@@ -18,18 +18,16 @@ const mapStateToProps = state => {
 };
 
 const ConnectedSession = ({ game, history, votes, connection }) => (
-  <div className="body-session">
-    <div className="sessionContainer">
-      <Header head={game.user} />
-      <SessionInfo
-        roomName={game.roomName}
-        roomId={game.id}
-        roomHistory={history}
-      />
-      {!votes.end ? <PokerTable /> : <Chart />}
-      <PokerBets stats={game} results={votes} connection={connection} />
-      <Stories stories={history} />
-    </div>
+  <div className="sessionContainer">
+    <Header head={game.user} />
+    <SessionInfo
+      roomName={game.roomName}
+      roomId={game.id}
+      roomHistory={history}
+    />
+    {!votes.end ? <PokerTable /> : <Chart />}
+    <PokerBets stats={game} results={votes} connection={connection} />
+    <Stories stories={history} />
   </div>
 );
 

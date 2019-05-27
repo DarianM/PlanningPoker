@@ -1,0 +1,67 @@
+.container {
+  margin: 52px auto;
+  max-width: 555px;
+}
+
+.log-session {
+  text-align: center;
+  padding: 0 67px 75px 67px;
+  box-shadow: rgb(213, 217, 222) 0px 0px 2.8px 0px;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.header-login {
+  padding-top: 60px;
+  font-size: 30px;
+  margin: 0px;
+}
+
+.sub-header {
+  font-size: 16px;
+  color: #808284;
+  padding-top: 20px;
+  margin-bottom: 40px;
+}
+
+.form-login {
+  display: grid;
+}
+
+.user-log {
+  border-radius: 5px;
+  border: 1px solid rgb(213, 217, 222);
+  background-color: white;
+}
+
+.user-log:hover {
+  border: 1px solid gray;
+}
+
+.user-input {
+  padding: 9px 8px 11px;
+  border: 1px solid #0b030300;
+  color: black;
+  width: 350px;
+}
+
+.enter-button {
+  color: white;
+  background-color: #4b9ae8;
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 9px 8px 11px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.enter-button:hover {
+  background-color: #1b538b;
+  cursor: pointer;
+}
+
+.enter-button:active {
+  position: relative;
+  top: 1px;
+}

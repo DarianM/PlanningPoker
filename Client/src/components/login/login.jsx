@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions/roomActions";
+import { Modal } from "../modals";
+
+import "./login.css";
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -15,18 +18,17 @@ export class ConnectedLogin extends Component {
     super();
     this.state = {
       user: "",
-      id: -1,
-      roomName: ""
+      roomName: "",
+      show: false
     };
     this.handleUser = this.handleUser.bind(this);
     this.handleRoomName = this.handleRoomName.bind(this);
-    this.handleJoinId = this.handleJoinId.bind(this);
+    this.handleNewRoomModal = this.handleNewRoomModal.bind(this);
     this.handleNewSession = this.handleNewSession.bind(this);
     this.handleJoinSession = this.handleJoinSession.bind(this);
   }
 
-  async handleNewSession(event) {
-    event.preventDefault();
+  async handleNewSession() {
     const { createRoom } = this.props;
     const { user } = this.state;
     const { roomName } = this.state;
@@ -37,85 +39,99 @@ export class ConnectedLogin extends Component {
   async handleJoinSession(event) {
     event.preventDefault();
     const { joinRoom } = this.props;
+    const { hash } = this.props;
+    const roomId = hash.slice(1);
     const { user } = this.state;
-    const { id } = this.state;
-    joinRoom({ user, roomId: id });
+
+    joinRoom({ user, roomId });
   }
 
   handleUser(event) {
     this.setState({ user: event.target.value });
   }
 
-  handleRoomName(event) {
-    this.setState({ roomName: event.target.value });
+  handleNewRoomModal() {
+    this.setState(state => ({ show: !state.show }));
   }
 
-  handleJoinId(event) {
-    this.setState({ id: Number(event.target.value) });
+  handleRoomName(event) {
+    this.setState({ roomName: event.target.value });
   }
 
   render() {
     const { connection, hash } = this.props;
     const { isFetching } = connection;
     const { error } = connection;
-    return !hash ? (
+    const { show } = this.state;
+    return (
       <>
         <div className="container">
           <div className="log-session">
-            <h2>Poker Planning!</h2>
-            <div id="user">
-              <h4>User:</h4>
-              <input
-                id="userName"
-                className="sessionId"
-                type="text"
-                placeholder="Name"
-                onChange={this.handleUser}
-              />
-            </div>
-            <div>
-              <h4>...optionally room name</h4>
-              <input
-                type="text"
-                placeholder="Room Name"
-                className="sessionId"
-                onChange={this.handleRoomName}
-              />
-            </div>
-            <button
-              type="button"
-              id="startSession"
-              className="session-button"
-              disabled={isFetching}
-              onClick={this.handleNewSession}
-            >
-              {isFetching ? "Processing..." : "Start a Session"}
-            </button>
-            <h4>... or ...</h4>
-            <div id="joinId">
-              <input
-                id="gameId"
-                className="sessionId"
-                type="text"
-                placeholder="Session ID"
-                onChange={this.handleJoinId}
-              />
-            </div>
-            <button
-              type="button"
-              id="joinSession"
-              className="session-button"
-              disabled={isFetching}
-              onClick={this.handleJoinSession}
-            >
-              {isFetching ? "Processing..." : "Join a Session"}
-            </button>
+            <div className="header-login">Let&apos;s start!</div>
+            <div className="sub-header">Join the room:</div>
+            <form className="form-login">
+              <div className="user-log">
+                <i className="far fa-user" />
+                <input
+                  id="userName"
+                  className="user-input"
+                  type="text"
+                  placeholder="Name"
+                  onChange={this.handleUser}
+                />
+              </div>
+
+              <button
+                type="button"
+                id="startSession"
+                className="enter-button"
+                disabled={isFetching}
+                onClick={
+                  !hash ? this.handleNewRoomModal : this.handleJoinSession
+                }
+              >
+                {isFetching ? "Processing..." : "Start a Session"}
+              </button>
+            </form>
+
             {error && <p className="loginError">{error}</p>}
           </div>
         </div>
+        {show && (
+          <Modal>
+            <div className="modal-header">Create New Room</div>
+            <div>
+              <input
+                placeholder="Enter room name"
+                onChange={this.handleRoomName}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                className="votes-blue"
+                type="button"
+                onClick={e => {
+                  e.preventDefault();
+                  this.handleNewSession();
+                }}
+              >
+                {`Create`}
+              </button>
+              <button
+                className="votes-option"
+                type="button"
+                onClick={e => {
+                  e.preventDefault();
+                  this.handleNewRoomModal();
+                }}
+              >
+                {`Cancel`}
+              </button>
+            </div>
+          </Modal>
+        )}
       </>
-    ) : (<> <div>
-      <h1>...HASH...</h1></div> </>);
+    );
   }
 }
 

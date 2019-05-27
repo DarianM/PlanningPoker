@@ -47,8 +47,10 @@ class PokerBets extends Component {
 
   render() {
     const { stats } = this.props;
+    const { id } = stats;
     const { results } = this.props;
     const { connection } = this.props;
+    const url = `${window.location.host}/#${id}`;
 
     const { seconds } = this.state;
     const { minutes } = this.state;
@@ -76,6 +78,10 @@ class PokerBets extends Component {
           startTimer={this.startTimer}
           stopTimer={this.stopTimer}
         />
+        <div className="invite-link">
+          <div>Invite a teammate</div>
+          <input type="text" value={url} />
+        </div>
       </div>
     );
   }

@@ -1,7 +1,6 @@
 import {
   CREATE_ROOM,
   UPDATE_ROOM,
-  REJOIN_ROOM,
   START_GAME,
   USER_VOTE,
   NEW_MEMBER,
@@ -45,13 +44,6 @@ export default function(state = initialState, action) {
           ? { member: m.member, voted: true, id: m.id }
           : { member: m.member, voted: false, id: m.id }
       )
-    };
-  }
-
-  if (action.type === REJOIN_ROOM) {
-    return {
-      ...state,
-      ...action.payload
     };
   }
 
