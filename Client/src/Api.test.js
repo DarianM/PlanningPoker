@@ -1,6 +1,7 @@
 import Api from "./Api";
 
 describe("with server ok", () => {
+  const POST = "POST";
   const url = "http:fake.com";
   const mockFetch = () =>
     new Promise((resolve, reject) =>
@@ -13,7 +14,7 @@ describe("with server ok", () => {
       })
     );
   it("should throw exception", async () => {
-    const result = await Api(url, {}, mockFetch);
+    const result = await Api(POST, url, {}, mockFetch);
     expect(result).toEqual({ user: "name", roomName: "randomName" });
   });
 });

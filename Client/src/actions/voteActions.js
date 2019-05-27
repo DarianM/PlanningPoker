@@ -47,7 +47,9 @@ function flippingCards(payload) {
 function deleteVotes(payload) {
   const { roomId } = payload;
   return async dispatch => {
-    Api.clearVotes(roomId);
+    Api.clearVotes(roomId).catch(err =>
+      dispatch(addToast({ text: err.message }))
+    );
   };
 }
 

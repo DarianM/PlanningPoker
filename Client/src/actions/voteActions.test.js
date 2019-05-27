@@ -2,7 +2,8 @@ import { addVote, memberVoted, flipCards, deleteVotes } from "./voteActions";
 import * as Api from "../Api";
 
 jest.mock("../Api", () => ({
-  vote: jest.fn()
+  vote: jest.fn(),
+  clearVotes: jest.fn()
 }));
 
 describe("add vote thunk mid", () => {
@@ -44,50 +45,6 @@ describe("add vote thunk mid", () => {
   });
 });
 
-describe("member voted thunk mid", () => {
-  describe("after user has voted successfully", () => {
-    const dispatch = jest.fn();
-    const getState = jest.fn();
-    const result = memberVoted({ user: "you", voted: true });
-    it("should dispatch action modifing user voting state", () => {
-      result(dispatch, getState);
-      expect(dispatch).toBeCalledWith({
-        type: "USER_VOTE",
-        payload: { user: "you", voted: true }
-      });
-    });
-  });
-
-  describe("after all users have voted successfully", () => {
-    const dispatch = jest.fn();
-    const getState = jest.fn(() => ({
-      gameRoom: {
-        members: [
-          { member: "me", voted: true, id: 1 },
-          { member: "you", voted: true, id: 2 }
-        ]
-      }
-    }));
-
-    const result = memberVoted({ user: "you", voted: true });
-    it("should dispatch flip cards action", async () => {
-      await result(dispatch, getState);
-      expect(dispatch).toBeCalledWith({
-        type: "USER_VOTE",
-        payload: { user: "you", voted: true }
-      });
-      expect(dispatch).toBeCalledWith({
-        type: "USER_VOTE",
-        payload: { user: "you", voted: true }
-      });
-      expect(dispatch).toBeCalledWith({
-        type: "FLIP_CARDS",
-        payload: { flip: true }
-      });
-    });
-  });
-});
-
 describe("flip cards thunk mid", () => {
   const dispatch = jest.fn();
   const result = flipCards({ flip: true });
@@ -101,13 +58,17 @@ describe("flip cards thunk mid", () => {
 });
 
 describe("clear votes thunk mid", () => {
+  Api.clearVotes.mockImplementationOnce(
+    () =>
+      new Promise(resolve => {
+        resolve({ ok: true });
+      })
+  );
   const dispatch = jest.fn();
   const result = deleteVotes({ flip: false, list: [] });
   it("should dispatch action to websocket middleware", () => {
     result(dispatch);
-    expect(dispatch).toBeCalledWith({
-      type: "WEBSOCKET_SEND",
-      payload: { reason: "CLEAR_VOTES", data: { flip: false, list: [] } }
-    });
+    expect(Api.clearVotes).toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });
