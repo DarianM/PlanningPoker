@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions/roomActions";
+import * as actions from "../../actions/storyActions";
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -21,11 +21,7 @@ export class ConnectedStory extends Component {
   }
 
   render() {
-    const { story } = this.props;
-    const { id } = this.props;
-    const { close } = this.props;
-    const { editStory } = this.props;
-    const { children } = this.props;
+    const { story, id, roomId, close, editStory, children } = this.props;
 
     return (
       <React.Fragment>
@@ -48,7 +44,7 @@ export class ConnectedStory extends Component {
             onClick={e => {
               e.preventDefault();
               const { newTitle } = this.state;
-              editStory({ value: newTitle, id });
+              editStory({ value: newTitle, id, roomId });
               close();
             }}
           >

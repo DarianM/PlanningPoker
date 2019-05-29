@@ -26,8 +26,13 @@ const ConnectedSession = ({ game, history, votes, connection }) => (
       roomHistory={history}
     />
     {!votes.end ? <PokerTable /> : <Chart />}
-    <PokerBets stats={game} results={votes} connection={connection} />
-    <Stories stories={history} />
+    <PokerBets
+      stats={game}
+      results={votes}
+      connection={connection}
+      stories={history}
+    />
+    <Stories stories={history} roomId={game.id} />
   </div>
 );
 

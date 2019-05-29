@@ -5,11 +5,11 @@ import { Modal } from "../modals";
 
 describe("New Story Modal", () => {
   it("renders without crashing", () => {
-    const mockAddStory = jest.fn();
+    const mocknewStory = jest.fn();
     const mockMany = jest.fn();
     mount(
       <Modal>
-        <NewStory addNewStory={mockAddStory} addMany={mockMany} />
+        <NewStory addNewStory={mocknewStory} addMany={mockMany} />
       </Modal>
     );
   });
@@ -17,14 +17,14 @@ describe("New Story Modal", () => {
   describe("a textarea appears were admin can write stories", () => {
     it("should commit to the store with one story at a time", () => {
       let newText;
-      const mockAddStoryFunc = changeData => {
+      const mocknewStoryFunc = changeData => {
         newText = changeData.new.story;
       };
       const mockMany = jest.fn();
 
       const wrapper = mount(
         <Modal>
-          <NewStory addNewStory={mockAddStoryFunc} addMany={mockMany} />
+          <NewStory addNewStory={mocknewStoryFunc} addMany={mockMany} />
         </Modal>
       );
       const textarea = wrapper
@@ -45,14 +45,14 @@ describe("New Story Modal", () => {
   describe("admin clicks Save And Add New button", () => {
     it("should allow admin to enter as many stories as he wants, without closing the modal", () => {
       let newText;
-      const mockAddStoryFunc = changeData => {
+      const mocknewStoryFunc = changeData => {
         newText = changeData.new.story;
       };
       const mockMany = jest.fn();
 
       const wrapper = mount(
         <Modal>
-          <NewStory addNewStory={mockAddStoryFunc} addMany={mockMany} />
+          <NewStory addNewStory={mocknewStoryFunc} addMany={mockMany} />
         </Modal>
       );
       const textarea = wrapper

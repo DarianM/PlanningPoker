@@ -1,10 +1,4 @@
-import {
-  ADD_VOTE,
-  USER_VOTE,
-  FLIP_CARDS,
-  DELETE_VOTES,
-  WEBSOCKET_SEND
-} from "./types";
+import { ADD_VOTE, USER_VOTE, FLIP_CARDS, DELETE_VOTES } from "./types";
 import { addToast } from "./toastsActions";
 import * as Api from "../Api";
 

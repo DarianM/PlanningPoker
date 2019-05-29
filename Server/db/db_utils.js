@@ -7,11 +7,21 @@ const getRoomMembers = async roomId => {
     .where({ roomId });
 };
 
+const getRoomStories = async roomId => {
+  return await knex("stories")
+    .select()
+    .where({ roomId });
+};
+
 const getUserById = async id => {
   return await knex("members")
     .select("name")
     .where({ id })
     .first();
+};
+
+const addStory = async (roomId, story) => {
+  return await knex("stories").insert({ roomId, description: story });
 };
 
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
@@ -30,7 +40,7 @@ const checkRoomAvailability = async id => {
 
 const getRoomStats = async id => {
   return await knex("rooms")
-    .select("name as roomName", "started", "flipped")
+    .select("name as roomName", "flipped")
     .where({ id })
     .first();
 };
@@ -125,14 +135,21 @@ const flipVotes = async (id, value) => {
     .where({ id });
 };
 
-const startGame = async (started, id) => {
-  await knex("rooms")
-    .update({ started })
+const startStory = async (started, id) => {
+  await knex("stories")
+    .update({ started, isActive: true })
+    .where({ id });
+};
+
+const editStory = async (description, id) => {
+  await knex("stories")
+    .update({ description })
     .where({ id });
 };
 
 module.exports = {
   getRoomMembers,
+  getRoomStories,
   getUserById,
   getRoomStats,
   checkUserUniquenessWithinRoom,
@@ -141,9 +158,11 @@ module.exports = {
   createRoom,
   addUserToRoom,
   addMemberVote,
-  startGame,
+  startStory,
   deleteRoomVotes,
   deleteUser,
   flipVotes,
-  update
+  update,
+  addStory,
+  editStory
 };

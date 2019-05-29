@@ -16,7 +16,6 @@ const initialStore = {
     gameStart: null
   },
   gameHistory: {
-    nextStoryId: 1,
     stories: [],
     activeStory: ""
   },

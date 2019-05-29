@@ -1,12 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions/roomActions";
+import * as room from "../../actions/roomActions";
+import * as story from "../../actions/storyActions";
+
 import EditableText from "../editableText";
 
 const mapDispatchToProps = dispatch => ({
-  editStory: story => dispatch(actions.editStory(story)),
-  editRoomName: payload => dispatch(actions.editRoomName(payload))
+  editStory: edit => dispatch(story.editStory(edit)),
+  editRoomName: payload => dispatch(room.editRoomName(payload))
 });
 
 export const ConnectedSessionInfo = ({
@@ -16,16 +18,18 @@ export const ConnectedSessionInfo = ({
   roomHistory,
   editStory
 }) => {
-  const onTextChanged = ({ value }) =>
-    editStory({ value, id: roomHistory.activeStory.id });
+  const onActiveStoryChanged = ({ value }) =>
+    editStory({ value, id: roomHistory.activeStory.id, roomId });
+  const onRoomNameChanged = ({ value }) =>
+    editRoomName({ roomName: value, roomId });
   return (
     <div>
-      <EditableText text={roomName} commit={editRoomName} roomId={roomId} />
+      <EditableText text={roomName} commit={onRoomNameChanged} />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
       {roomHistory.activeStory && (
         <EditableText
           text={roomHistory.activeStory.text}
-          commit={onTextChanged}
+          commit={onActiveStoryChanged}
         />
       )}
     </div>

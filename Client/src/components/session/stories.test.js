@@ -9,13 +9,13 @@ describe("Sessioninfo Component", () => {
     activeStory: ""
   };
 
-  const mockAddStoryFunc = jest.fn();
+  const mocknewStoryFunc = jest.fn();
   const mockDeleteFunc = jest.fn();
   it("renders without crashing", () => {
     mount(
       <ConnectedStories
         stories={stories}
-        addStory={mockAddStoryFunc}
+        newStory={mocknewStoryFunc}
         deleteStory={mockDeleteFunc}
       />
     );
@@ -26,7 +26,7 @@ describe("Sessioninfo Component", () => {
       const wrapper = mount(
         <ConnectedStories
           stories={stories}
-          addStory={mockAddStoryFunc}
+          newStory={mocknewStoryFunc}
           deleteStory={mockDeleteFunc}
         />
       );

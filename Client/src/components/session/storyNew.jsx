@@ -10,8 +10,8 @@ class NewStory extends Component {
 
   handleSaveStory() {
     const { story } = this.state;
-    const { addNewStory } = this.props;
-    addNewStory({ new: { story, completed: false } });
+    const { addNewStory, roomId } = this.props;
+    addNewStory({ story, roomId, completed: false });
     this.setState({ story: "" });
   }
 

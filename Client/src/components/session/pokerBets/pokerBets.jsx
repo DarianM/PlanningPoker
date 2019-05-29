@@ -18,16 +18,19 @@ class PokerBets extends Component {
   }
 
   componentDidMount() {
-    const { stats } = this.props;
-    if (stats.gameStart) {
-      this.startTimer(stats.gameStart);
+    const { stories } = this.props;
+    const { started } = stories.activeStory;
+    if (started) {
+      this.startTimer(started);
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { stats } = this.props;
-    if (prevProps.stats.gameStart !== stats.gameStart) {
-      this.startTimer(stats.gameStart);
+    const { stories } = this.props;
+    const { started } = stories.activeStory;
+
+    if (prevProps.stories.activeStory.started !== started) {
+      this.startTimer(started);
     }
   }
 
@@ -40,16 +43,15 @@ class PokerBets extends Component {
   }
 
   update() {
-    const { stats } = this.props;
-    const time = Math.round((Date.now() - stats.gameStart) / 1000);
+    const { stories } = this.props;
+    const { started } = stories.activeStory;
+    const time = Math.round((Date.now() - started) / 1000);
     this.setState({ minutes: Math.floor(time / 60), seconds: time % 60 });
   }
 
   render() {
-    const { stats } = this.props;
+    const { stats, stories, results, connection } = this.props;
     const { id } = stats;
-    const { results } = this.props;
-    const { connection } = this.props;
     const url = `${window.location.host}/#${id}`;
 
     const { seconds } = this.state;
@@ -57,7 +59,7 @@ class PokerBets extends Component {
     return (
       <div id="votesResults" className="results">
         <StatusMessage
-          start={stats.gameStart}
+          start={stories.activeStory.started}
           end={results.end}
           flip={results.flip}
           members={stats.members}
@@ -73,6 +75,7 @@ class PokerBets extends Component {
         <Members members={stats.members} votes={results} />
         <GameControls
           game={stats}
+          stories={stories}
           results={results}
           connection={connection}
           startTimer={this.startTimer}
