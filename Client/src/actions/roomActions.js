@@ -8,10 +8,6 @@ import {
   UPDATE_ROOM,
   NEW_MEMBER,
   REMOVE_MEMBER,
-  ADD_STORY,
-  DELETE_STORY,
-  EDIT_STORY,
-  EDIT_HISTORY,
   END_GAME,
   RESET_TIMER,
   START_GAME
@@ -53,8 +49,10 @@ function createRoom(payload) {
       dispatch(newMember({ member: user, id: memberId }));
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
-      dispatch(addToast({ text: err.message }));
-      dispatch({ type: LOGIN_FAILURE });
+      err.map(e => dispatch({ type: LOGIN_FAILURE, payload: e.message }));
+
+      // dispatch(addToast({ text: err.message }));
+      // dispatch({ type: LOGIN_FAILURE });
     }
   };
 }
@@ -73,13 +71,11 @@ function joinRoom(payload) {
           roomInfo.userId
         )
       );
-
       dispatch({ type: UPDATE_ROOM, payload: roomInfo });
-
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
-      dispatch(addToast({ text: err.message }));
-      dispatch({ type: LOGIN_FAILURE });
+      // dispatch(addToast({ text: err.message }));
+      err.map(e => dispatch({ type: LOGIN_FAILURE, payload: e.message }));
     }
   };
 }
@@ -92,53 +88,10 @@ function removeMember(payload) {
   };
 }
 
-function startGame(payload) {
-  const { gameStart, roomId } = payload;
-  return async dispatch => {
-    dispatch({ type: GAME_STARTING });
-    await Api.start(gameStart, roomId);
-  };
-}
-
 function startingGame(payload) {
   return {
     type: START_GAME,
     payload
-  };
-}
-
-function addStory(payload) {
-  return (dispatch, getState) => {
-    const { gameHistory } = getState();
-    if (gameHistory.activeStory === "")
-      dispatch({
-        type: EDIT_HISTORY,
-        payload: {
-          activeStory: { id: 1, text: payload.new.story }
-        }
-      });
-    dispatch({ type: ADD_STORY, payload });
-  };
-}
-
-function deleteStory(payload) {
-  return {
-    type: DELETE_STORY,
-    payload
-  };
-}
-
-function editStory(payload) {
-  return (dispatch, getState) => {
-    const { gameHistory } = getState();
-    if (payload.id === gameHistory.activeStory.id)
-      dispatch({
-        type: EDIT_HISTORY,
-        payload: {
-          activeStory: { id: gameHistory.activeStory.id, text: payload.value }
-        }
-      });
-    dispatch({ type: EDIT_STORY, payload });
   };
 }
 
@@ -178,11 +131,7 @@ export {
   joinRoom,
   newMember,
   removeMember,
-  startGame,
   startingGame,
-  addStory,
-  deleteStory,
-  editStory,
   editRoomName,
   endGame,
   resetTimer

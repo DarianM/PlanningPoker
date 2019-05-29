@@ -30,7 +30,6 @@ export default function(state = initialState, action) {
 
   if (action.type === UPDATE_ROOM) {
     const { roomMembers, flipped } = action.payload;
-    console.log(action.payload);
     const voted = roomMembers
       .filter(member => member.voted)
       .map(m => ({ user: m.member, voted: m.voted, id: m.id }));
