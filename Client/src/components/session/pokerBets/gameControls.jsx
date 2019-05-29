@@ -3,16 +3,17 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as room from "../../../actions/roomActions";
 import * as vote from "../../../actions/voteActions";
+import * as story from "../../../actions/storyActions";
 
 const mapDispatchToProps = dispatch => ({
-  startCurrentGame: game => dispatch(room.startGame(game)),
+  startCurrentStory: game => dispatch(story.startStory(game)),
   deleteVotes: votes => dispatch(vote.deleteVotes(votes)),
   flipCards: cards => dispatch(vote.flipCards(cards)),
   endCurrentGame: game => dispatch(room.endGame(game)),
   resetTimer: time => dispatch(room.resetTimer(time))
 });
 
-const startButton = (startCurrentGame, isStarting, roomId) => {
+const startButton = (startCurrentStory, isStarting, roomId, storyId) => {
   return (
     <div className="startgame-control">
       <button
@@ -20,7 +21,7 @@ const startButton = (startCurrentGame, isStarting, roomId) => {
         className="votes-blue"
         onClick={e => {
           e.preventDefault();
-          startCurrentGame({ gameStart: new Date(), roomId });
+          startCurrentStory({ gameStart: new Date(), roomId, storyId });
         }}
       >
         {isStarting ? `Starting...` : `Start`}
@@ -108,9 +109,10 @@ const nextStoryButton = () => {
 
 export const ConnectedGameControls = ({
   game,
+  stories,
   results,
   connection,
-  startCurrentGame,
+  startCurrentStory,
   flipCards,
   endCurrentGame,
   deleteVotes,
@@ -118,19 +120,21 @@ export const ConnectedGameControls = ({
   stopTimer,
   startTimer
 }) => {
-  const { gameStart, id } = game;
+  const { id } = game;
   const { isStarting } = connection;
+  const { activeStory } = stories;
+  const { started } = activeStory;
 
   return (
     <>
-      {!gameStart ? (
-        startButton(startCurrentGame, isStarting, id)
+      {!started ? (
+        startButton(startCurrentStory, isStarting, id, activeStory.id)
       ) : (
         <div className="controls">
           {!results.flip
             ? flipCardsButton(flipCards, id)
             : !results.end && endVoteButton(endCurrentGame, stopTimer)}
-          {clearVotesButton(deleteVotes, startTimer, gameStart, id)}
+          {clearVotesButton(deleteVotes, startTimer, started, id)}
           {!results.end && resetTimerButton(resetTimer, stopTimer)}
           {nextStoryButton()}
         </div>
@@ -159,7 +163,7 @@ ConnectedGameControls.propTypes = {
     isStarting: PropTypes.bool,
     error: PropTypes.string
   }).isRequired,
-  startCurrentGame: PropTypes.func.isRequired,
+  startCurrentStory: PropTypes.func.isRequired,
   endCurrentGame: PropTypes.func.isRequired,
   flipCards: PropTypes.func.isRequired,
   deleteVotes: PropTypes.func.isRequired,

@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 import StoryDescription from "./storyDescription";
 import { Modal } from "../modals";
 import NewStory from "./storyNew";
-import * as actions from "../../actions/roomActions";
+import * as actions from "../../actions/storyActions";
 
 function mapDispatchToProps(dispatch) {
   return {
-    addStory: story => dispatch(actions.addStory(story)),
+    newStory: story => dispatch(actions.newStory(story)),
     deleteStory: story => dispatch(actions.deleteStory(story))
   };
 }
@@ -25,16 +25,18 @@ export class ConnectedStories extends Component {
   }
 
   render() {
-    const { stories } = this.props;
+    const { stories, roomId, newStory, deleteStory } = this.props;
     const activeStoryId = stories.activeStory.id;
-    const { addStory } = this.props;
-    const { deleteStory } = this.props;
     const { add } = this.state;
     return (
       <div className="stories">
         {add && (
           <Modal>
-            <NewStory addNewStory={addStory} addMany={this.handleNewStory} />
+            <NewStory
+              roomId={roomId}
+              addNewStory={newStory}
+              addMany={this.handleNewStory}
+            />
           </Modal>
         )}
         <ul className="nav-story">
@@ -70,6 +72,7 @@ export class ConnectedStories extends Component {
                   <StoryDescription
                     key={e.id}
                     story={e.story}
+                    roomId={roomId}
                     id={e.id}
                     activeStoryId={activeStoryId}
                     deleteStory={deleteStory}
@@ -87,7 +90,7 @@ ConnectedStories.propTypes = {
   stories: PropTypes.shape({
     story: PropTypes.string
   }).isRequired,
-  addStory: PropTypes.func.isRequired,
+  newStory: PropTypes.func.isRequired,
   deleteStory: PropTypes.func.isRequired
 };
 

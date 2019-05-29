@@ -68,13 +68,19 @@ module.exports = class connectedSocket {
       case "USER_VOTED":
         this.server.broadcast(this.roomId, message);
         break;
-      case "GAME_STARTED":
+      case "STORY_STARTED":
         this.server.broadcast(this.roomId, message);
         break;
       case "FLIP_CARDS":
         this.server.broadcast(this.roomId, message);
         break;
       case "CLEAR_VOTES":
+        this.server.broadcast(this.roomId, message);
+        break;
+      case "NEW_STORY":
+        this.server.broadcast(this.roomId, message);
+        break;
+      case "STORY_RENAMED":
         this.server.broadcast(this.roomId, message);
         break;
       default:

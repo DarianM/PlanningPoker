@@ -15,10 +15,7 @@ class StoryDescription extends Component {
   }
 
   render() {
-    const { story } = this.props;
-    const { activeStoryId } = this.props;
-    const { deleteStory } = this.props;
-    const { id } = this.props;
+    const { story, activeStoryId, deleteStory, id, roomId } = this.props;
     const { show } = this.state;
     const onEditStory = e => {
       e.preventDefault();
@@ -61,7 +58,12 @@ class StoryDescription extends Component {
           <td>
             {show && (
               <Modal>
-                <Story story={story} id={id} close={this.hideModal}>
+                <Story
+                  story={story}
+                  roomId={roomId}
+                  id={id}
+                  close={this.hideModal}
+                >
                   <p>votes here...</p>
                 </Story>
               </Modal>

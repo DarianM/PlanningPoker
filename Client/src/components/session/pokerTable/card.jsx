@@ -15,7 +15,7 @@ const mapStateToProps = state => {
   return {
     loggedUser: state.gameRoom.user,
     room: state.gameRoom.id,
-    start: state.gameRoom.gameStart,
+    start: state.gameHistory.activeStory.started,
     flipped: state.gameVotes.flip
   };
 };

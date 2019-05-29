@@ -148,7 +148,7 @@ describe("Routes: Room", () => {
         });
         it("should return 400", () => {
           expect(result.statusCode).toBe(400);
-          expect(result.body.error).toBe("wrong type");
+          expect(result.body.error).toBe("Please provide a valid room id");
         });
       });
       describe("for username", () => {
@@ -163,7 +163,7 @@ describe("Routes: Room", () => {
         });
         it("should return 400", () => {
           expect(result.statusCode).toBe(400);
-          expect(result.body.error).toBe("wrong type");
+          expect(result.body.error).toBe("Please insert a username");
         });
       });
     });
@@ -234,7 +234,7 @@ describe("Routes: Room", () => {
       });
       it("should return 400", () => {
         expect(result.statusCode).toBe(400);
-        expect(result.body.error).toBe("wrong type");
+        expect(result.body.error).toBe("Please provide a valid room id");
       });
     });
   });

@@ -6,6 +6,11 @@ import {
   removeMember
 } from "../actions/roomActions";
 import {
+  addStory,
+  makeStoryStarted,
+  renameStory
+} from "../actions/storyActions";
+import {
   addingVote,
   memberVoted,
   flippingCards,
@@ -60,8 +65,8 @@ const messageMiddleware = fetch => store => next => async action => {
       store.dispatch(flippingCards({ flip: data.flip }));
     }
 
-    if (reason === "GAME_STARTED") {
-      store.dispatch(startingGame({ gameStart: new Date(data.date) }));
+    if (reason === "STORY_STARTED") {
+      store.dispatch(makeStoryStarted(data));
     }
     if (reason === "CLEAR_VOTES") {
       store.dispatch(deletingVotes(data));
@@ -71,6 +76,12 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "USER_LEFT") {
       store.dispatch(removeMember(data));
+    }
+    if (reason === "NEW_STORY") {
+      store.dispatch(addStory(data));
+    }
+    if (reason === "STORY_RENAMED") {
+      store.dispatch(renameStory(data));
     }
     return {};
   }
