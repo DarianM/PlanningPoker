@@ -17,7 +17,11 @@
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
-    ]
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "identity-obj-proxy"
+    }
   },
   "keywords": [],
   "author": "",
@@ -57,11 +61,13 @@
   "dependencies": {
     "@aspnet/signalr": "^1.1.2",
     "@babel/runtime": "^7.3.4",
+    "identity-obj-proxy": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
-    "react-select": "^2.4.1",
     "react-redux": "^6.0.1",
-    "redux": "^4.0.1"
+    "react-select": "^2.4.1",
+    "redux": "^4.0.1",
+    "yup": "^0.27.0"
   }
 }

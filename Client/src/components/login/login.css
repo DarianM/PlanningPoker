@@ -41,7 +41,6 @@
 .user-input {
   padding: 9px 8px 11px;
   border: 1px solid #0b030300;
-  color: black;
   width: 350px;
 }
 
@@ -64,4 +63,19 @@
 .enter-button:active {
   position: relative;
   top: 1px;
+}
+
+.log-modal-input {
+  display: grid;
+  margin: 20px 15px 0px 15px;
+}
+
+.modal-input-roomname {
+  padding: 9px 8px 11px;
+  border-radius: 5px;
+  border: 1px solid rgb(213, 217, 222);
+}
+
+.modal-input-roomname:hover {
+  border: 1px solid gray;
 }

@@ -1,75 +1,76 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { mount } from "enzyme";
 import { ConnectedLogin } from "./login";
 
-let connection = { isFetching: false, error: "" };
-const applyShallow = mock => {
-  return shallow(
-    <ConnectedLogin createRoom={mock} joinRoom={mock} connection={connection} />
+const connection = { isFetching: false, error: "" };
+const mockCreateRoom = jest.fn();
+const mockJoinRoom = jest.fn();
+const applyMount = hash => {
+  return mount(
+    <ConnectedLogin
+      createRoom={mockCreateRoom}
+      joinRoom={mockJoinRoom}
+      connection={connection}
+      hash={hash}
+    />
   );
 };
 
 describe("Login Component", () => {
   it("renders without crashing", () => {
-    const mockLoginFunc = jest.fn();
-    applyShallow(mockLoginFunc);
+    const hash = "/#14";
+    applyMount(hash);
   });
 
-  describe("when start a session button is clicked", () => {
-    it("should call the mock login function", () => {
-      const mockOnClick = jest.fn();
-      const wrapper = applyShallow(mockOnClick);
-      wrapper.setState({
-        user: "name",
-        roomName: "RIP_Grumpy_Cat"
+  describe("creating a new room", () => {
+    describe("start a session button is clicked", () => {
+      describe("with valid user name", () => {
+        const hash = "";
+        it("should display enter room name form", () => {
+          const wrapper = applyMount(hash);
+          wrapper.instance().user.current.value = "name";
+          wrapper
+            .find(".enter-button")
+            .simulate("click", { preventDefault() {} });
+          expect(wrapper.state().show).toBe(true);
+          expect(wrapper.find(".log-modal-input").exists()).toBe(true);
+        });
       });
-      wrapper.find("#startSession").simulate("click", { preventDefault() {} });
-      expect(mockOnClick.mock.calls.length).toBe(1);
-      expect(mockOnClick.mock.calls[0][0].roomName).toEqual("RIP_Grumpy_Cat");
+
+      describe("with invalid user name", () => {
+        const hash = "";
+        it("should display error message", () => {
+          const wrapper = applyMount(hash);
+          wrapper.instance().user.current.value = "why_are_you_doing_this";
+
+          wrapper
+            .find(".enter-button")
+            .simulate("click", { preventDefault() {} });
+          expect(wrapper.state().error).toEqual(
+            "Please enter no more than 10 characters"
+          );
+          expect(wrapper.find(".loginError").exists()).toBe(true);
+        });
+      });
     });
   });
 
-  describe("when pressing start a session button some data is being fetched", () => {
-    connection = { ...connection, isFetching: true };
-    it("button text should be Processing...", () => {
-      const mockLoginFunc = jest.fn();
-      const wrapper = applyShallow(mockLoginFunc);
-      const startSessionBtn = wrapper
-        .find("#startSession")
-        .simulate("click", { preventDefault() {} });
-      expect(startSessionBtn.text()).toBe("Processing...");
-    });
-  });
-
-  describe("when join session button is clicked", () => {
-    it("should call the mock login function", () => {
-      const mockOnClick = jest.fn();
-      const wrapper = applyShallow(mockOnClick);
-      wrapper.find("#joinSession").simulate("click", { preventDefault() {} });
-
-      expect(mockOnClick.mock.calls.length).toBe(1);
-    });
-  });
-
-  describe("when pressing join session button some data is being fetched", () => {
-    connection = { ...connection, isFetching: true };
-    it("button text should be Processing...", () => {
-      const mockLoginFunc = jest.fn();
-      const wrapper = applyShallow(mockLoginFunc);
-      const joinSessionBtn = wrapper
-        .find("#joinSession")
-        .simulate("click", { preventDefault() {} });
-      expect(joinSessionBtn.text()).toBe("Processing...");
-    });
-  });
-
-  describe("after pressing join session button some error data might arrive ", () => {
-    connection = { isFetching: true, error: "Room is not available" };
-    it("error message should be displayed at the bottom", () => {
-      const mockLoginFunc = jest.fn();
-      const wrapper = applyShallow(mockLoginFunc);
-      const errorMessage = wrapper.find(".loginError");
-      expect(errorMessage.text()).toBe("Room is not available");
+  describe("joining a room", () => {
+    const hash = "/#1";
+    describe("when start a session button is clicked some data is beeing fetched", () => {
+      it("button text should be Processing...", () => {
+        const wrapper = applyMount(hash);
+        wrapper.setProps({ connection: { isFetching: true, error: "" } });
+        expect(wrapper.find(".enter-button").text()).toEqual("Processing...");
+      });
+      it("should join a created room", () => {
+        const wrapper = applyMount(hash);
+        wrapper.instance().user.current.value = "valid";
+        wrapper
+          .find(".enter-button")
+          .simulate("click", { preventDefault() {} });
+        expect(mockJoinRoom).toHaveBeenCalled();
+      });
     });
   });
 });
