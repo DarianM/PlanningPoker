@@ -12,18 +12,16 @@ const initialStore = {
     id: -1,
     roomName: "",
     hasJoined: false,
-    members: [],
-    gameStart: null
+    members: []
   },
-  gameHistory: {
-    stories: [],
-    activeStory: ""
-  },
-  gameVotes: {
-    end: null,
-    flip: false,
-    list: [{ user: "testUser", voted: "1/3", id: 1 }]
+  stories: {
+    byId: {},
+    allIds: [],
+    activeStoryId: undefined
   }
+  // stories: [
+  //   { id: 1, text: "", start: null, end: null, active: true, votes: [] }
+  // ]
 };
 
 const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

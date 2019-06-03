@@ -23,8 +23,9 @@ const incomingMessage = { url: "/1" };
 describe("websocket server", () => {
   describe("on connection", () => {
     const cbFunc = wss.on.mock.calls[0][1];
+    cbFunc(socket, incomingMessage);
     it("test", () => {
-      expect(cbFunc(socket, incomingMessage)).not.toBeNull();
+      expect().toHaveBeenCalled();
     });
   });
 });
@@ -43,7 +44,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "john" });
       });
 
@@ -58,7 +59,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "" });
       });
 
@@ -69,7 +70,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: 1234 });
       });
 
@@ -80,7 +81,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test", roomName: "" });
       });
       it("should return room's name NewRoom", () =>
@@ -91,7 +92,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test", roomName: "myRoom" });
       });
       it("should return room's chosen name", () =>
@@ -102,7 +103,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test", roomName: true });
       });
       it("should return room's chosen name", () =>
@@ -110,17 +111,17 @@ describe("Routes: Room", () => {
     });
   });
 
-  describe("/api/member route", () => {
+  describe("/api/join route", () => {
     describe("joining a user in an existing room", () => {
       let result;
       beforeEach(async () => {
         socket.send.mockReset();
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
 
         result = await request(app)
-          .post("/api/member")
+          .post("/api/room/join")
           .send({ user: "me", roomId: 1 });
       });
       it("should return 200", () => {
@@ -140,30 +141,34 @@ describe("Routes: Room", () => {
         let result;
         beforeEach(async () => {
           await request(app)
-            .post("/api/room")
+            .post("/api/room/create")
             .send({ user: "one" });
           result = await request(app)
-            .post("/api/member")
+            .post("/api/room/join")
             .send({ user: "test", roomId: "x" });
         });
         it("should return 400", () => {
           expect(result.statusCode).toBe(400);
-          expect(result.body.error).toBe("Please provide a valid room id");
+          expect(result.body.error).toEqual([
+            { location: "roomId", message: "Please provide a valid room id" }
+          ]);
         });
       });
       describe("for username", () => {
         let result;
         beforeEach(async () => {
           await request(app)
-            .post("/api/room")
+            .post("/api/room/create")
             .send({ user: "one" });
           result = await request(app)
-            .post("/api/member")
+            .post("/api/room/join")
             .send({ user: 99, roomId: 1 });
         });
         it("should return 400", () => {
           expect(result.statusCode).toBe(400);
-          expect(result.body.error).toBe("Please insert a username");
+          expect(result.body.error).toEqual([
+            { location: "user", message: "Please insert a username" }
+          ]);
         });
       });
     });
@@ -171,44 +176,50 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         result = await request(app)
-          .post("/api/member")
+          .post("/api/room/join")
           .send({ user: "test", roomId: 2 });
       });
       it("should return 400 - room not available", () => {
         expect(result.statusCode).toBe(400);
-        expect(result.body.error).toBe("Room not available");
+        expect(result.body.error).toEqual([
+          { location: "roomId", message: "Room not available" }
+        ]);
       });
     });
     describe("join a user in a room where another user with the same name already exists", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
         result = await request(app)
-          .post("/api/member")
+          .post("/api/room/join")
           .send({ user: "test", roomId: 1 });
       });
       it("should return 400 - name conflict", () => {
         expect(result.statusCode).toBe(400);
-        expect(result.body.error).toBe(
-          "A user with the same name already exists in the room"
-        );
+        expect(result.body.error).toEqual([
+          {
+            location: "user",
+            message: "A user with the same name already exists in the room"
+          }
+        ]);
       });
     });
   });
 
-  describe("/api/:roomId route", () => {
+  describe("/api/room/:roomId route", () => {
     describe("get members from a room", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
-        result = await request(app).get("/api/1");
+        result = await request(app).get("/api/room/1");
       });
       it("should return room's members list and status 200", () => {
-        expect(result.body.roomMembers).toContainEqual({
+        const { roomMembers } = result.body;
+        expect(roomMembers).toContainEqual({
           member: "test",
           voted: null,
           id: 1
@@ -220,7 +231,7 @@ describe("Routes: Room", () => {
     describe("room with desired id does not exist", () => {
       let result;
       beforeEach(async () => {
-        result = await request(app).get("/api/1");
+        result = await request(app).get("/api/room/1");
       });
       it("should return 400 and error", () => {
         expect(result.body.error).toBe("Room not available");
@@ -230,25 +241,30 @@ describe("Routes: Room", () => {
     describe("room id is of wrong type", () => {
       let result;
       beforeEach(async () => {
-        result = await request(app).get("/api/VI");
+        result = await request(app).get("/api/room/VI");
       });
       it("should return 400", () => {
         expect(result.statusCode).toBe(400);
-        expect(result.body.error).toBe("Please provide a valid room id");
+        expect(result.body.error).toEqual([
+          { location: "roomId", message: "Please provide a valid room id" }
+        ]);
       });
     });
   });
 
   describe("/api/start route", () => {
-    describe("starting a game with a valid date", () => {
+    describe("starting a story with a valid date", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
+        await request(app)
+          .post("/api/story/add")
+          .send({ story: "test", roomId: 1 });
         result = await request(app)
-          .post("/api/start")
-          .send({ date: "2019-05-22T07:41:17.882Z", roomId: 1 });
+          .post("/api/story/start")
+          .send({ date: "2019-05-22T07:41:17.882Z", storyId: 1, roomId: 1 });
       });
       it("should return 200 and broadcast game start", () => {
         expect(result.statusCode).toBe(200);
@@ -264,15 +280,17 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
         result = await request(app)
-          .post("/api/start")
+          .post("/api/story/start")
           .send({ date: "2019-05-35", roomId: 1 });
       });
       it("should return 400, wrong type", () => {
         expect(result.statusCode).toBe(400);
-        expect(result.body.error).toBe("wrong type");
+        expect(result.body.error).toEqual([
+          { location: "date", message: "wrong date" }
+        ]);
       });
     });
   });
@@ -281,7 +299,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
         result = await request(app)
           .post("/api/vote")
@@ -302,7 +320,7 @@ describe("Routes: Room", () => {
       let result;
       beforeEach(async () => {
         await request(app)
-          .post("/api/room")
+          .post("/api/room/create")
           .send({ user: "test" });
         result = await request(app)
           .post("/api/vote")

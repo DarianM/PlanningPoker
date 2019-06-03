@@ -1,4 +1,4 @@
-import voteReducer from "./voteReducer";
+import voteReducer from "./storiesReducer";
 
 describe("voteReducer", () => {
   describe("player clicks on a card after the game has started", () => {

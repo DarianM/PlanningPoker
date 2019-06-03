@@ -67,10 +67,8 @@ class EditableText extends Component {
   }
 
   render() {
-    const { text } = this.props;
-    const { value } = this.state;
-    const { edit } = this.state;
-    const { commit } = this.props;
+    const { text, commit } = this.props;
+    const { value, edit } = this.state;
 
     return edit ? this.editMode(commit, value) : this.normalMode(text);
   }
@@ -78,8 +76,7 @@ class EditableText extends Component {
 
 EditableText.propTypes = {
   text: PropTypes.string.isRequired,
-  commit: PropTypes.func.isRequired,
-  roomId: PropTypes.number.isRequired
+  commit: PropTypes.func.isRequired
 };
 
 export default EditableText;

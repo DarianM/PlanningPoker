@@ -1,36 +1,43 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as room from "../../actions/roomActions";
-import * as story from "../../actions/storyActions";
+import { editStory } from "../../actions/storyActions";
+import { editRoomName } from "../../actions/roomActions";
 
 import EditableText from "../editableText";
+import { getActiveStory } from "../../selectors";
 
 const mapDispatchToProps = dispatch => ({
-  editStory: edit => dispatch(story.editStory(edit)),
-  editRoomName: payload => dispatch(room.editRoomName(payload))
+  renameStory: newValue => dispatch(editStory(newValue)),
+  renameRoom: newValue => dispatch(editRoomName(newValue))
 });
+
+const mapStateToProps = state => {
+  return {
+    roomId: state.gameRoom.id,
+    roomName: state.gameRoom.roomName,
+    activeStory: getActiveStory(state)
+  };
+};
 
 export const ConnectedSessionInfo = ({
   roomId,
   roomName,
-  editRoomName,
-  roomHistory,
-  editStory
+  renameStory,
+  renameRoom,
+  activeStory
 }) => {
+  const { id, text } = activeStory;
   const onActiveStoryChanged = ({ value }) =>
-    editStory({ value, id: roomHistory.activeStory.id, roomId });
+    renameStory({ value, id, roomId });
   const onRoomNameChanged = ({ value }) =>
-    editRoomName({ roomName: value, roomId });
+    renameRoom({ roomName: value, roomId });
   return (
     <div>
       <EditableText text={roomName} commit={onRoomNameChanged} />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
-      {roomHistory.activeStory && (
-        <EditableText
-          text={roomHistory.activeStory.text}
-          commit={onActiveStoryChanged}
-        />
+      {activeStory && (
+        <EditableText text={text} commit={onActiveStoryChanged} />
       )}
     </div>
   );
@@ -39,15 +46,16 @@ export const ConnectedSessionInfo = ({
 ConnectedSessionInfo.propTypes = {
   roomName: PropTypes.string.isRequired,
   roomId: PropTypes.number.isRequired,
-  roomHistory: PropTypes.shape({
-    edit: PropTypes.bool
-  }).isRequired,
-  editStory: PropTypes.func.isRequired,
-  editRoomName: PropTypes.func.isRequired
+  activeStory: PropTypes.object,
+  renameStory: PropTypes.func.isRequired,
+  renameRoom: PropTypes.func.isRequired
 };
 
-const SessionInfo = connect(
-  null,
+ConnectedSessionInfo.defaultProps = {
+  activeStory: PropTypes.instanceOf(undefined)
+};
+
+export default connect(
+  mapStateToProps,
   mapDispatchToProps
 )(ConnectedSessionInfo);
-export default SessionInfo;

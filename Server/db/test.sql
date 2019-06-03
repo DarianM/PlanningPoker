@@ -1,5 +1,6 @@
 SELECT * FROM members;
 SELECT * FROM rooms;
+SELECT * FROM stories;
 SELECT * FROM roomsMembers;
 
 SELECT * FROM members

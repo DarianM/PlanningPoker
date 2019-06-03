@@ -8,7 +8,6 @@ import {
   USER_VOTE,
   START_GAME
 } from "../actions/types";
-import { memberVoted } from "../actions/voteActions";
 
 describe("message middleware", () => {
   const next = jest.fn();

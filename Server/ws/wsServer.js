@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const nodeFetch = require("node-fetch");
 const connectedSocket = require("./connectedSocket");
 
 module.exports = class wsServer {
@@ -25,7 +25,8 @@ module.exports = class wsServer {
     });
   }
 
-  async fetchNormalClosure(socket, roomId) {
+  async fetchNormalClosure(socket, roomId, optionalFetch) {
+    const fetch = optionalFetch || nodeFetch;
     const { userId } = this._usersSockets.find(user => user.socket === socket);
     this._usersSockets = this._usersSockets.filter(
       user => user.userId !== userId
@@ -46,7 +47,7 @@ module.exports = class wsServer {
   decomposeUrl(url) {
     const separatorIndex = url.lastIndexOf("/");
     const roomId = url.substring(1, separatorIndex);
-    const userId = url.substring(url.lastIndexOf("/") + 1);
+    const userId = url.substring(separatorIndex + 1);
     return { roomId, userId };
   }
 

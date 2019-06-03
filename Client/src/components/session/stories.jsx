@@ -13,6 +13,13 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+const mapStateToProps = state => {
+  return {
+    roomId: state.gameRoom.id,
+    stories: state.stories
+  };
+};
+
 export class ConnectedStories extends Component {
   constructor(props) {
     super(props);
@@ -26,7 +33,6 @@ export class ConnectedStories extends Component {
 
   render() {
     const { stories, roomId, newStory, deleteStory } = this.props;
-    const activeStoryId = stories.activeStory.id;
     const { add } = this.state;
     return (
       <div className="stories">
@@ -67,14 +73,14 @@ export class ConnectedStories extends Component {
         <div id="roomstory" className="todaystory">
           <table className="storytable">
             <tbody>
-              {stories.stories.map(e =>
-                !e.completed ? (
+              {stories.allIds.map(id =>
+                !stories.byId[id].end ? (
                   <StoryDescription
-                    key={e.id}
-                    story={e.story}
+                    key={stories.byId[id].id}
+                    story={stories.byId[id].text}
                     roomId={roomId}
-                    id={e.id}
-                    activeStoryId={activeStoryId}
+                    id={stories.byId[id].id}
+                    activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
                   />
                 ) : null
@@ -95,7 +101,7 @@ ConnectedStories.propTypes = {
 };
 
 const SessionStories = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ConnectedStories);
 

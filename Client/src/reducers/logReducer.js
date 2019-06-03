@@ -44,13 +44,12 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === UPDATE_ROOM) {
-    const { user, roomId, roomName, roomMembers, started } = action.payload;
+    const { user, roomId, roomName, roomMembers } = action.payload;
     return {
       ...state,
       user,
       id: roomId,
       roomName,
-      gameStart: started ? new Date(started) : null,
       members: roomMembers.map(m =>
         m.voted
           ? { member: m.member, voted: true, id: m.id }

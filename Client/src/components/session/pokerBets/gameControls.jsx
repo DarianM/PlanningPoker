@@ -1,168 +1,115 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as room from "../../../actions/roomActions";
-import * as vote from "../../../actions/voteActions";
-import * as story from "../../../actions/storyActions";
+import { isStarted, isEnded, isFlipped } from "../../../selectors";
+import { endGame, resetTimer } from "../../../actions/roomActions";
+import {
+  startStory,
+  deleteVotes,
+  flipCards
+} from "../../../actions/storyActions";
+import ButtonsGroup from "./buttonsGroup";
 
-const mapDispatchToProps = dispatch => ({
-  startCurrentStory: game => dispatch(story.startStory(game)),
-  deleteVotes: votes => dispatch(vote.deleteVotes(votes)),
-  flipCards: cards => dispatch(vote.flipCards(cards)),
-  endCurrentGame: game => dispatch(room.endGame(game)),
-  resetTimer: time => dispatch(room.resetTimer(time))
-});
+const mapStateToProps = state => {
+  const start = isStarted(state);
+  const flip = isFlipped(state);
+  const end = isEnded(state);
 
-const startButton = (startCurrentStory, isStarting, roomId, storyId) => {
-  return (
-    <div className="startgame-control">
-      <button
-        type="button"
-        className="votes-blue"
-        onClick={e => {
-          e.preventDefault();
-          startCurrentStory({ gameStart: new Date(), roomId, storyId });
-        }}
-      >
-        {isStarting ? `Starting...` : `Start`}
-      </button>
-    </div>
-  );
-};
+  const gameStarted = ["flip", "reset", "clear", "next"];
+  const flipped = ["end", "reset", "next", "clear"];
+  const ended = ["reset", "next"];
 
-const flipCardsButton = (flipCards, roomId) => {
-  return (
-    <button
-      type="button"
-      className="votes-option"
-      onClick={e => {
-        e.preventDefault();
-        flipCards({ roomId });
-      }}
-    >
-      {`Flip Cards`}
-    </button>
-  );
-};
+  const shows = start ? gameStarted : ["start"];
 
-const endVoteButton = (endCurrentGame, stopTimer) => {
-  return (
-    <button
-      type="button"
-      className="votes-blue"
-      onClick={e => {
-        e.preventDefault();
-        endCurrentGame({ end: new Date() });
-        stopTimer();
-      }}
-    >
-      {`Finish Voting`}
-    </button>
-  );
-};
-
-const clearVotesButton = (deleteVotes, startTimer, startGame, roomId) => {
-  return (
-    <button
-      type="button"
-      className="votes-option"
-      onClick={e => {
-        e.preventDefault();
-        deleteVotes({ flip: false, list: [], end: undefined, roomId });
-        startTimer(startGame);
-      }}
-    >
-      {`Clear Votes`}
-    </button>
-  );
-};
-
-const resetTimerButton = (reset, stopTimer) => {
-  return (
-    <button
-      type="button"
-      className="votes-option"
-      onClick={e => {
-        e.preventDefault();
-        stopTimer();
-        reset();
-      }}
-    >
-      {`Reset Timer`}
-    </button>
-  );
-};
-
-const nextStoryButton = () => {
-  return (
-    <button
-      type="button"
-      className="votes-option"
-      onClick={e => {
-        e.preventDefault();
-      }}
-    >
-      {`Next Story`}
-    </button>
-  );
+  return { shows };
 };
 
 export const ConnectedGameControls = ({
-  game,
-  stories,
-  results,
-  connection,
-  startCurrentStory,
-  flipCards,
-  endCurrentGame,
+  shows,
+  startStory,
   deleteVotes,
-  resetTimer,
-  stopTimer,
-  startTimer
+  flipCards,
+  endGame,
+  resetTimer
 }) => {
-  const { id } = game;
-  const { isStarting } = connection;
-  const { activeStory } = stories;
-  const { started } = activeStory;
-
+  const buttons = [
+    {
+      id: "start",
+      text: "Start",
+      className: "votes-blue"
+    },
+    {
+      id: "flip",
+      text: "Flip Cards",
+      className: "votes-option"
+    },
+    {
+      id: "end",
+      text: "Finish Voting",
+      className: "votes-blue"
+    },
+    {
+      id: "clear",
+      text: "Clear Votes",
+      className: "votes-option"
+    },
+    {
+      id: "reset",
+      text: "Reset Timer",
+      className: "votes-option"
+    },
+    {
+      id: "next",
+      text: "Next Story",
+      className: "votes-option"
+    }
+  ];
+  const onClick = id => {
+    switch (id) {
+      case "start":
+        startStory();
+        break;
+      case "flip":
+        flipCards();
+        break;
+      case "clear":
+        deleteVotes();
+        break;
+      case "end":
+        endGame();
+        break;
+      case "reset":
+        resetTimer();
+        break;
+      default:
+        break;
+    }
+  };
   return (
     <>
-      {!started ? (
-        startButton(startCurrentStory, isStarting, id, activeStory.id)
-      ) : (
-        <div className="controls">
-          {!results.flip
-            ? flipCardsButton(flipCards, id)
-            : !results.end && endVoteButton(endCurrentGame, stopTimer)}
-          {clearVotesButton(deleteVotes, startTimer, started, id)}
-          {!results.end && resetTimerButton(resetTimer, stopTimer)}
-          {nextStoryButton()}
-        </div>
-      )}
+      <ButtonsGroup
+        buttons={buttons.filter(b => shows.includes(b.id))}
+        onClick={onClick}
+      />
     </>
   );
 };
 
 const ControlButtons = connect(
-  null,
-  mapDispatchToProps
+  mapStateToProps,
+  { startStory, deleteVotes, flipCards, endGame, resetTimer }
 )(ConnectedGameControls);
 export default ControlButtons;
 
 ConnectedGameControls.propTypes = {
+  roomId: PropTypes.number.isRequired,
+  started: PropTypes.instanceOf(Date),
+  activeStoryId: PropTypes.number.isRequired,
   results: PropTypes.shape({
     end: PropTypes.instanceOf(Date),
     flip: PropTypes.bool
   }).isRequired,
-  game: PropTypes.shape({
-    gameStart: PropTypes.instanceOf(Date),
-    id: PropTypes.number
-  }),
-  connection: PropTypes.shape({
-    isFetching: PropTypes.bool,
-    isStarting: PropTypes.bool,
-    error: PropTypes.string
-  }).isRequired,
+  isStarting: PropTypes.bool.isRequired,
   startCurrentStory: PropTypes.func.isRequired,
   endCurrentGame: PropTypes.func.isRequired,
   flipCards: PropTypes.func.isRequired,
@@ -173,8 +120,5 @@ ConnectedGameControls.propTypes = {
 };
 
 ConnectedGameControls.defaultProps = {
-  game: PropTypes.shape({
-    gameStart: PropTypes.instanceOf(undefined),
-    id: PropTypes.number
-  })
+  started: PropTypes.instanceOf(undefined)
 };

@@ -8,14 +8,12 @@ import {
 import {
   addStory,
   makeStoryStarted,
-  renameStory
-} from "../actions/storyActions";
-import {
+  renameStory,
+  flippingCards,
   addingVote,
   memberVoted,
-  flippingCards,
   deletingVotes
-} from "../actions/voteActions";
+} from "../actions/storyActions";
 import { send } from "../actions/websocketActions";
 import {
   UPDATE_ROOM,
@@ -31,7 +29,7 @@ const TIMEOUT_BETWEEN_PINGS = 5000;
 let pingInterval = null;
 async function reconnectRoomF(roomId, user, interval, dispatch, fetch) {
   try {
-    const response = await fetch(`/api/${roomId}`);
+    const response = await fetch(`/api/room/${roomId}`);
     if (response.status === 200) {
       clearInterval(interval);
       const data = await response.json();
@@ -56,13 +54,13 @@ const messageMiddleware = fetch => store => next => async action => {
 
     if (reason === "USER_VOTED") {
       store.dispatch(
-        addingVote({ user: data.user, voted: data.voted, id: data.id })
+        addingVote({ user: data.user, voted: data.value, id: data.id })
       );
       store.dispatch(memberVoted({ user: data.user, voted: true }));
     }
 
     if (reason === "FLIP_CARDS") {
-      store.dispatch(flippingCards({ flip: data.flip }));
+      store.dispatch(flippingCards(data));
     }
 
     if (reason === "STORY_STARTED") {
