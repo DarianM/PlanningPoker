@@ -1,19 +1,29 @@
 import React from "react";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { getActiveStory, isFlipped } from "../../../selectors";
 
-const Members = ({ members, votes }) => (
+const mapStateToProps = state => {
+  return {
+    activeStory: getActiveStory(state),
+    flip: isFlipped(state),
+    members: state.gameRoom.members
+  };
+};
+
+const ConnectedMembers = ({ activeStory, flip, members }) => (
   <div className="members">
-    {members.map(item => (
-      <div key={item.id} className="player">
+    {members.map(pax => (
+      <div key={pax.id} className="player">
         <div className="member-logo-status" />
         <div className="member-logo" />
-        <div id="name">{item.member}</div>
-        {!votes.flip ? (
-          <div id="voted-state">{item.voted && <span>Voted!</span>}</div>
+        <div id="name">{pax.member}</div>
+        {!flip ? (
+          <div id="voted-state">{pax.voted && <span>Voted!</span>}</div>
         ) : (
           <div id="vote">
-            {item.voted ? (
-              votes.list.find(e => e.user === item.member).voted
+            {pax.voted ? (
+              activeStory.votes.find(e => e.name === pax.member).vote
             ) : (
               <span>?</span>
             )}
@@ -24,19 +34,20 @@ const Members = ({ members, votes }) => (
   </div>
 );
 
-Members.propTypes = {
+ConnectedMembers.propTypes = {
   members: PropTypes.arrayOf(
     PropTypes.shape({
       member: PropTypes.string,
       id: PropTypes.number
     })
   ).isRequired,
-  votes: PropTypes.shape({
-    end: PropTypes.instanceOf(Date),
-    flip: PropTypes.bool,
-    nextVoteId: PropTypes.number,
-    list: PropTypes.arrayOf(PropTypes.object)
+  flip: PropTypes.bool.isRequired,
+  activeStory: PropTypes.shape({
+    votes: PropTypes.array
   }).isRequired
 };
 
-export default Members;
+export default connect(
+  mapStateToProps,
+  null
+)(ConnectedMembers);

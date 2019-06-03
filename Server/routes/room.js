@@ -2,9 +2,22 @@ const express = require("express");
 
 const router = express.Router();
 
-const { server } = require("./api");
+const server = require("../ws/wsServerConfig");
+
 const validate = require("../validations");
 const db = require("../db/db_utils");
+
+router.get("/:roomId", validate.roomId, async (req, res) => {
+  const { roomId } = req.params;
+  const isRoomAvailable = await db.checkRoomAvailability(roomId);
+  if (isRoomAvailable === undefined) {
+    return res.status(400).send({ error: "Room not available" });
+  }
+  const roomMembers = await db.getRoomMembers(roomId);
+  let { roomName, started, flipped } = await db.getRoomStats(roomId);
+  flipped = flipped === 1;
+  res.send({ roomMembers, roomName, started, flipped });
+});
 
 router.post("/create", validate.newRoom, async (req, res) => {
   const roomName = req.body.roomName || "NewRoom";
@@ -42,7 +55,7 @@ router.post("/join", validate.joinRoom, async (req, res) => {
     server.broadcast(roomId, data);
     data = {
       reason: "FLIP_CARDS",
-      data: { flip: false }
+      data: { votes: [] }
     };
     server.broadcast(roomId, data);
     await res.send({ roomInfo });
@@ -63,6 +76,14 @@ router.put("/rename/:roomId", validate.rename, async (req, res) => {
   const { roomId } = req.params;
   await db.update("rooms", "name", roomName, { id: roomId });
   server.broadcast(roomId, { reason: "ROOM_NAME_UPDATED", data: { roomName } });
+  res.send({}).status(200);
+});
+
+router.put("/forceflip/:roomId", validate.roomId, async (req, res) => {
+  const { roomId } = req.params;
+  const votes = await db.flipVotes(roomId, true);
+  console.log(votes);
+  server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
   res.send({}).status(200);
 });
 

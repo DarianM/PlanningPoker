@@ -4,7 +4,7 @@ const socket = {
   on: jest.fn(),
   send: jest.fn(),
   onmessage: jest.fn(),
-  onclose: jest.fn(),
+  onclose: jest.fn(e => e),
   onerror: jest.fn(),
   ping: jest.fn(),
   terminate: jest.fn()
@@ -12,7 +12,8 @@ const socket = {
 
 const wsServer = {
   disconnect: jest.fn(),
-  broadcast: jest.fn()
+  broadcast: jest.fn(),
+  fetchNormalClosure: jest.fn()
 };
 
 describe("connected socket", () => {
@@ -55,14 +56,22 @@ describe("connected socket", () => {
     const clientSocket = new connectedSocket(socket, roomId, wsServer);
     clientSocket.clearPing = jest.fn();
     const onCloseCbFunc = socket.on.mock.calls[2][1];
-    onCloseCbFunc();
-
     it("should close socket and clear ping-pong interval", () => {
       expect(clientSocket.socket.terminate).toHaveBeenCalled();
       expect(clientSocket.clearPing).toHaveBeenCalled();
     });
-    it("should disconnect from server", () => {
-      expect(clientSocket.server.disconnect).toHaveBeenCalled();
+    describe("normal", () => {
+      onCloseCbFunc(1001);
+      it("should disconnect from server and notify the normal closure", () => {
+        expect(clientSocket.server.disconnect).toHaveBeenCalled();
+        expect(clientSocket.server.fetchNormalClosure).toHaveBeenCalled();
+      });
+    });
+    describe("abnormal", () => {
+      onCloseCbFunc(1006);
+      it("should only disconnect from server", () => {
+        expect(clientSocket.server.disconnect).toHaveBeenCalled();
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-import { addVote, memberVoted, flipCards, deleteVotes } from "./voteActions";
+import { addVote, memberVoted, flipCards, deleteVotes } from "./storyActions";
 import * as Api from "../Api";
 
 jest.mock("../Api", () => ({

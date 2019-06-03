@@ -1,33 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { addVote } from "../../../actions/voteActions";
-import { addToast } from "../../../actions/toastsActions";
 
-const mapDispatchToProps = dispatch => ({
-  addNewVote: (vote, start) =>
-    start
-      ? dispatch(addVote(vote))
-      : dispatch(addToast({ text: "Press Start..." }))
-});
-
-const mapStateToProps = state => {
-  return {
-    loggedUser: state.gameRoom.user,
-    room: state.gameRoom.id,
-    start: state.gameHistory.activeStory.started,
-    flipped: state.gameVotes.flip
-  };
-};
-
-export const ConnectedCard = ({
-  value,
-  addNewVote,
-  loggedUser,
-  room,
-  start,
-  flipped
-}) => (
+const Card = ({ value, onClick }) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
     <p className="corner" />
@@ -40,28 +14,10 @@ export const ConnectedCard = ({
       value={value}
       onClick={e => {
         e.preventDefault();
-        if (!flipped)
-          addNewVote({ user: loggedUser, roomId: room, voted: value }, start);
+        onClick({ value });
       }}
     />
   </div>
 );
 
-ConnectedCard.propTypes = {
-  start: PropTypes.instanceOf(Date),
-  room: PropTypes.number.isRequired,
-  value: PropTypes.string.isRequired,
-  loggedUser: PropTypes.string.isRequired,
-  addNewVote: PropTypes.func.isRequired,
-  flipped: PropTypes.bool.isRequired
-};
-
-ConnectedCard.defaultProps = {
-  start: PropTypes.instanceOf(undefined)
-};
-
-const Login = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ConnectedCard);
-export default Login;
+export default Card;

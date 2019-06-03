@@ -42,11 +42,12 @@ const roomId = joi
   .number()
   .integer()
   .error(() => "Please provide a valid room id");
-const voted = joi
+const value = joi
   .string()
   .valid(allowedVotes)
   .error(() => "Please provide a valid vote");
 const storyId = joi.number().integer();
+const active = joi.boolean();
 const story = joi.string().not("");
 const date = joi.date();
 
@@ -79,7 +80,8 @@ module.exports = {
   newStory: async (req, res, next) => {
     const schema = joi.object().keys({
       story,
-      roomId
+      roomId,
+      active
     });
     validate(req.body, schema, res, next);
   },
@@ -105,8 +107,9 @@ module.exports = {
   vote: async (req, res, next) => {
     const schema = joi.object().keys({
       user,
+      storyId,
       roomId,
-      voted
+      value
     });
     validate(req.body, schema, res, next);
   },

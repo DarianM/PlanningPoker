@@ -1,17 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import Logo from "./logo";
 import LogedUser from "./logedUser";
 
-const Header = ({ head }) => (
+const mapStateToProps = state => {
+  return {
+    user: state.gameRoom.user
+  };
+};
+
+const ConnectedHeader = ({ user }) => (
   <div className="header">
     <Logo />
-    <LogedUser name={head} />
+    <LogedUser name={user} />
   </div>
 );
 
-Header.propTypes = {
-  head: PropTypes.string.isRequired
+ConnectedHeader.propTypes = {
+  user: PropTypes.string.isRequired
 };
 
-export default Header;
+export default connect(
+  mapStateToProps,
+  null
+)(ConnectedHeader);

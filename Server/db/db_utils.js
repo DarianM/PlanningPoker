@@ -20,8 +20,9 @@ const getUserById = async id => {
     .first();
 };
 
-const addStory = async (roomId, story) => {
-  return await knex("stories").insert({ roomId, description: story });
+const addStory = async (roomId, story, isActive) => {
+  console.log(isActive);
+  return await knex("stories").insert({ roomId, description: story, isActive });
 };
 
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
@@ -129,10 +130,11 @@ const checkUserVotes = async roomId => {
     .whereNull("vote");
 };
 
-const flipVotes = async (id, value) => {
-  await knex("rooms")
-    .update({ flipped: value })
-    .where({ id });
+const flipVotes = async (roomId, storyId) => {
+  return await knex("members")
+    .select("id", "name", "vote")
+    .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
+    .where({ roomId });
 };
 
 const startStory = async (started, id) => {
