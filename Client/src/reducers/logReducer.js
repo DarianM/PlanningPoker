@@ -45,6 +45,7 @@ export default function(state = initialState, action) {
 
   if (action.type === UPDATE_ROOM) {
     const { user, roomId, roomName, roomMembers } = action.payload;
+    console.log(roomMembers);
     return {
       ...state,
       user,

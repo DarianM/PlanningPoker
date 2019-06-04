@@ -29,6 +29,7 @@ export const LOGIN_SUCCES = "LOGIN_SUCCES";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
 export const GAME_STARTING = "GAME_STARTING";
 export const GAME_STARTED = "GAME_STARTED";
+export const GAME_FAILURE = "GAME_FAILURE";
 export const REMOVE_MEMBER = "REMOVE_MEMBER";
 
 export {

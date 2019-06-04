@@ -3,6 +3,8 @@ import {
   DELETE_STORY,
   EDIT_STORY,
   GAME_STARTING,
+  GAME_STARTED,
+  GAME_FAILURE,
   FLIP_CARDS,
   ADD_VOTE,
   USER_VOTE,
@@ -25,12 +27,11 @@ function addVote(payload) {
     const state = getState();
     const { start, id } = getActiveStory(state);
     const flipped = isFlipped(state);
-    const { user } = state.gameRoom;
-    const roomId = state.gameRoom.id;
+    const { user, id: roomId } = state.gameRoom;
     if (!start) {
       dispatch(addToast({ text: "Press start" }));
     } else if (start && !flipped) {
-      Api.vote(user, roomId, id, value).catch(err =>
+      Api.vote(user, id, roomId, value).catch(err =>
         dispatch(addToast({ text: err.message }))
       );
     }
@@ -83,15 +84,21 @@ function newStory(payload) {
 
 function startStory() {
   return async (dispatch, getState) => {
+    dispatch({ type: GAME_STARTING });
     const state = getState();
     const gameStart = new Date();
-    const roomId = state.gameRoom.id;
-    const storyId = getActiveStory(state).id;
-    if (!storyId)
+    const { id: roomId } = state.gameRoom;
+    const { id: storyId } = getActiveStory(state);
+    if (!storyId) {
+      dispatch({ type: GAME_FAILURE });
       dispatch(addToast({ text: "There are no more stories in the backlog" }));
-    else {
-      dispatch({ type: GAME_STARTING });
-      await Api.start(gameStart, roomId, storyId);
+    } else {
+      try {
+        await Api.start(gameStart, roomId, storyId);
+        dispatch({ type: GAME_STARTED });
+      } catch (error) {
+        dispatch({ type: GAME_FAILURE, payload: error });
+      }
     }
   };
 }

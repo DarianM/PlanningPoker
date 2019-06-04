@@ -21,11 +21,12 @@ const mapStateToProps = state => {
 
   const shows = start ? gameStarted : ["start"];
 
-  return { shows };
+  return { shows, status: state.connection.isLoading };
 };
 
 export const ConnectedGameControls = ({
   shows,
+  status,
   startStory,
   deleteVotes,
   flipCards,
@@ -36,32 +37,44 @@ export const ConnectedGameControls = ({
     {
       id: "start",
       text: "Start",
-      className: "votes-blue"
+      className: "votes-blue",
+      status,
+      loading: "Starting..."
     },
     {
       id: "flip",
       text: "Flip Cards",
-      className: "votes-option"
+      className: "votes-option",
+      status,
+      loading: "Flipping cards..."
     },
     {
       id: "end",
       text: "Finish Voting",
-      className: "votes-blue"
+      className: "votes-blue",
+      status,
+      loading: "Ending story..."
     },
     {
       id: "clear",
       text: "Clear Votes",
-      className: "votes-option"
+      className: "votes-option",
+      status,
+      loading: "Clearing votes..."
     },
     {
       id: "reset",
       text: "Reset Timer",
-      className: "votes-option"
+      className: "votes-option",
+      status,
+      loading: "Reseting timer..."
     },
     {
       id: "next",
       text: "Next Story",
-      className: "votes-option"
+      className: "votes-option",
+      status,
+      loading: "Waiting for next story..."
     }
   ];
   const onClick = id => {
@@ -109,7 +122,7 @@ ConnectedGameControls.propTypes = {
     end: PropTypes.instanceOf(Date),
     flip: PropTypes.bool
   }).isRequired,
-  isStarting: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
   startCurrentStory: PropTypes.func.isRequired,
   endCurrentGame: PropTypes.func.isRequired,
   flipCards: PropTypes.func.isRequired,

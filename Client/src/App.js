@@ -30,7 +30,7 @@ ConnectedApp.propTypes = {
     })
   ).isRequired,
   connection: PropTypes.shape({
-    isFetching: PropTypes.bool,
+    isLoading: PropTypes.bool,
     error: PropTypes.string
   }).isRequired,
   hash: PropTypes.string.isRequired
