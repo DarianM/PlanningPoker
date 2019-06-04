@@ -14,8 +14,8 @@ const PokerBets = () => (
     {/* <div className="invite-link">
       <div>Invite a teammate</div>
       <input type="text" value={url} />
-    </div> */}
-  </div>
+    </div>
+  </div> */}
 );
 
 export default PokerBets;

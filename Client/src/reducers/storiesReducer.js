@@ -16,21 +16,21 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-  // if (action.type === UPDATE_ROOM) {
-  //   const { roomMembers, flipped } = action.payload;
-  //   const voted = roomMembers
-  //     .filter(member => member.voted)
-  //     .map(m => ({ user: m.member, voted: m.voted, id: m.id }));
-  //   return {
-  //     ...state,
-  //     list: voted,
-  //     flip: flipped
-  //   };
-  // }
-
   if (action.type === REMOVE_MEMBER) {
     const { name } = action.payload;
-    return { ...state, list: state.list.filter(m => m.user !== name) };
+    const { activeStoryId } = state;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          votes: state.byId[activeStoryId].votes.filter(
+            item => item.name !== name
+          )
+        }
+      }
+    };
   }
 
   if (action.type === DELETE_VOTES) {
@@ -118,10 +118,9 @@ export default function(state = initialState, action) {
   }
   if (action.type === UPDATE_ROOM) {
     const { roomStories } = action.payload;
-    console.log(action.payload);
-    // const { id: activeStoryId } =
-    //   roomStories.find(story => story.isActive) || undefined;
-    // console.log(activeStoryId);
+    const allIds = roomStories.map(story => story.id);
+    const { id: activeStoryId } =
+      roomStories.find(story => story.isActive) || [];
     const byIdArray = roomStories.map(story => {
       const { id, description: text, started: start, ended: end } = story;
       return {
@@ -134,22 +133,26 @@ export default function(state = initialState, action) {
         }
       };
     });
-    console.log(byIdArray);
+    const byId = Object.assign({}, ...byIdArray.map(item => item));
+
     return {
-      ...state
+      ...state,
+      byId,
+      activeStoryId,
+      allIds
     };
   }
   if (action.type === EDIT_STORY) {
-    const { id, description } = action.payload;
+    const { id, description: text } = action.payload;
     return {
       ...state,
-      stories: state.stories.map(e =>
-        e.id === id ? { ...e, story: description } : e
-      ),
-      activeStoryId:
-        state.activeStoryId.id === id
-          ? { ...state.activeStoryId, text: description }
-          : { ...state.activeStoryId }
+      byId: {
+        ...state.byId,
+        [id]: {
+          ...state.byId[id],
+          text
+        }
+      }
     };
   }
 

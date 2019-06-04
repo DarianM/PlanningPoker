@@ -11,7 +11,7 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedMembers = ({ activeStory, flip, members }) => (
+export const ConnectedMembers = ({ activeStory, flip, members }) => (
   <div className="members">
     {members.map(pax => (
       <div key={pax.id} className="player">

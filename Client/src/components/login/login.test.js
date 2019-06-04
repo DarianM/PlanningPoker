@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { ConnectedLogin } from "./login";
 
-const connection = { isFetching: false, error: "" };
+const connection = { isLoading: false, error: "" };
 const mockCreateRoom = jest.fn();
 const mockJoinRoom = jest.fn();
 const applyMount = hash => {
@@ -60,7 +60,7 @@ describe("Login Component", () => {
     describe("when start a session button is clicked some data is beeing fetched", () => {
       it("button text should be Processing...", () => {
         const wrapper = applyMount(hash);
-        wrapper.setProps({ connection: { isFetching: true, error: "" } });
+        wrapper.setProps({ connection: { isLoading: true, error: "" } });
         expect(wrapper.find(".enter-button").text()).toEqual("Processing...");
       });
       it("should join a created room", () => {

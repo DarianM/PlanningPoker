@@ -51,7 +51,7 @@ class ConnectedTimer extends Component {
     const { activeStory } = this.props;
     // if(activeStory.end) stopTimer();
     const { start } = activeStory;
-    const time = Math.round((Date.now() - start) / 1000);
+    const time = Math.round((Date.now() - new Date(start)) / 1000);
     this.setState({ minutes: Math.floor(time / 60), seconds: time % 60 });
   }
 

@@ -12,7 +12,7 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedStatusMessage = ({ start, end, flip, members }) => {
+export const ConnectedStatusMessage = ({ start, end, flip, members }) => {
   const player = members.find(e => !e.voted);
   return (
     <div id="status-message" className="results-header">

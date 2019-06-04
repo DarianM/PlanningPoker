@@ -5,7 +5,7 @@ import { ConnectedGameControls } from "./gameControls";
 describe("Poker results Component", () => {
   let game = { gameStart: null, id: -1 };
   let gameVotes = { end: null, flip: false };
-  let connection = { isStarting: false };
+  let connection = { isLoading: false };
   const mockStartGame = jest.fn();
   const mockFlipCards = jest.fn();
   const mockDeleteVotes = jest.fn();
@@ -53,7 +53,7 @@ describe("Poker results Component", () => {
 
   describe("after start button has been clicked, some delay exists while data is fetching", () => {
     it("Start button text should be Starting", () => {
-      connection = { isStarting: true };
+      connection = { isLoading: true };
       const wrapper = applyMount();
       const startButton = wrapper.find(".votes-blue");
       expect(startButton.text()).toBe("Starting...");

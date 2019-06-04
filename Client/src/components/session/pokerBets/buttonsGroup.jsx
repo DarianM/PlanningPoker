@@ -6,13 +6,14 @@ const ButtonsGroup = ({ buttons, onClick }) => {
       {buttons.map(b => (
         <button
           type="button"
+          disabled={b.status}
           className={b.className}
           onClick={e => {
             e.preventDefault();
             onClick(b.id);
           }}
         >
-          {b.text}
+          {!b.status ? b.text : b.loading}
         </button>
       ))}
     </div>

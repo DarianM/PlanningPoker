@@ -62,7 +62,7 @@ export class ConnectedLogin extends Component {
 
   render() {
     const { connection, hash } = this.props;
-    const { isFetching } = connection;
+    const { isLoading } = connection;
     const { error } = this.state;
     const formError = error || connection.error;
     const { show } = this.state;
@@ -91,10 +91,10 @@ export class ConnectedLogin extends Component {
                 type="button"
                 id="startSession"
                 className="enter-button"
-                disabled={isFetching}
+                disabled={isLoading}
                 onClick={this.handleRoomForm}
               >
-                {isFetching ? "Processing..." : "Start a Session"}
+                {isLoading ? "Processing..." : "Start a Session"}
               </button>
             </form>
 
@@ -118,7 +118,7 @@ ConnectedLogin.propTypes = {
   createRoom: PropTypes.func.isRequired,
   joinRoom: PropTypes.func.isRequired,
   connection: PropTypes.shape({
-    isFetching: PropTypes.bool,
+    isLoading: PropTypes.bool,
     error: PropTypes.string
   }).isRequired,
   hash: PropTypes.string

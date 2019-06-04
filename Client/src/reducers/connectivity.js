@@ -3,32 +3,39 @@ import {
   LOGIN_SUCCES,
   LOGIN_FAILURE,
   GAME_STARTING,
-  GAME_STARTED
+  GAME_STARTED,
+  GAME_FAILURE
 } from "../actions/types";
 
 const initialState = {
-  isFetching: false,
-  isStarting: false,
+  isLoading: false,
   error: ""
 };
 
 export default function connection(state = initialState, action) {
+  const starting = { ...state, isLoading: true };
+  const success = { ...state, isLoading: false, error: null };
+  const failure = { ...state, isLoading: false, error: action.payload };
+
   switch (action.type) {
     case LOGIN: {
-      return { ...state, isFetching: true };
+      return starting;
     }
 
     case LOGIN_SUCCES:
-      return { ...state, isFetching: false, error: null };
+      return success;
 
     case LOGIN_FAILURE:
-      return { ...state, isFetching: false, error: action.payload };
+      return failure;
 
     case GAME_STARTING:
-      return { ...state, isStarting: true };
+      return starting;
 
     case GAME_STARTED:
-      return { ...state, isStarting: false };
+      return success;
+
+    case GAME_FAILURE:
+      return failure;
 
     default:
       return state;

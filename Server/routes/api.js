@@ -37,6 +37,7 @@ router.delete("/votes/:roomId", validate.roomId, async (req, res) => {
 });
 
 router.post("/vote", validate.vote, async (req, res) => {
+  console.log(req.body);
   const { user, storyId, roomId, value } = req.body;
   const id = await db.addMemberVote(user, roomId, value);
   const data = {
