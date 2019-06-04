@@ -7,7 +7,8 @@ import {
 } from "../actions/roomActions";
 import {
   addStory,
-  makeStoryStarted,
+  startingStory,
+  endingStory,
   renameStory,
   flippingCards,
   addingVote,
@@ -64,7 +65,10 @@ const messageMiddleware = fetch => store => next => async action => {
     }
 
     if (reason === "STORY_STARTED") {
-      store.dispatch(makeStoryStarted(data));
+      store.dispatch(startingStory(data));
+    }
+    if (reason === "STORY_ENDED") {
+      store.dispatch(endingStory(data));
     }
     if (reason === "CLEAR_VOTES") {
       store.dispatch(deletingVotes(data));

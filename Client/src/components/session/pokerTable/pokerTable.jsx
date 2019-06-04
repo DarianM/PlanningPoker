@@ -10,9 +10,7 @@ const mapStateToProps = state => {
 };
 
 const ConnectedPokerTable = ({ activeStory }) => (
-  <div id="pointButtons" className="game">
-    {!activeStory.end ? <PokerCards /> : <Chart />}
-  </div>
+  <>{!activeStory.end ? <PokerCards /> : <Chart />}</>
 );
 
 ConnectedPokerTable.propTypes = {

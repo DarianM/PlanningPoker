@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => {
 
 const cards = ["0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100"];
 const ConnectedPokerCards = ({ addNewVote }) => (
-  <div>
+  <div className="poker-cards">
     {cards.map(x => (
       <Card key={x} value={x} onClick={addNewVote} />
     ))}

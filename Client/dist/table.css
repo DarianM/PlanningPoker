@@ -1,3 +1,13 @@
+:root {
+  --main-bg-color: #edf2f7;
+  --main-text-color: #131b23;
+  --control-btn-color: #19b55a;
+  --control-btn-hover: #09814a;
+  --editable-input-text: #19b55a;
+  --editable-input-hover: #09814a;
+  --status-message-bg-color: #19b55a;
+}
+
 .sessionContainer {
   padding-left: 55px;
   padding-right: 85px;
@@ -15,25 +25,25 @@
 }
 
 .votes-option {
-  color: #4b9ae8;
+  color: var(--control-btn-color);
   background-color: transparent;
   font-size: 15px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
   padding: 9px 8px 11px;
   border-radius: 4px;
-  border: 1px solid #4b9ae8;
+  border: 1px solid var(--control-btn-color);
 }
 
 .votes-option:hover {
-  color: #1b538b;
-  border-color: #1b538b;
+  color: var(--control-btn-hover);
+  border-color: var(--control-btn-hover);
   cursor: pointer;
 }
 
 .votes-blue {
   color: white;
-  background-color: #4b9ae8;
+  background-color: var(--control-btn-color);
   font-size: 15px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
@@ -43,7 +53,7 @@
 }
 
 .votes-blue:hover {
-  background-color: #1b538b;
+  background-color: var(--control-btn-hover);
   cursor: pointer;
 }
 
@@ -52,17 +62,10 @@
   top: 1px;
 }
 
-/* .sessionId {
-  width: 95px;
-  height: 30px;
-  margin: 7px;
-} */
-
 .header {
   grid-area: header;
   display: grid;
   grid-template-columns: 1fr auto;
-  color: #000009;
   border-bottom: 1px solid #d5d9de;
   background-color: #fff;
   padding-right: 45px;
@@ -89,6 +92,7 @@
 .header-logo {
   content: url(./images/pokerIT.png);
   padding: 15px 15px;
+  width: 110px;
 }
 
 .stories {
@@ -102,6 +106,7 @@
   grid-area: game;
   display: grid;
   background-color: #fafcfe;
+  border-radius: 10px;
   grid-template-rows: 60px 433px;
   grid-template-columns: minmax(300px, auto);
   grid-template-areas:
@@ -113,7 +118,6 @@
 @media screen and (min-width: 1025px) {
   .chart-container {
     display: grid;
-    background-color: #fafcfe;
     grid-template-rows: 60px 433px;
     grid-template-columns: minmax(auto, 550px) minmax(160px, 220px);
     grid-template-areas:
@@ -128,7 +132,7 @@
   font-size: 20px;
   padding-top: 15px;
   background-color: white;
-  border-radius: 5px 5px 0 0;
+  border-radius: 10px 10px 0 0;
   border-bottom: 1px solid #d5d9de;
 }
 
@@ -145,7 +149,6 @@
 .donut-circle1 {
   font-weight: 300;
   font-size: 26px;
-  color: #131b23;
   margin-bottom: 10px;
 }
 
@@ -158,7 +161,6 @@
 .donut-circle3 {
   font-weight: 300;
   font-size: 20px;
-  color: #131b23;
   margin-top: 10px;
 }
 
@@ -182,19 +184,19 @@
 }
 
 .newstory-btn > :first-child {
-  color: #4b9ae8;
+  color: var(--control-btn-color);
   font-size: 16px;
   border: none;
   background: none;
 }
 
 .newstory-btn > :first-child :hover {
-  color: #1b538b;
+  color: var(--editable-input-hover);
   cursor: pointer;
 }
 
 .todaystory {
-  border-top-color: rgb(213, 217, 222);
+  border-top-color: #d5d9de;
   border-top-style: solid;
   border-top-width: 1px;
 }
@@ -228,10 +230,10 @@
   padding-right: 5px;
 }
 
-.game {
-  max-width: 750px;
-  border: 1px solid white;
+.poker-cards {
   grid-area: game;
+  border: 1px solid white;
+  max-width: 770px;
 }
 
 .results {
@@ -253,7 +255,7 @@
 .results-header {
   color: white;
   font-size: 20px;
-  background-color: dodgerblue;
+  background-color: var(--status-message-bg-color);
   text-align: center;
   padding-top: 15px;
   border-radius: 10px 10px 0 0;
@@ -297,10 +299,7 @@
 }
 
 .startgame-control {
-  display: grid;
-  grid-area: 4/1/5/3;
-  background-color: #fafcfe;
-  padding: 30px;
+  grid-column-end: span 2;
 }
 
 .controls {
@@ -325,11 +324,11 @@
 
 .activestory {
   font-size: 18px;
-  color: #4b9ae8;
+  color: var(--editable-input-text);
 }
 
 .activestory:hover {
-  color: #1b538b;
+  color: var(--editable-input-hover);
   cursor: pointer;
   text-decoration: underline;
 }
@@ -339,7 +338,7 @@
   display: table-cell;
   width: 650px;
   height: 35px;
-  border: 1px solid rgb(213, 217, 222);
+  border: 1px solid #d5d9de;
   border-radius: 3px;
   background-color: white;
 }
@@ -355,7 +354,7 @@
   color: white;
   padding: 5px;
   height: 30px;
-  background-color: rgb(75, 154, 232);
+  background-color: var(--control-btn-color);
   border: 1px transparent;
   border-radius: 4px;
 }
@@ -375,38 +374,33 @@
 
 p.corner {
   font-size: 18px;
-  color: black;
   position: absolute;
   margin: 0;
   padding: 5px;
 }
 
 p.corner:nth-child(1) {
-  border-color: green;
   top: 3px;
   left: 15px;
 }
 
 p.corner:nth-child(2) {
-  border-color: red;
   top: 0px;
   right: 15px;
 }
 
 p.corner:nth-child(3) {
-  border-color: yellow;
   bottom: 0;
   left: 15px;
 }
 
 p.corner:nth-child(4) {
-  border-color: pink;
   bottom: 3px;
   right: 15px;
   transform: scale(-1, -1);
 }
 
-.pokerCardButton {
+.poker-card-button {
   width: 130px;
   height: 175px;
   margin: 5px;
@@ -414,36 +408,22 @@ p.corner:nth-child(4) {
   border: 2px;
   border-radius: 5px;
   font-size: 18px;
-  color: #131b23;
   font-size: 46px;
   font-weight: 300;
   font-family: "Lato", sans-serif;
 }
 
-.pokerCardButton:hover {
+.poker-card-button:hover {
   box-shadow: 0px 0px 4.95px 0.05px;
-  cursor: pointer;
-}
-
-.card-center {
-  border: 1px solid #d5d9de;
-  position: absolute;
-  padding: 15px;
-  margin: 25px;
-  width: 60px;
-  height: 100px;
-  border-radius: 4px;
-  margin-left: -117px;
   cursor: pointer;
 }
 
 .body-session {
   margin: -8px;
-  color: black;
+  color: var(--main-text-color);
   font-size: 16px;
   font-family: "Open Sans", sans-serif;
-  background-color: #edf2f7;
-  /*background-image: url("./pokerblue.jpg");*/
+  background-color: var(--main-bg-color);
 }
 
 @media screen and (min-width: 867px) {

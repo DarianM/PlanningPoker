@@ -39,6 +39,9 @@ const clearVotes = roomId => fetchMethod(DELETE, `/api/votes/${roomId}`, {});
 
 const flip = roomId => fetchMethod(PUT, `/api/room/forceflip/${roomId}`, {});
 
+const end = (date, roomId, storyId) =>
+  fetchMethod(POST, "api/story/end", { date, roomId, storyId });
+
 const updateRoomName = (roomId, roomName) =>
   fetchMethod(PUT, `/api/room/rename/${roomId}`, { roomName });
 
@@ -53,6 +56,7 @@ export {
   join,
   create,
   start,
+  end,
   clearVotes,
   flip,
   updateRoomName,

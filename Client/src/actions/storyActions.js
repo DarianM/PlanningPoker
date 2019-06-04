@@ -103,9 +103,25 @@ function startStory() {
   };
 }
 
-function makeStoryStarted(payload) {
+function startingStory(payload) {
   return dispatch => {
     dispatch({ type: "START_STORY", payload });
+  };
+}
+
+function endStory() {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const storyEnd = new Date();
+    const roomId = state.gameRoom.id;
+    const storyId = getActiveStory(state).id;
+    await Api.end(storyEnd, roomId, storyId);
+  };
+}
+
+function endingStory(payload) {
+  return dispatch => {
+    dispatch({ type: "END_STORY", payload });
   };
 }
 
@@ -145,7 +161,9 @@ export {
   newStory,
   addStory,
   startStory,
-  makeStoryStarted,
+  startingStory,
+  endStory,
+  endingStory,
   deleteStory,
   editStory,
   renameStory,

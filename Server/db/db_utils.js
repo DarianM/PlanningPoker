@@ -143,6 +143,12 @@ const startStory = async (started, id) => {
     .where({ id });
 };
 
+const endStory = async (ended, id) => {
+  await knex("stories")
+    .update({ ended, isActive: false })
+    .where({ id });
+};
+
 const editStory = async (description, id) => {
   await knex("stories")
     .update({ description })
@@ -161,6 +167,7 @@ module.exports = {
   addUserToRoom,
   addMemberVote,
   startStory,
+  endStory,
   deleteRoomVotes,
   deleteUser,
   flipVotes,

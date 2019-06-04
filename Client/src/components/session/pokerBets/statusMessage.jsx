@@ -21,7 +21,9 @@ export const ConnectedStatusMessage = ({ start, end, flip, members }) => {
       ) : (
         <div>
           {player && !flip ? (
-            `Waiting for ${player.member} to vote`
+            `Waiting for ${
+              members.length < 3 ? player.member : `${members.length} players`
+            } to vote`
           ) : (
             <div>
               {!end

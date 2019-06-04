@@ -42,6 +42,7 @@ export default function(state = initialState, action) {
         ...state.byId,
         [activeStoryId]: {
           ...state.byId[activeStoryId],
+          end: null,
           votes
         }
       }
@@ -84,6 +85,21 @@ export default function(state = initialState, action) {
         [activeStoryId]: {
           ...state.byId[activeStoryId],
           start: new Date(date)
+        }
+      }
+    };
+  }
+
+  if (action.type === "END_STORY") {
+    const { date } = action.payload;
+    const { activeStoryId } = state;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          end: new Date(date)
         }
       }
     };

@@ -39,4 +39,17 @@ router.post("/start", validate.date, validate.gameStart, async (req, res) => {
   res.send({}).status(200);
 });
 
+router.post("/end", validate.date, validate.gameStart, async (req, res) => {
+  const { date, roomId, storyId } = req.body;
+  await db.endStory(date, storyId);
+
+  const data = {
+    reason: "STORY_ENDED",
+    data: { date }
+  };
+
+  server.broadcast(roomId, data);
+  res.send({}).status(200);
+});
+
 module.exports = router;

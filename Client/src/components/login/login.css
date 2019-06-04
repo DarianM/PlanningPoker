@@ -46,7 +46,7 @@
 
 .enter-button {
   color: white;
-  background-color: #4b9ae8;
+  background-color: var(--control-btn-color);
   margin-top: 20px;
   font-size: 15px;
   font-weight: 600;
@@ -56,7 +56,7 @@
 }
 
 .enter-button:hover {
-  background-color: #1b538b;
+  background-color: var(--control-btn-hover);
   cursor: pointer;
 }
 

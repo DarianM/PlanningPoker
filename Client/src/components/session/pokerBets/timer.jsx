@@ -32,10 +32,17 @@ class ConnectedTimer extends Component {
 
   componentDidUpdate(prevProps) {
     const { activeStory } = this.props;
-    const { start } = activeStory;
+    const { start, end } = activeStory;
 
     if (prevProps.activeStory.start !== start) {
       this.startTimer(start);
+    }
+
+    if (prevProps.activeStory.end !== end && end === null)
+      this.startTimer(start);
+
+    if (start && end) {
+      this.stopTimer();
     }
   }
 

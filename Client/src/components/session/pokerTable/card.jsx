@@ -10,7 +10,7 @@ const Card = ({ value, onClick }) => (
     <input
       type="button"
       id="card"
-      className="pokerCardButton"
+      className="poker-card-button"
       value={value}
       onClick={e => {
         e.preventDefault();

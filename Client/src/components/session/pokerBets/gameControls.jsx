@@ -6,7 +6,8 @@ import { endGame, resetTimer } from "../../../actions/roomActions";
 import {
   startStory,
   deleteVotes,
-  flipCards
+  flipCards,
+  endStory
 } from "../../../actions/storyActions";
 import ButtonsGroup from "./buttonsGroup";
 
@@ -17,10 +18,11 @@ const mapStateToProps = state => {
 
   const gameStarted = ["flip", "reset", "clear", "next"];
   const flipped = ["end", "reset", "next", "clear"];
-  const ended = ["reset", "next"];
+  const ended = ["clear", "next"];
 
-  const shows = start ? gameStarted : ["start"];
-
+  let shows = start ? gameStarted : ["start"];
+  shows = start && flip ? flipped : shows;
+  shows = end ? ended : shows;
   return { shows, status: state.connection.isLoading };
 };
 
@@ -30,7 +32,7 @@ export const ConnectedGameControls = ({
   startStory,
   deleteVotes,
   flipCards,
-  endGame,
+  endStory,
   resetTimer
 }) => {
   const buttons = [
@@ -89,7 +91,7 @@ export const ConnectedGameControls = ({
         deleteVotes();
         break;
       case "end":
-        endGame();
+        endStory();
         break;
       case "reset":
         resetTimer();
@@ -110,7 +112,7 @@ export const ConnectedGameControls = ({
 
 const ControlButtons = connect(
   mapStateToProps,
-  { startStory, deleteVotes, flipCards, endGame, resetTimer }
+  { startStory, deleteVotes, flipCards, endStory, resetTimer }
 )(ConnectedGameControls);
 export default ControlButtons;
 

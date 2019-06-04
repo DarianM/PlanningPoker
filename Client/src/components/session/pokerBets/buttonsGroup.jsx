@@ -1,13 +1,14 @@
 import React from "react";
 
 const ButtonsGroup = ({ buttons, onClick }) => {
+  const oneBtn = buttons.length === 1;
   return (
     <div className="controls">
       {buttons.map(b => (
         <button
           type="button"
           disabled={b.status}
-          className={b.className}
+          className={oneBtn ? `${b.className} startgame-control` : b.className}
           onClick={e => {
             e.preventDefault();
             onClick(b.id);
