@@ -41,7 +41,8 @@
 .user-input {
   padding: 9px 8px 11px;
   border: 1px solid #0b030300;
-  width: 350px;
+  width: 70%;
+  position: relative;
 }
 
 .enter-button {

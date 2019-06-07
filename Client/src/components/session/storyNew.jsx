@@ -25,7 +25,7 @@ class NewStory extends Component {
     return (
       <React.Fragment>
         <div className="modal-header">Create New Story</div>
-        <div>
+        <div className="modal-center">
           <textarea
             placeholder="Put your story text here."
             className="newstory-textarea"

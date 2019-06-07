@@ -33,7 +33,7 @@ export const ConnectedSessionInfo = ({
   const onRoomNameChanged = ({ value }) =>
     renameRoom({ roomName: value, roomId });
   return (
-    <div>
+    <div className="sessionInfo">
       <EditableText text={roomName} commit={onRoomNameChanged} />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
       {id && <EditableText text={text} commit={onActiveStoryChanged} />}

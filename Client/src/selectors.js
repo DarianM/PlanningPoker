@@ -9,7 +9,7 @@ const isFlipped = state => {
 };
 const isStarted = state => {
   const { start } = getActiveStory(state);
-  return !!start;
+  return start || null;
 };
 const isEnded = state => getActiveStory(state).end;
 

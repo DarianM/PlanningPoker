@@ -1,10 +1,10 @@
 import { addToast } from "../actions/toastsActions";
 import { newMember, renameRoom, removeMember } from "../actions/roomActions";
 import {
-  addStory,
+  addingStory,
   startingStory,
   endingStory,
-  renameStory,
+  renamingStory,
   flippingCards,
   addingVote,
   memberVoted,
@@ -76,10 +76,10 @@ const messageMiddleware = fetch => store => next => async action => {
       store.dispatch(removeMember(data));
     }
     if (reason === "NEW_STORY") {
-      store.dispatch(addStory(data));
+      store.dispatch(addingStory(data));
     }
     if (reason === "STORY_RENAMED") {
-      store.dispatch(renameStory(data));
+      store.dispatch(renamingStory(data));
     }
     if (reason === "TIMER_RESET") {
       store.dispatch(resetingTimer(data));

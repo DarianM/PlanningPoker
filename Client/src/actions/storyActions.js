@@ -15,13 +15,6 @@ import { addToast } from "./toastsActions";
 import { getActiveStory, isFlipped } from "../selectors";
 import * as Api from "../Api";
 
-function flippingCards(payload) {
-  return {
-    type: FLIP_CARDS,
-    payload
-  };
-}
-
 function addVote(payload) {
   return async (dispatch, getState) => {
     const { value } = payload;
@@ -32,9 +25,11 @@ function addVote(payload) {
     if (!start) {
       dispatch(addToast({ text: "Press start" }));
     } else if (start && !flipped) {
-      Api.vote(user, id, roomId, value).catch(err =>
-        dispatch(addToast({ text: err.message }))
-      );
+      try {
+        await Api.vote(user, id, roomId, value);
+      } catch (error) {
+        dispatch(addToast({ text: error.message }));
+      }
     }
   };
 }
@@ -53,14 +48,29 @@ function memberVoted(payload) {
 function flipCards() {
   return async (dispatch, getState) => {
     const roomId = getState().gameRoom.id;
-    await Api.flip(roomId);
+    try {
+      await Api.flip(roomId);
+    } catch (error) {
+      dispatch(addToast({ text: error.message }));
+    }
+  };
+}
+
+function flippingCards(payload) {
+  return {
+    type: FLIP_CARDS,
+    payload
   };
 }
 
 function deleteVotes() {
   return async (dispatch, getState) => {
-    const { id } = getState().gameRoom;
-    Api.clearVotes(id).catch(err => dispatch(addToast({ text: err.message })));
+    const { id: roomId } = getState().gameRoom;
+    try {
+      await Api.clearVotes(roomId);
+    } catch (error) {
+      dispatch(addToast({ text: error.message }));
+    }
   };
 }
 
@@ -80,6 +90,12 @@ function newStory(payload) {
     else {
       await Api.addStory(story, roomId, false);
     }
+  };
+}
+
+function addingStory(payload) {
+  return dispatch => {
+    dispatch({ type: ADD_STORY, payload });
   };
 }
 
@@ -116,19 +132,17 @@ function endStory() {
     const storyEnd = new Date();
     const roomId = state.gameRoom.id;
     const storyId = getActiveStory(state).id;
-    await Api.end(storyEnd, roomId, storyId);
+    try {
+      await Api.end(storyEnd, roomId, storyId);
+    } catch (error) {
+      dispatch(addToast({ text: error.message }));
+    }
   };
 }
 
 function endingStory(payload) {
   return dispatch => {
     dispatch({ type: "END_STORY", payload });
-  };
-}
-
-function addStory(payload) {
-  return dispatch => {
-    dispatch({ type: ADD_STORY, payload });
   };
 }
 
@@ -139,16 +153,14 @@ function deleteStory(payload) {
   };
 }
 
-function renameStory(payload) {
-  return dispatch => {
-    dispatch({ type: EDIT_STORY, payload });
-  };
-}
-
 function editStory(payload) {
   return async dispatch => {
     const { value, id, roomId } = payload;
-    await Api.editStory(value, id, roomId);
+    try {
+      await Api.editStory(value, id, roomId);
+    } catch (error) {
+      dispatch(addToast({ text: error.message }));
+    }
   };
 }
 
@@ -167,6 +179,11 @@ function resetingTimer(payload) {
   };
 }
 
+function renamingStory(payload) {
+  return dispatch => {
+    dispatch({ type: EDIT_STORY, payload });
+  };
+}
 export {
   addVote,
   addingVote,
@@ -176,14 +193,14 @@ export {
   deleteVotes,
   deletingVotes,
   newStory,
-  addStory,
+  addingStory,
   startStory,
   startingStory,
   endStory,
   endingStory,
   deleteStory,
   editStory,
-  renameStory,
   resetTimer,
-  resetingTimer
+  resetingTimer,
+  renamingStory
 };

@@ -94,7 +94,8 @@ export class ConnectedLogin extends Component {
                 disabled={isLoading}
                 onClick={this.handleRoomForm}
               >
-                {isLoading ? "Processing..." : "Start a Session"}
+                {(isLoading && "Processing...") ||
+                  (!hash ? "Start a Session" : "Join a Session")}
               </button>
             </form>
 

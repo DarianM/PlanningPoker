@@ -5,11 +5,17 @@ class EditableText extends Component {
   constructor(props) {
     super(props);
     this.state = { edit: false, value: "" };
+    this.textInput = React.createRef();
     this.editText = this.editText.bind(this);
 
     this.normalMode = this.normalMode.bind(this);
     this.editMode = this.editMode.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidUpdate() {
+    const { edit } = this.state;
+    if (edit) this.textInput.current.focus();
   }
 
   editText(prop) {
@@ -45,10 +51,19 @@ class EditableText extends Component {
     return (
       <div className="editable-input">
         <input
+          ref={this.textInput}
+          tabIndex="0"
           className="activestory-input"
           type="text"
           defaultValue={text}
           onChange={this.handleChange}
+          onBlur={e => {
+            if (
+              !e.relatedTarget ||
+              e.relatedTarget.className !== "editable-submit"
+            )
+              this.editText(false);
+          }}
         />
         <button
           className="editable-submit"

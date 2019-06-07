@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const LogedUser = ({ name }) => (
-  <div id="userLoged">
+  <div className="user-loged">
     <div className="header-userName">{`User: ${name}`}</div>
     <div className="header-userImg" />
   </div>

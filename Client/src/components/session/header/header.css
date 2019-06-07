@@ -1,0 +1,28 @@
+.header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border-bottom: 1px solid #d5d9de;
+  background-color: #fff;
+}
+
+.user-loged {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding: 5px;
+  align-items: center;
+  align-content: space-around;
+  grid-column-gap: 10px;
+}
+
+.header-userImg {
+  content: url(../../../../dist/images/pokerIT.png);
+  width: 60px;
+  border-radius: 50%;
+}
+
+.header-logo {
+  content: url(../../../../dist/images/user_logo.png);
+  padding: 15px 15px;
+  width: 110px;
+}

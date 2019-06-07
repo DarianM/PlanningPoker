@@ -9,14 +9,12 @@
 }
 
 .sessionContainer {
-  padding-left: 55px;
-  padding-right: 85px;
   display: grid;
   grid-template-columns: minmax(300px, auto);
   grid-template-rows: auto;
   grid-template-areas:
     "header"
-    "roomid"
+    "info"
     "game"
     "results"
     "stories"
@@ -68,25 +66,12 @@
   grid-template-columns: 1fr auto;
   border-bottom: 1px solid #d5d9de;
   background-color: #fff;
-  padding-right: 45px;
-  padding-left: 45px;
-  margin-left: -55px;
-  margin-right: -85px;
 }
 
 .header-userImg {
   content: url(./images/user_logo.png);
   width: 60px;
   border-radius: 50%;
-  display: block;
-  padding: 13px;
-}
-
-.header-userName {
-  display: block;
-  float: left;
-  padding: 28px;
-  margin-right: -25px;
 }
 
 .header-logo {
@@ -95,8 +80,19 @@
   width: 110px;
 }
 
+.user-loged {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding: 5px;
+  align-items: center;
+  align-content: space-around;
+  grid-column-gap: 10px;
+}
+
 .stories {
   grid-area: stories;
+  margin: 0 35px;
+  min-width: 300px;
   background-color: white;
   padding-bottom: 23px;
   border-radius: 4px;
@@ -105,6 +101,7 @@
 .chart-container {
   grid-area: game;
   display: grid;
+  margin: 0 35px;
   background-color: #fafcfe;
   border-radius: 10px;
   grid-template-rows: 60px 433px;
@@ -142,8 +139,7 @@
   align-content: center;
   border: 20px solid #f8e71d;
   border-radius: 50%;
-  padding: 88px;
-  margin: 40px;
+  padding: 80px;
 }
 
 .donut-circle1 {
@@ -171,16 +167,13 @@
 
 .nav-story {
   list-style-type: none;
-  padding: 0;
-}
-
-.nav-story > li {
-  display: inline;
-  padding: 10px;
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  grid-column-gap: 20px;
 }
 
 .newstory-btn {
-  float: right;
+  place-self: end;
 }
 
 .newstory-btn > :first-child {
@@ -233,13 +226,16 @@
 .poker-cards {
   grid-area: game;
   border: 1px solid white;
+  margin: 0 35px;
+  min-width: 300px;
   max-width: 770px;
 }
 
 .results {
   display: grid;
-  border-radius: 10px 10px 0 0;
   grid-area: results;
+  border-radius: 10px 10px 0 0;
+  margin: 0 35px;
   min-width: 300px;
   max-width: 720px;
   grid-template-rows: repeat(2, 60px) auto auto 1fr;
@@ -280,7 +276,7 @@
   content: url(./images/user_logo.png);
   width: 42px;
   border-radius: 50%;
-  padding: 6px;
+  padding: 3px;
 }
 
 .member-logo-status {
@@ -295,7 +291,9 @@
 
 .player {
   display: grid;
+  align-items: center;
   grid-template-columns: auto 1fr 1fr;
+  margin: 5px;
 }
 
 .startgame-control {
@@ -318,8 +316,10 @@
   grid-area: 5/1/6/3;
 }
 
-.sessionRoomId {
-  grid-area: roomid;
+.sessionInfo {
+  grid-area: info;
+  margin: 0 35px;
+  min-width: 300px;
 }
 
 .activestory {
@@ -334,9 +334,10 @@
 }
 
 .editable-input {
-  vertical-align: middle;
-  display: table-cell;
-  width: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 650px;
   height: 35px;
   border: 1px solid #d5d9de;
   border-radius: 3px;
@@ -345,7 +346,7 @@
 
 .activestory-input {
   border: none;
-  width: 600px;
+  width: 85%;
   font-size: 16px;
   padding-left: 15px;
 }
@@ -419,7 +420,8 @@ p.corner:nth-child(4) {
 }
 
 .body-session {
-  margin: -8px;
+  margin: 0;
+  padding: 0;
   color: var(--main-text-color);
   font-size: 16px;
   font-family: "Open Sans", sans-serif;
@@ -428,14 +430,11 @@ p.corner:nth-child(4) {
 
 @media screen and (min-width: 867px) {
   .sessionContainer {
-    padding-left: 55px;
-    padding-right: 85px;
     display: grid;
-    grid-template-columns: minmax(300px, auto) 1fr;
-    grid-template-rows: auto;
+    grid-template-columns: auto 1fr;
     grid-template-areas:
       "header header"
-      "roomid roomid"
+      "info info"
       "game results"
       "stories results"
       ". .";

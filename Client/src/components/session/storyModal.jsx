@@ -29,6 +29,7 @@ export class ConnectedStory extends Component {
         <div className="story-body">
           <div>Title:</div>
           <input
+            className="story-detail-input"
             type="text"
             defaultValue={story}
             onChange={this.handleNewTitle}

@@ -47,27 +47,25 @@ export class ConnectedStories extends Component {
         )}
         <ul className="nav-story">
           <li>
-            <span className="active-story">Active Story</span>
+            <span className="active-story">Active</span>
           </li>
           <li>
             <span>Completed</span>
           </li>
           <li>
-            <span>All Stories</span>
+            <span>All</span>
           </li>
-          <li>
-            <div className="newstory-btn">
-              <button
-                className="new_btn"
-                type="button"
-                onClick={e => {
-                  e.preventDefault();
-                  this.handleNewStory(true);
-                }}
-              >
-                <span>+ New</span>
-              </button>
-            </div>
+          <li className="newstory-btn">
+            <button
+              className="new_btn"
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                this.handleNewStory(true);
+              }}
+            >
+              <span>+ New</span>
+            </button>
           </li>
         </ul>
         <div id="roomstory" className="todaystory">
