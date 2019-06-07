@@ -11,7 +11,7 @@ class NewStory extends Component {
   handleSaveStory() {
     const { story } = this.state;
     const { addNewStory, roomId } = this.props;
-    addNewStory({ story, roomId, completed: false });
+    addNewStory({ story, roomId });
     this.setState({ story: "" });
   }
 
@@ -73,7 +73,8 @@ class NewStory extends Component {
 
 NewStory.propTypes = {
   addNewStory: PropTypes.func.isRequired,
-  addMany: PropTypes.func.isRequired
+  addMany: PropTypes.func.isRequired,
+  roomId: PropTypes.number.isRequired
 };
 
 export default NewStory;

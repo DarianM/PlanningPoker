@@ -39,6 +39,15 @@ router.post("/start", validate.date, validate.gameStart, async (req, res) => {
   res.send({}).status(200);
 });
 
+router.put("/reset", async (req, res) => {
+  // validations
+  const { roomId, storyId } = req.body;
+  const newDate = Date.now();
+  await db.resetTimer(storyId, newDate);
+  server.broadcast(roomId, { reason: "TIMER_RESET", data: { newDate } });
+  res.send({}).status(200);
+});
+
 router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   const { date, roomId, storyId } = req.body;
   await db.endStory(date, storyId);

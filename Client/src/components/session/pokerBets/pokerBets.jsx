@@ -3,6 +3,7 @@ import StatusMessage from "./statusMessage";
 import GameControls from "./gameControls";
 import Members from "./members";
 import Timer from "./timer";
+import Invite from "./invite";
 
 const PokerBets = () => (
   <div id="votesResults" className="results">
@@ -11,11 +12,8 @@ const PokerBets = () => (
     <Timer />
     <Members />
     <GameControls />
-    {/* <div className="invite-link">
-      <div>Invite a teammate</div>
-      <input type="text" value={url} />
-    </div>
-  </div> */}
+    <Invite />
+  </div>
 );
 
 export default PokerBets;

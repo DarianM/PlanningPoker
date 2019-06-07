@@ -4,16 +4,12 @@ const getActiveStory = state => {
 };
 
 const isFlipped = state => {
-  try {
-    const { votes } = getActiveStory(state);
-    return votes.some(vote => vote.vote !== undefined);
-  } catch (error) {
-    return false;
-  }
+  const { votes } = getActiveStory(state);
+  return votes && votes.some(vote => vote.vote !== undefined);
 };
 const isStarted = state => {
-  const activeStory = getActiveStory(state);
-  return activeStory.start;
+  const { start } = getActiveStory(state);
+  return !!start;
 };
 const isEnded = state => getActiveStory(state).end;
 

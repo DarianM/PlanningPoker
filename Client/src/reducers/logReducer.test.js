@@ -3,7 +3,6 @@ import {
   CREATE_ROOM,
   NEW_MEMBER,
   WEBSOCKET_OPEN,
-  START_GAME,
   USER_VOTE,
   DELETE_VOTES
 } from "../actions/types";
@@ -66,18 +65,6 @@ describe("logReducer", () => {
           payload: { member: "ImNew", voted: false, id: 2 }
         })
       ).toEqual(expected);
-    });
-  });
-
-  describe("when admin clicks start game button", () => {
-    it("saves starting time & should let members in room pick any card", () => {
-      const initialState = { gameStart: null };
-      const newState = logReducer(initialState, {
-        type: START_GAME,
-        payload: { gameStart: Date }
-      });
-
-      expect(newState.gameStart).toBe(Date);
     });
   });
 

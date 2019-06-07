@@ -2,12 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { isStarted, isEnded, isFlipped } from "../../../selectors";
-import { endGame, resetTimer } from "../../../actions/roomActions";
 import {
   startStory,
   deleteVotes,
   flipCards,
-  endStory
+  endStory,
+  resetTimer
 } from "../../../actions/storyActions";
 import ButtonsGroup from "./buttonsGroup";
 
@@ -117,23 +117,11 @@ const ControlButtons = connect(
 export default ControlButtons;
 
 ConnectedGameControls.propTypes = {
-  roomId: PropTypes.number.isRequired,
-  started: PropTypes.instanceOf(Date),
-  activeStoryId: PropTypes.number.isRequired,
-  results: PropTypes.shape({
-    end: PropTypes.instanceOf(Date),
-    flip: PropTypes.bool
-  }).isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  startCurrentStory: PropTypes.func.isRequired,
-  endCurrentGame: PropTypes.func.isRequired,
-  flipCards: PropTypes.func.isRequired,
+  shows: PropTypes.arrayOf(String).isRequired,
+  status: PropTypes.bool.isRequired,
+  startStory: PropTypes.func.isRequired,
   deleteVotes: PropTypes.func.isRequired,
-  resetTimer: PropTypes.func.isRequired,
-  stopTimer: PropTypes.func.isRequired,
-  startTimer: PropTypes.func.isRequired
-};
-
-ConnectedGameControls.defaultProps = {
-  started: PropTypes.instanceOf(undefined)
+  flipCards: PropTypes.func.isRequired,
+  endStory: PropTypes.func.isRequired,
+  resetTimer: PropTypes.func.isRequired
 };

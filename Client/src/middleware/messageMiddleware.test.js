@@ -5,8 +5,7 @@ import {
   NEW_MEMBER,
   ADD_VOTE,
   FLIP_CARDS,
-  USER_VOTE,
-  START_GAME
+  USER_VOTE
 } from "../actions/types";
 
 describe("message middleware", () => {
@@ -74,25 +73,6 @@ describe("message middleware", () => {
         expect(store.dispatch.mock.calls[0][0].type).toEqual(FLIP_CARDS);
       });
     });
-
-    describe("GAME_STARTED", () => {
-      const reason = "GAME_STARTED";
-      const action = {
-        type: "WEBSOCKET_MESSAGE",
-        payload: {
-          reason,
-          data: { gameStart: new Date("2018-01-09T11:05:20") }
-        }
-      };
-      it("stores the starting date of the game", () => {
-        messageMidTest(jest.fn())(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toEqual(START_GAME);
-        expect(
-          store.dispatch.mock.calls[0][0].payload.gameStart
-        ).toBeInstanceOf(Date);
-      });
-    });
-  });
 
   describe("on WEBSOCKET_RECONNECTED", () => {
     describe("reconnected", () => {

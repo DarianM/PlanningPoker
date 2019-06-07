@@ -1,22 +1,36 @@
-import { createRoom, joinRoom } from "./roomActions";
+import {
+  createRoom,
+  joinRoom,
+  removeMember,
+  editRoomName,
+  newMember,
+  renameRoom
+} from "./roomActions";
 import * as Api from "../Api";
 
 jest.mock("../Api", () => ({
   create: jest.fn(),
   join: jest.fn(),
-  vote: jest.fn()
+  vote: jest.fn(),
+  updateRoomName: jest.fn()
 }));
 
 describe("create room action", () => {
   Api.create.mockImplementationOnce(
-    () => new Promise((resolve, reject) => reject(new Error("error")))
+    () =>
+      new Promise((resolve, reject) =>
+        reject([{ message: "err", location: "unknown" }])
+      )
   );
   describe("with network offline", () => {
     it("should dispatch LOGIN_FAILURE", async () => {
       const result = createRoom({ user: "random", roomName: "room" });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch).toBeCalledWith({ type: "LOGIN_FAILURE" });
+      expect(dispatch).toBeCalledWith({
+        type: "LOGIN_FAILURE",
+        payload: "err"
+      });
     });
   });
 
@@ -25,11 +39,8 @@ describe("create room action", () => {
       () =>
         new Promise((resolve, reject) =>
           resolve({
-            json: () => ({
-              roomName: "randomName",
-              user: "aName"
-            }),
-            ok: true
+            roomId: 1,
+            memberId: 1
           })
         )
     );
@@ -45,13 +56,19 @@ describe("create room action", () => {
 describe("join room action", () => {
   describe("with network offline", () => {
     Api.join.mockImplementationOnce(
-      () => new Promise((resolve, reject) => reject(new Error("error")))
+      () =>
+        new Promise((resolve, reject) =>
+          reject([{ message: "err", location: "unknown" }])
+        )
     );
     it("should dispatch LOGIN_FAILURE", async () => {
       const result = joinRoom({ user: "random", roomId: 1 });
       const dispatch = jest.fn();
       await result(dispatch);
-      expect(dispatch).toBeCalledWith({ type: "LOGIN_FAILURE" });
+      expect(dispatch).toBeCalledWith({
+        type: "LOGIN_FAILURE",
+        payload: "err"
+      });
     });
   });
 
@@ -60,10 +77,12 @@ describe("join room action", () => {
       () =>
         new Promise((resolve, reject) =>
           resolve({
-            json: () => ({
+            roomInfo: {
+              user: "name",
               roomName: "randomName",
-              user: "name"
-            }),
+              userId: 1
+            },
+            roomId: 1,
             status: 200
           })
         )
@@ -73,6 +92,53 @@ describe("join room action", () => {
       const dispatch = jest.fn();
       await result(dispatch);
       expect(dispatch.mock.calls.pop()).toEqual([{ type: "LOGIN_SUCCES" }]);
+    });
+  });
+
+  describe("remove member action", () => {
+    it("should dispatch remove member", async () => {
+      const result = removeMember({ name: "test" });
+      const dispatch = jest.fn();
+      await result(dispatch);
+      expect(dispatch).toBeCalledWith({
+        type: "REMOVE_MEMBER",
+        payload: { name: "test" }
+      });
+    });
+  });
+
+  describe("edit room name", () => {
+    describe("with a valid name", () => {
+      it("should successfully rename the room", async () => {
+        const result = editRoomName({ roomName: "NewName", roomId: 1 });
+        const dispatch = jest.fn();
+        await result(dispatch);
+        expect(Api.updateRoomName).toHaveBeenCalled();
+      });
+    });
+    describe("with an invalid name", () => {
+      it("should dispatch toast", async () => {
+        const result = editRoomName({ roomName: "./", roomId: 1 });
+        const dispatch = jest.fn();
+        await result(dispatch);
+        expect(dispatch).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("new member", () => {
+    it("should return correspondent action creator", () => {
+      const payload = { member: "test", id: 1, voted: false };
+      const result = newMember(payload);
+      expect(result).toEqual({ type: "NEW_MEMBER", payload });
+    });
+  });
+
+  describe("rename room", () => {
+    it("should return correspondent action creator", () => {
+      const payload = { roomId: 1, roomName: "newName" };
+      const result = renameRoom(payload);
+      expect(result).toEqual({ type: "RENAME_ROOM", payload });
     });
   });
 });
