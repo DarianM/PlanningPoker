@@ -9,7 +9,7 @@ const mapStateToProps = state => {
   };
 };
 
-class ConnectedTimer extends Component {
+export class ConnectedTimer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,20 +34,17 @@ class ConnectedTimer extends Component {
     const { activeStory } = this.props;
     const { start, end } = activeStory;
 
-    if (prevProps.activeStory.start !== start) {
+    if (!prevProps.activeStory.start && start) {
       this.startTimer(start);
     }
-
-    if (prevProps.activeStory.end !== end && end === null)
-      this.startTimer(start);
-
-    if (start && end) {
-      this.stopTimer();
-    }
+    if (prevProps.activeStory.end && !end) this.startTimer(start);
   }
 
   startTimer(start) {
-    if (start) this.clock = setInterval(this.update, 1000);
+    if (start) {
+      console.log(start);
+      this.clock = setInterval(this.update, 1000);
+    }
   }
 
   stopTimer() {
@@ -56,7 +53,7 @@ class ConnectedTimer extends Component {
 
   update() {
     const { activeStory } = this.props;
-    // if(activeStory.end) stopTimer();
+    if (activeStory.end) this.stopTimer();
     const { start } = activeStory;
     const time = Math.round((Date.now() - new Date(start)) / 1000);
     this.setState({ minutes: Math.floor(time / 60), seconds: time % 60 });

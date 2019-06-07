@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Card = ({ value, onClick }) => (
+export const Card = ({ value, onClick }) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
     <p className="corner" />

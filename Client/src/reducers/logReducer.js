@@ -2,7 +2,6 @@ import {
   CREATE_ROOM,
   UPDATE_ROOM,
   REMOVE_MEMBER,
-  START_GAME,
   USER_VOTE,
   NEW_MEMBER,
   DELETE_VOTES,
@@ -24,9 +23,6 @@ export default function(state = initialState, action) {
   }
   if (action.type === WEBSOCKET_OPEN) {
     return { ...state, hasJoined: true };
-  }
-  if (action.type === START_GAME) {
-    return { ...state, ...action.payload };
   }
   if (action.type === NEW_MEMBER) {
     const member = { ...action.payload, voted: false };
@@ -72,13 +68,5 @@ export default function(state = initialState, action) {
       members: state.members.map(e => ({ ...e, voted: false }))
     };
   }
-
-  if (action.type === RESET_TIMER) {
-    return {
-      ...state,
-      gameStart: new Date()
-    };
-  }
-
   return state;
 }

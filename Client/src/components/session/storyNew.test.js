@@ -18,13 +18,17 @@ describe("New Story Modal", () => {
     it("should commit to the store with one story at a time", () => {
       let newText;
       const mocknewStoryFunc = changeData => {
-        newText = changeData.new.story;
+        newText = changeData.story;
       };
       const mockMany = jest.fn();
 
       const wrapper = mount(
         <Modal>
-          <NewStory addNewStory={mocknewStoryFunc} addMany={mockMany} />
+          <NewStory
+            roomId={1}
+            addNewStory={mocknewStoryFunc}
+            addMany={mockMany}
+          />
         </Modal>
       );
       const textarea = wrapper
@@ -46,7 +50,7 @@ describe("New Story Modal", () => {
     it("should allow admin to enter as many stories as he wants, without closing the modal", () => {
       let newText;
       const mocknewStoryFunc = changeData => {
-        newText = changeData.new.story;
+        newText = changeData.story;
       };
       const mockMany = jest.fn();
 

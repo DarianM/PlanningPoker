@@ -6,6 +6,7 @@ import {
   UPDATE_ROOM,
   FLIP_CARDS,
   ADD_VOTE,
+  RESET_TIMER,
   DELETE_VOTES,
   END_GAME,
   REMOVE_MEMBER
@@ -91,6 +92,8 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === "END_STORY") {
+    // check if there are more stories and set the next one as active, otherwise toast "no more stories in the backlog"
+    //
     const { date } = action.payload;
     const { activeStoryId } = state;
     return {
@@ -167,6 +170,21 @@ export default function(state = initialState, action) {
         [id]: {
           ...state.byId[id],
           text
+        }
+      }
+    };
+  }
+
+  if (action.type === RESET_TIMER) {
+    const { newDate } = action.payload;
+    const { activeStoryId } = state;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          start: new Date(newDate)
         }
       }
     };

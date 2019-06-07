@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { isFlipped, isStarted, isEnded } from "../../../selectors";
 
 const mapStateToProps = state => {
+  console.log(isStarted(state));
   return {
     start: isStarted(state),
     flip: isFlipped(state),

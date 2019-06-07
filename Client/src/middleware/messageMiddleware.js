@@ -1,10 +1,5 @@
 import { addToast } from "../actions/toastsActions";
-import {
-  startingGame,
-  newMember,
-  renameRoom,
-  removeMember
-} from "../actions/roomActions";
+import { newMember, renameRoom, removeMember } from "../actions/roomActions";
 import {
   addStory,
   startingStory,
@@ -13,7 +8,8 @@ import {
   flippingCards,
   addingVote,
   memberVoted,
-  deletingVotes
+  deletingVotes,
+  resetingTimer
 } from "../actions/storyActions";
 import { send } from "../actions/websocketActions";
 import {
@@ -84,6 +80,9 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "STORY_RENAMED") {
       store.dispatch(renameStory(data));
+    }
+    if (reason === "TIMER_RESET") {
+      store.dispatch(resetingTimer(data));
     }
     return {};
   }

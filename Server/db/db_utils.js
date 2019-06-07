@@ -21,7 +21,6 @@ const getUserById = async id => {
 };
 
 const addStory = async (roomId, story, isActive) => {
-  console.log(isActive);
   return await knex("stories").insert({ roomId, description: story, isActive });
 };
 
@@ -155,6 +154,12 @@ const editStory = async (description, id) => {
     .where({ id });
 };
 
+const resetTimer = async (storyId, newStart) => {
+  await knex("stories")
+    .update({ started: newStart })
+    .where({ id: storyId });
+};
+
 module.exports = {
   getRoomMembers,
   getRoomStories,
@@ -173,5 +178,6 @@ module.exports = {
   flipVotes,
   update,
   addStory,
-  editStory
+  editStory,
+  resetTimer
 };

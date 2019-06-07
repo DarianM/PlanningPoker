@@ -4,19 +4,21 @@ import { ConnectedStories } from "./stories";
 
 describe("Sessioninfo Component", () => {
   const stories = {
-    nextStoryId: 1,
-    stories: [{ story: "test", completed: false, id: 1 }],
-    activeStory: ""
+    byId: {
+      1: { id: 1, text: "test" }
+    },
+    allIds: [1],
+    activeStoryId: 1
   };
 
-  const mocknewStoryFunc = jest.fn();
-  const mockDeleteFunc = jest.fn();
+  const mockNewStory = jest.fn();
+  const mockDeleteStory = jest.fn();
   it("renders without crashing", () => {
     mount(
       <ConnectedStories
         stories={stories}
-        newStory={mocknewStoryFunc}
-        deleteStory={mockDeleteFunc}
+        newStory={mockNewStory}
+        deleteStory={mockDeleteStory}
       />
     );
   });
@@ -26,8 +28,8 @@ describe("Sessioninfo Component", () => {
       const wrapper = mount(
         <ConnectedStories
           stories={stories}
-          newStory={mocknewStoryFunc}
-          deleteStory={mockDeleteFunc}
+          newStory={mockNewStory}
+          deleteStory={mockDeleteStory}
         />
       );
       const newStoryBtn = wrapper.find(".new_btn");

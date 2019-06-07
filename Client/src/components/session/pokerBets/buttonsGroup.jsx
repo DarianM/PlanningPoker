@@ -6,6 +6,7 @@ const ButtonsGroup = ({ buttons, onClick }) => {
     <div className="controls">
       {buttons.map(b => (
         <button
+          key={b.id}
           type="button"
           disabled={b.status}
           className={oneBtn ? `${b.className} startgame-control` : b.className}

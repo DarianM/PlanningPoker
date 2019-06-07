@@ -8,7 +8,8 @@ import {
   FLIP_CARDS,
   ADD_VOTE,
   USER_VOTE,
-  DELETE_VOTES
+  DELETE_VOTES,
+  RESET_TIMER
 } from "./types";
 import { addToast } from "./toastsActions";
 import { getActiveStory, isFlipped } from "../selectors";
@@ -151,11 +152,27 @@ function editStory(payload) {
   };
 }
 
+function resetTimer() {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { id: storyId } = getActiveStory(state);
+    const { id: roomId } = state.gameRoom;
+    await Api.resetTimer(roomId, storyId);
+  };
+}
+
+function resetingTimer(payload) {
+  return dispatch => {
+    dispatch({ type: RESET_TIMER, payload });
+  };
+}
+
 export {
   addVote,
   addingVote,
   memberVoted,
   flipCards,
+  flippingCards,
   deleteVotes,
   deletingVotes,
   newStory,
@@ -167,5 +184,6 @@ export {
   deleteStory,
   editStory,
   renameStory,
-  flippingCards
+  resetTimer,
+  resetingTimer
 };

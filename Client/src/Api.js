@@ -51,6 +51,9 @@ const addStory = (story, roomId, active) =>
 const editStory = (description, id, roomId) =>
   fetchMethod(PUT, "/api/story/rename", { description, id, roomId });
 
+const resetTimer = (roomId, storyId) =>
+  fetchMethod(PUT, "/api/story/reset", { roomId, storyId });
+
 export {
   vote,
   join,
@@ -61,5 +64,6 @@ export {
   flip,
   updateRoomName,
   addStory,
-  editStory
+  editStory,
+  resetTimer
 };

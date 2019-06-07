@@ -79,7 +79,8 @@ StoryDescription.propTypes = {
   story: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
   activeStoryId: PropTypes.number.isRequired,
-  deleteStory: PropTypes.func.isRequired
+  deleteStory: PropTypes.func.isRequired,
+  roomId: PropTypes.number.isRequired
 };
 
 export default StoryDescription;

@@ -2,15 +2,10 @@ import {
   LOGIN,
   LOGIN_SUCCES,
   LOGIN_FAILURE,
-  GAME_STARTING,
-  GAME_STARTED,
   CREATE_ROOM,
   UPDATE_ROOM,
   NEW_MEMBER,
-  REMOVE_MEMBER,
-  END_GAME,
-  RESET_TIMER,
-  START_GAME
+  REMOVE_MEMBER
 } from "./types";
 import { addToast } from "./toastsActions";
 import { connect } from "./websocketActions";
@@ -88,13 +83,6 @@ function removeMember(payload) {
   };
 }
 
-function startingGame(payload) {
-  return {
-    type: START_GAME,
-    payload
-  };
-}
-
 function editRoomName(payload) {
   return async dispatch => {
     const { roomName, roomId } = payload;
@@ -111,28 +99,11 @@ function renameRoom(payload) {
   };
 }
 
-function endGame(payload) {
-  return {
-    type: END_GAME,
-    payload
-  };
-}
-
-function resetTimer(payload) {
-  return {
-    type: RESET_TIMER,
-    payload
-  };
-}
-
 export {
   createRoom,
   renameRoom,
   joinRoom,
   newMember,
   removeMember,
-  startingGame,
-  editRoomName,
-  endGame,
-  resetTimer
+  editRoomName
 };

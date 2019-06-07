@@ -73,18 +73,19 @@ export class ConnectedStories extends Component {
         <div id="roomstory" className="todaystory">
           <table className="storytable">
             <tbody>
-              {stories.allIds.map(id =>
-                !stories.byId[id].end ? (
+              {stories.allIds.map(id => {
+                const { id: storyId, text } = stories.byId[id];
+                return !stories.byId[id].end ? (
                   <StoryDescription
-                    key={stories.byId[id].id}
-                    story={stories.byId[id].text}
+                    key={storyId}
+                    story={text}
                     roomId={roomId}
-                    id={stories.byId[id].id}
+                    id={storyId}
                     activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
                   />
-                ) : null
-              )}
+                ) : null;
+              })}
             </tbody>
           </table>
         </div>
@@ -94,10 +95,20 @@ export class ConnectedStories extends Component {
 }
 ConnectedStories.propTypes = {
   stories: PropTypes.shape({
-    story: PropTypes.string
-  }).isRequired,
+    byId: PropTypes.shape({}),
+    allIds: PropTypes.arrayOf(Number),
+    activeStoryId: PropTypes.number
+  }),
+  roomId: PropTypes.number.isRequired,
   newStory: PropTypes.func.isRequired,
   deleteStory: PropTypes.func.isRequired
+};
+
+ConnectedStories.defaultProps = {
+  stories: PropTypes.shape({
+    byId: PropTypes.shape({}),
+    allIds: PropTypes.array
+  })
 };
 
 const SessionStories = connect(

@@ -36,9 +36,7 @@ export const ConnectedSessionInfo = ({
     <div>
       <EditableText text={roomName} commit={onRoomNameChanged} />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
-      {activeStory && (
-        <EditableText text={text} commit={onActiveStoryChanged} />
-      )}
+      {id && <EditableText text={text} commit={onActiveStoryChanged} />}
     </div>
   );
 };
@@ -46,15 +44,26 @@ export const ConnectedSessionInfo = ({
 ConnectedSessionInfo.propTypes = {
   roomName: PropTypes.string.isRequired,
   roomId: PropTypes.number.isRequired,
-  activeStory: PropTypes.object,
+  activeStory: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    text: PropTypes.string.isRequired,
+    start: PropTypes.instanceOf(Date),
+    end: PropTypes.instanceOf(Date),
+    votes: PropTypes.array
+  }),
   renameStory: PropTypes.func.isRequired,
   renameRoom: PropTypes.func.isRequired
 };
 
 ConnectedSessionInfo.defaultProps = {
-  activeStory: PropTypes.instanceOf(undefined)
+  activeStory: PropTypes.shape({
+    id: PropTypes.instanceOf(undefined),
+    text: PropTypes.instanceOf(undefined),
+    start: PropTypes.instanceOf(undefined),
+    end: PropTypes.instanceOf(undefined),
+    votes: PropTypes.instanceOf(undefined)
+  })
 };
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps
