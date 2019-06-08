@@ -1,18 +1,16 @@
 import { ADD_TOAST, REMOVE_TOAST } from "./types";
 
-let nextToastId = 0;
 export function addToast(payload) {
-  nextToastId += 1;
+  const expires = { ...payload, expires: Date.now() + 3000 };
   return {
-    payload,
-    id: nextToastId,
+    payload: expires,
     type: ADD_TOAST
   };
 }
 
-export function removeToast(id) {
+export function removeToast() {
   return {
-    payload: id,
+    payload: { currentDate: Date.now() },
     type: REMOVE_TOAST
   };
 }

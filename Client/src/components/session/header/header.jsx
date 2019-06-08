@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import Logo from "./logo";
 import LogedUser from "./logedUser";
 
+import "./header.css";
+
 const mapStateToProps = state => {
   return {
     user: state.gameRoom.user

@@ -16,13 +16,13 @@
 }
 
 .header-userImg {
-  content: url(../../../../dist/images/pokerIT.png);
+  content: url(/images/user_logo.png);
   width: 60px;
   border-radius: 50%;
 }
 
 .header-logo {
-  content: url(../../../../dist/images/user_logo.png);
+  content: url(/images/pokerIT.png);
   padding: 15px 15px;
   width: 110px;
 }

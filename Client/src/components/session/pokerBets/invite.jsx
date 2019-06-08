@@ -10,7 +10,12 @@ const mapStateToProps = state => {
 const ConnectedInvite = ({ url }) => (
   <div className="invite-link">
     <div>Invite a teammate</div>
-    <input type="text" value={url} />
+    <input
+      type="text"
+      className="link-input"
+      onFocus={e => e.target.select()}
+      value={url}
+    />
   </div>
 );
 

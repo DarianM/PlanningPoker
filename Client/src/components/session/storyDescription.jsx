@@ -12,6 +12,7 @@ class StoryDescription extends Component {
 
   hideModal() {
     this.setState({ show: false });
+    document.body.classList.remove("modal-open");
   }
 
   render() {
@@ -20,6 +21,7 @@ class StoryDescription extends Component {
     const onEditStory = e => {
       e.preventDefault();
       this.setState({ show: true });
+      document.body.classList.add("modal-open");
     };
     return (
       <>

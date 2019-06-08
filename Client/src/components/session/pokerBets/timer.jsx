@@ -14,7 +14,8 @@ export class ConnectedTimer extends Component {
     super(props);
     this.state = {
       seconds: 0,
-      minutes: 0
+      minutes: 0,
+      hours: 0
     };
 
     this.update = this.update.bind(this);
@@ -42,7 +43,6 @@ export class ConnectedTimer extends Component {
 
   startTimer(start) {
     if (start) {
-      console.log(start);
       this.clock = setInterval(this.update, 1000);
     }
   }
@@ -56,16 +56,20 @@ export class ConnectedTimer extends Component {
     if (activeStory.end) this.stopTimer();
     const { start } = activeStory;
     const time = Math.round((Date.now() - new Date(start)) / 1000);
-    this.setState({ minutes: Math.floor(time / 60), seconds: time % 60 });
+    this.setState({
+      hours: Math.floor(time / 3600),
+      minutes: Math.floor((time / 3600) % 60),
+      seconds: time % 60
+    });
   }
 
   render() {
-    const { seconds } = this.state;
-    const { minutes } = this.state;
+    const { seconds, minutes, hours } = this.state;
     return (
       <div className="timer">
         <i className="far fa-clock" />
-        <span>
+        <span className="clock">
+          {hours < 10 ? `0${hours}:` : `${hours}:`}
           {minutes < 10 ? `0${minutes}:` : `${minutes}:`}
           {seconds < 10 ? `0${seconds}` : seconds}
         </span>

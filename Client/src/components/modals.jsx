@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -12,34 +12,52 @@ const Modal = ({ children }) => {
   );
 };
 
-const ConnectedToasts = ({ toasts, actions }) => {
-  return (
-    <ul className="toasts">
-      {toasts.map(toast => {
-        const { id } = toast;
-        return (
-          <Toast
-            {...toast}
-            key={id}
-            onDismissClick={() => actions.removeToast(id)}
-          />
-        );
-      })}
-    </ul>
-  );
-};
+class ConnectedToasts extends Component {
+  componentDidUpdate() {
+    const { toasts, actions } = this.props;
+    const hasToasts = Boolean(toasts.length);
+    const started = Boolean(this.checkInterval);
+
+    if (hasToasts && !started) {
+      this.checkInterval = setInterval(() => {
+        actions.removeToast();
+      }, 1000);
+    }
+    if (!hasToasts && started) {
+      clearInterval(this.checkInterval);
+      this.checkInterval = 0;
+    }
+  }
+
+  render() {
+    const { toasts, actions } = this.props;
+    return (
+      <ul className="toasts">
+        {toasts.map(toast => {
+          const { expires } = toast;
+          return (
+            <Toast
+              {...toast}
+              key={expires}
+              onDismissClick={() => actions.removeToast()}
+            />
+          );
+        })}
+      </ul>
+    );
+  }
+}
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ removeToast }, dispatch)
 });
 
 const Toast = ({ text, onDismissClick }) => {
-  setTimeout(onDismissClick, 3000);
   return (
     <li className="toast">
       <p className="toast__content">{text}</p>
       <button type="button" className="toast__dismiss" onClick={onDismissClick}>
-        {`x`}
+        {"\u00D7"}
       </button>
     </li>
   );

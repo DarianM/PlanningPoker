@@ -27,13 +27,15 @@ export class ConnectedStories extends Component {
     this.handleNewStory = this.handleNewStory.bind(this);
   }
 
-  handleNewStory(prop) {
-    this.setState({ add: prop });
+  handleNewStory(storyModal) {
+    this.setState({ add: storyModal });
+    if (!storyModal) document.body.classList.remove("modal-open");
   }
 
   render() {
     const { stories, roomId, newStory, deleteStory } = this.props;
     const { add } = this.state;
+    if (add) document.body.classList.add("modal-open");
     return (
       <div className="stories">
         {add && (
