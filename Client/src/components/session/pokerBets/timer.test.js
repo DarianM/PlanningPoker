@@ -27,18 +27,18 @@ describe("Timer component", () => {
     it("should display 00:00", () => {
       const wrapper = applyShallow();
       jest.advanceTimersByTime(5000);
-      expect(wrapper.find(".timer").text()).toEqual("00:00");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:00");
     });
   });
 
   describe("admin did press Start button and 10s have passed since then", () => {
-    it("should display 00:10", () => {
+    it("should display 00:00:10", () => {
       const wrapper = applyShallow();
       wrapper.setProps({
         activeStory: { start: new Date("2019-04-09T11:05:10") }
       });
       jest.advanceTimersByTime(1000);
-      expect(wrapper.find(".timer").text()).toEqual("00:10");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:10");
     });
   });
 
@@ -49,13 +49,13 @@ describe("Timer component", () => {
         activeStory: { start: new Date("2019-04-09T11:04:50") }
       });
       jest.advanceTimersByTime(1000);
-      expect(wrapper.find(".timer").text()).toEqual("00:30");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:30");
 
       wrapper.setProps({
         activeStory: { start: new Date("2019-04-09T11:05:20"), end: null }
       });
       jest.advanceTimersByTime(1000);
-      expect(wrapper.find(".timer").text()).toEqual("00:00");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:00");
     });
   });
 
@@ -66,12 +66,12 @@ describe("Timer component", () => {
         activeStory: { start: new Date("2019-04-09T11:05:07") }
       });
       jest.advanceTimersByTime(1000);
-      expect(wrapper.find(".timer").text()).toEqual("00:13");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:13");
 
       wrapper.setProps({
         activeStory: { end: new Date("2019-04-09T11:05:07") }
       });
-      expect(wrapper.find(".timer").text()).toEqual("00:13");
+      expect(wrapper.find(".timer").text()).toEqual("00:00:13");
     });
   });
 
@@ -85,14 +85,14 @@ describe("Timer component", () => {
         }
       });
       jest.advanceTimersByTime(1000);
-      expect(wrapper.find(".timer").text()).toEqual("03:20");
+      expect(wrapper.find(".timer").text()).toEqual("00:03:20");
       wrapper.setProps({
         activeStory: { start: new Date("2019-04-09T11:02:00"), end: null }
       });
       Date.now = jest.fn(() => new Date("2019-04-09T11:05:40").valueOf());
 
       jest.advanceTimersByTime(20000);
-      expect(wrapper.find(".timer").text()).toEqual("03:40");
+      expect(wrapper.find(".timer").text()).toEqual("00:03:40");
     });
   });
 });

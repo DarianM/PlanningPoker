@@ -1,13 +1,16 @@
 import { addToast } from "../actions/toastsActions";
-import { newMember, renameRoom, removeMember } from "../actions/roomActions";
+import {
+  newMember,
+  renameRoom,
+  removeMember,
+  memberVoted
+} from "../actions/roomActions";
 import {
   addingStory,
   startingStory,
   endingStory,
   renamingStory,
   flippingCards,
-  addingVote,
-  memberVoted,
   deletingVotes,
   resetingTimer
 } from "../actions/storyActions";
@@ -50,9 +53,6 @@ const messageMiddleware = fetch => store => next => async action => {
     }
 
     if (reason === "USER_VOTED") {
-      store.dispatch(
-        addingVote({ user: data.user, voted: data.value, id: data.id })
-      );
       store.dispatch(memberVoted({ user: data.user, voted: true }));
     }
 
@@ -67,7 +67,7 @@ const messageMiddleware = fetch => store => next => async action => {
       store.dispatch(endingStory(data));
     }
     if (reason === "CLEAR_VOTES") {
-      store.dispatch(deletingVotes(data));
+      store.dispatch(deletingVotes());
     }
     if (reason === "ROOM_NAME_UPDATED") {
       store.dispatch(renameRoom(data));

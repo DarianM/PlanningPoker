@@ -1,10 +1,13 @@
 import logReducer from "./logReducer";
 import {
   CREATE_ROOM,
+  RENAME_ROOM,
   NEW_MEMBER,
   WEBSOCKET_OPEN,
   USER_VOTE,
-  DELETE_VOTES
+  REMOVE_MEMBER,
+  DELETE_VOTES,
+  UPDATE_ROOM
 } from "../actions/types";
 
 describe("logReducer", () => {
@@ -29,7 +32,7 @@ describe("logReducer", () => {
     });
   });
 
-  describe("whten receives that websocket has opened", () => {
+  describe("when receives a websocket open action", () => {
     it("logs the user into his room", () => {
       const expected = {
         hasJoined: true
@@ -47,7 +50,29 @@ describe("logReducer", () => {
     });
   });
 
-  describe("in existing poker room", () => {
+  describe("when receives rename room action", () => {
+    const initialState = {
+      user: "name",
+      roomName: "room",
+      id: 1
+    };
+    it("should change room's name", () => {
+      const expected = {
+        user: "name",
+        roomName: "room-edited",
+        id: 1
+      };
+
+      expect(
+        logReducer(initialState, {
+          type: RENAME_ROOM,
+          payload: { roomName: "room-edited" }
+        })
+      ).toEqual(expected);
+    });
+  });
+
+  describe("when receives new member action", () => {
     const initialState = {
       members: [{ member: "Adrian", voted: true, id: 1 }]
     };
@@ -68,29 +93,48 @@ describe("logReducer", () => {
     });
   });
 
-  describe("after games has started", () => {
-    describe("display in room players who picked a card", () => {
-      const initialState = {
+  describe("when receives an user vote action", () => {
+    const initialState = {
+      members: [
+        { member: "John", voted: false, id: 1 },
+        { member: "Adrian", voted: true, id: 2 }
+      ]
+    };
+    it("updates member voting state", () => {
+      const expected = {
         members: [
-          { member: "John", voted: false, id: 1 },
+          { member: "John", voted: true, id: 1 },
           { member: "Adrian", voted: true, id: 2 }
         ]
       };
-      it("updates member voting state", () => {
-        const expected = {
-          members: [
-            { member: "John", voted: true, id: 1 },
-            { member: "Adrian", voted: true, id: 2 }
-          ]
-        };
 
-        expect(
-          logReducer(initialState, {
-            type: USER_VOTE,
-            payload: { user: "John", voted: true }
-          })
-        ).toEqual(expected);
-      });
+      expect(
+        logReducer(initialState, {
+          type: USER_VOTE,
+          payload: { user: "John", voted: true }
+        })
+      ).toEqual(expected);
+    });
+  });
+
+  describe("when receives a remove member action", () => {
+    const initialState = {
+      members: [
+        { member: "John", voted: false, id: 1 },
+        { member: "Adrian", voted: true, id: 2 }
+      ]
+    };
+    it("updates members list", () => {
+      const expected = {
+        members: [{ member: "John", voted: false, id: 1 }]
+      };
+
+      expect(
+        logReducer(initialState, {
+          type: REMOVE_MEMBER,
+          payload: { name: "Adrian" }
+        })
+      ).toEqual(expected);
     });
   });
 
@@ -114,6 +158,57 @@ describe("logReducer", () => {
       expect(logReducer(initialState, { type: DELETE_VOTES })).toEqual(
         expected
       );
+    });
+  });
+
+  describe("when receives an update room action", () => {
+    const initialState = {
+      user: "",
+      roomName: ""
+    };
+
+    it("should update the room accordingly", () => {
+      const expected = {
+        user: "user2",
+        id: 1,
+        roomName: "theRoom",
+        members: [
+          { member: "user1", voted: true, id: 1 },
+          { member: "user2", voted: false, id: 2 }
+        ]
+      };
+
+      expect(
+        logReducer(initialState, {
+          type: UPDATE_ROOM,
+          payload: {
+            user: "user2",
+            roomId: 1,
+            roomName: "theRoom",
+            roomMembers: [
+              { member: "user1", voted: true, id: 1 },
+              { member: "user2", voted: false, id: 2 }
+            ]
+          }
+        })
+      ).toEqual(expected);
+    });
+  });
+
+  describe("when receives an unknown action", () => {
+    const initialState = {
+      user: "test",
+      roomId: 1,
+      roomName: "newRoom",
+      members: [{ member: "test", voted: false, id: 1 }]
+    };
+    it("should return the initial state", () => {
+      expect(
+        logReducer(initialState, {
+          type: "UNKNOWN_ACTION",
+          payload: { info: null }
+        })
+      ).toEqual(initialState);
     });
   });
 });

@@ -5,6 +5,7 @@ import {
   CREATE_ROOM,
   UPDATE_ROOM,
   NEW_MEMBER,
+  USER_VOTE,
   REMOVE_MEMBER
 } from "./types";
 import { addToast } from "./toastsActions";
@@ -70,7 +71,12 @@ function joinRoom(payload) {
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
       // dispatch(addToast({ text: err.message }));
-      err.map(e => dispatch({ type: LOGIN_FAILURE, payload: e.message }));
+      err.map(e =>
+        dispatch({
+          type: LOGIN_FAILURE,
+          payload: { message: e.message, location: e.location }
+        })
+      );
     }
   };
 }
@@ -99,11 +105,16 @@ function renameRoom(payload) {
   };
 }
 
+function memberVoted(payload) {
+  return { type: USER_VOTE, payload };
+}
+
 export {
   createRoom,
   renameRoom,
   joinRoom,
   newMember,
   removeMember,
-  editRoomName
+  editRoomName,
+  memberVoted
 };

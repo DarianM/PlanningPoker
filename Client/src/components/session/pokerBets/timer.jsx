@@ -58,7 +58,7 @@ export class ConnectedTimer extends Component {
     const time = Math.round((Date.now() - new Date(start)) / 1000);
     this.setState({
       hours: Math.floor(time / 3600),
-      minutes: Math.floor((time / 3600) % 60),
+      minutes: Math.floor((time / 60) % 60),
       seconds: time % 60
     });
   }
