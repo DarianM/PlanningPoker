@@ -30,14 +30,12 @@ router.delete("/votes/:roomId", validate.roomId, async (req, res) => {
   await db.deleteRoomVotes(roomId);
   // await db.flipVotes(roomId, false);
   server.broadcast(roomId, {
-    reason: "CLEAR_VOTES",
-    data: { votes: [] }
+    reason: "CLEAR_VOTES"
   });
   res.send({}).status(200);
 });
 
 router.post("/vote", validate.vote, async (req, res) => {
-  console.log(req.body);
   const { user, storyId, roomId, value } = req.body;
   const id = await db.addMemberVote(user, roomId, value);
   const data = {

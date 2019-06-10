@@ -19,9 +19,6 @@ const initialStore = {
     allIds: [],
     activeStoryId: undefined
   }
-  // stories: [
-  //   { id: 1, text: "", start: null, end: null, active: true, votes: [] }
-  // ]
 };
 
 const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

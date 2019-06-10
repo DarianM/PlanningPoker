@@ -1,14 +1,13 @@
 import {
   ADD_STORY,
+  START_STORY,
+  END_STORY,
   DELETE_STORY,
   EDIT_STORY,
-  EDIT_HISTORY,
   UPDATE_ROOM,
   FLIP_CARDS,
-  ADD_VOTE,
   RESET_TIMER,
   DELETE_VOTES,
-  END_GAME,
   REMOVE_MEMBER
 } from "../actions/types";
 
@@ -17,42 +16,6 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-  if (action.type === REMOVE_MEMBER) {
-    const { name } = action.payload;
-    const { activeStoryId } = state;
-    return {
-      ...state,
-      byId: {
-        ...state.byId,
-        [activeStoryId]: {
-          ...state.byId[activeStoryId],
-          votes: state.byId[activeStoryId].votes.filter(
-            item => item.name !== name
-          )
-        }
-      }
-    };
-  }
-
-  if (action.type === DELETE_VOTES) {
-    const { votes } = action.payload;
-    const { activeStoryId } = state;
-    return {
-      ...state,
-      byId: {
-        ...state.byId,
-        [activeStoryId]: {
-          ...state.byId[activeStoryId],
-          end: null,
-          votes
-        }
-      }
-    };
-  }
-
-  if (action.type === END_GAME) {
-    return { ...state, ...action.payload };
-  }
   if (action.type === ADD_STORY) {
     const { id, story } = action.payload;
     let { activeStoryId } = state;
@@ -66,7 +29,7 @@ export default function(state = initialState, action) {
       }
     };
     if (!state.activeStoryId) {
-      activeStoryId = action.payload.id;
+      activeStoryId = id;
     }
     return {
       ...state,
@@ -76,7 +39,7 @@ export default function(state = initialState, action) {
     };
   }
 
-  if (action.type === "START_STORY") {
+  if (action.type === START_STORY) {
     const { date } = action.payload;
     const { activeStoryId } = state;
     return {
@@ -91,9 +54,7 @@ export default function(state = initialState, action) {
     };
   }
 
-  if (action.type === "END_STORY") {
-    // check if there are more stories and set the next one as active, otherwise toast "no more stories in the backlog"
-    //
+  if (action.type === END_STORY) {
     const { date } = action.payload;
     const { activeStoryId } = state;
     return {
@@ -124,43 +85,6 @@ export default function(state = initialState, action) {
     };
   }
 
-  if (action.type === DELETE_STORY) {
-    const { id } = action.payload;
-    const newList = state.stories.filter(e => e.id !== id);
-    return { ...state, stories: [...newList] };
-  }
-  if (action.type === EDIT_HISTORY) {
-    return {
-      ...state,
-      ...action.payload
-    };
-  }
-  if (action.type === UPDATE_ROOM) {
-    const { roomStories } = action.payload;
-    const allIds = roomStories.map(story => story.id);
-    const { id: activeStoryId } =
-      roomStories.find(story => story.isActive) || [];
-    const byIdArray = roomStories.map(story => {
-      const { id, description: text, started: start, ended: end } = story;
-      return {
-        [story.id]: {
-          id,
-          text,
-          start,
-          end,
-          votes: []
-        }
-      };
-    });
-    const byId = Object.assign({}, ...byIdArray.map(item => item));
-
-    return {
-      ...state,
-      byId,
-      activeStoryId,
-      allIds
-    };
-  }
   if (action.type === EDIT_STORY) {
     const { id, description: text } = action.payload;
     return {
@@ -170,6 +94,46 @@ export default function(state = initialState, action) {
         [id]: {
           ...state.byId[id],
           text
+        }
+      }
+    };
+  }
+
+  if (action.type === DELETE_STORY) {
+    // should be treated on the server first
+    const { id } = action.payload;
+    const newList = state.stories.filter(e => e.id !== id);
+    return { ...state, stories: [...newList] };
+  }
+
+  if (action.type === REMOVE_MEMBER) {
+    const { name } = action.payload;
+    const { activeStoryId } = state;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          votes: state.byId[activeStoryId].votes.filter(
+            item => item.name !== name
+          )
+        }
+      }
+    };
+  }
+
+  if (action.type === DELETE_VOTES) {
+    // const { votes } = action.payload;
+    const { activeStoryId } = state;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          end: null,
+          votes: []
         }
       }
     };
@@ -187,6 +151,33 @@ export default function(state = initialState, action) {
           start: new Date(newDate)
         }
       }
+    };
+  }
+
+  if (action.type === UPDATE_ROOM) {
+    const { roomStories } = action.payload;
+    const allIds = roomStories.map(story => story.id);
+    const { id: activeStoryId } =
+      roomStories.find(story => story.isActive) || [];
+    const byIdArray = roomStories.map(story => {
+      const { id, description: text, started: start, ended: end } = story;
+      return {
+        [story.id]: {
+          id,
+          text,
+          start: new Date(start),
+          end,
+          votes: []
+        }
+      };
+    });
+    const byId = Object.assign({}, ...byIdArray.map(item => item));
+
+    return {
+      ...state,
+      byId,
+      activeStoryId,
+      allIds
     };
   }
 

@@ -4,7 +4,19 @@ import {
   LOGIN_FAILURE,
   GAME_STARTING,
   GAME_STARTED,
-  GAME_FAILURE
+  GAME_FAILURE,
+  FLIP_STARTING,
+  FLIP_SUCCESS,
+  FLIP_FAILURE,
+  CLEAR_STARTING,
+  CLEAR_SUCCESS,
+  CLEAR_FAILURE,
+  END_STARTING,
+  END_SUCCESS,
+  END_FAILURE,
+  RESET_STARTING,
+  RESET_SUCCESS,
+  RESET_FAILURE
 } from "../actions/types";
 
 const initialState = {
@@ -35,6 +47,42 @@ export default function connection(state = initialState, action) {
       return success;
 
     case GAME_FAILURE:
+      return failure;
+
+    case FLIP_STARTING:
+      return starting;
+
+    case FLIP_SUCCESS:
+      return success;
+
+    case FLIP_FAILURE:
+      return failure;
+
+    case CLEAR_STARTING:
+      return starting;
+
+    case CLEAR_SUCCESS:
+      return success;
+
+    case CLEAR_FAILURE:
+      return failure;
+
+    case END_STARTING:
+      return starting;
+
+    case END_SUCCESS:
+      return success;
+
+    case END_FAILURE:
+      return failure;
+
+    case RESET_STARTING:
+      return starting;
+
+    case RESET_SUCCESS:
+      return success;
+
+    case RESET_FAILURE:
       return failure;
 
     default:

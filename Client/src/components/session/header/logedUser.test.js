@@ -10,7 +10,7 @@ describe("LogedUser Component", () => {
     it("should display correct username", () => {
       expect(
         mount(<LogedUser name="testName" />)
-          .find("#userLoged")
+          .find(".header-userName")
           .text()
       ).toEqual("User: testName");
     });

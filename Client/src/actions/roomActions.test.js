@@ -4,7 +4,8 @@ import {
   removeMember,
   editRoomName,
   newMember,
-  renameRoom
+  renameRoom,
+  memberVoted
 } from "./roomActions";
 import * as Api from "../Api";
 
@@ -67,7 +68,7 @@ describe("join room action", () => {
       await result(dispatch);
       expect(dispatch).toBeCalledWith({
         type: "LOGIN_FAILURE",
-        payload: "err"
+        payload: { location: "unknown", message: "err" }
       });
     });
   });
@@ -127,15 +128,23 @@ describe("join room action", () => {
   });
 
   describe("new member", () => {
-    it("should return correspondent action creator", () => {
+    it("should return correspondent action for reducer", () => {
       const payload = { member: "test", id: 1, voted: false };
       const result = newMember(payload);
       expect(result).toEqual({ type: "NEW_MEMBER", payload });
     });
   });
 
+  describe("member voted", () => {
+    it("should return proper action for reducer", () => {
+      const payload = { user: "test", voted: true };
+      const result = memberVoted(payload);
+      expect(result).toEqual({ type: "USER_VOTE", payload });
+    });
+  });
+
   describe("rename room", () => {
-    it("should return correspondent action creator", () => {
+    it("should return correspondent action for reducer", () => {
       const payload = { roomId: 1, roomName: "newName" };
       const result = renameRoom(payload);
       expect(result).toEqual({ type: "RENAME_ROOM", payload });

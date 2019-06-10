@@ -57,8 +57,7 @@ describe("message middleware", () => {
       };
       it("stores the vote and keeps a evidence", () => {
         messageMidTest(jest.fn())(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toEqual(ADD_VOTE);
-        expect(store.dispatch.mock.calls[1][0].type).toEqual(USER_VOTE);
+        expect(store.dispatch.mock.calls[0][0].type).toEqual(USER_VOTE);
       });
     });
 
@@ -74,72 +73,73 @@ describe("message middleware", () => {
       });
     });
 
-  describe("on WEBSOCKET_RECONNECTED", () => {
-    describe("reconnected", () => {
-      const mockFetch = jest.fn(
-        () =>
-          new Promise((resolve, reject) =>
-            resolve({
-              json: () => ({
-                roomId: 1
-              }),
-              status: 200
-            })
-          )
-      );
-      const interval = jest.fn();
-      const action = {
-        type: "WEBSOCKET_RECONNECTED",
-        payload: interval
-      };
-      it("reconnects to room and displays a toast with msg great success", async () => {
-        await messageMidTest(mockFetch)(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toBe(UPDATE_ROOM);
-        expect(store.dispatch.mock.calls[1][0].type).toBe(ADD_TOAST);
-      });
-    });
-
-    describe("server offline", () => {
-      const mockFetch = jest.fn(
-        () =>
-          new Promise((resolve, reject) =>
-            resolve({
-              json: () => ({
-                roomId: 1
-              }),
-              status: 400
-            })
-          )
-      );
-      const interval = jest.fn();
-      const action = {
-        type: "WEBSOCKET_RECONNECTED",
-        payload: interval
-      };
-      it("display message toast reconnecting failed", async () => {
-        await messageMidTest(mockFetch)(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toBe(ADD_TOAST);
-        expect(store.dispatch.mock.calls[0][0].payload.text).toBe(
-          "Server seems to be offline. Retrying..."
+    describe("on WEBSOCKET_RECONNECTED", () => {
+      describe("reconnected", () => {
+        const mockFetch = jest.fn(
+          () =>
+            new Promise((resolve, reject) =>
+              resolve({
+                json: () => ({
+                  roomId: 1
+                }),
+                status: 200
+              })
+            )
         );
+        const interval = jest.fn();
+        const action = {
+          type: "WEBSOCKET_RECONNECTED",
+          payload: interval
+        };
+        it("reconnects to room and displays a toast with msg great success", async () => {
+          await messageMidTest(mockFetch)(store)(next)(action);
+          expect(store.dispatch.mock.calls[0][0].type).toBe(UPDATE_ROOM);
+          expect(store.dispatch.mock.calls[1][0].type).toBe(ADD_TOAST);
+        });
       });
-    });
 
-    describe("reconnection failed", () => {
-      const mockFetch = jest.fn(
-        () => new Promise((resolve, reject) => reject())
-      );
-      const interval = jest.fn();
-      const action = {
-        type: "WEBSOCKET_RECONNECTED",
-        payload: interval
-      };
-      it("display message toast reconnecting failed", async () => {
-        await messageMidTest(mockFetch)(store)(next)(action);
-        expect(store.dispatch.mock.calls[0][0].type).toBe(ADD_TOAST);
-        expect(store.dispatch.mock.calls[0][0].payload.text).toBe(
-          "Reconnecting failed..."
+      describe("server offline", () => {
+        const mockFetch = jest.fn(
+          () =>
+            new Promise((resolve, reject) =>
+              resolve({
+                json: () => ({
+                  roomId: 1
+                }),
+                status: 400
+              })
+            )
         );
+        const interval = jest.fn();
+        const action = {
+          type: "WEBSOCKET_RECONNECTED",
+          payload: interval
+        };
+        it("display message toast reconnecting failed", async () => {
+          await messageMidTest(mockFetch)(store)(next)(action);
+          expect(store.dispatch.mock.calls[0][0].type).toBe(ADD_TOAST);
+          expect(store.dispatch.mock.calls[0][0].payload.text).toBe(
+            "Server seems to be offline. Retrying..."
+          );
+        });
+      });
+
+      describe("reconnection failed", () => {
+        const mockFetch = jest.fn(
+          () => new Promise((resolve, reject) => reject())
+        );
+        const interval = jest.fn();
+        const action = {
+          type: "WEBSOCKET_RECONNECTED",
+          payload: interval
+        };
+        it("display message toast reconnecting failed", async () => {
+          await messageMidTest(mockFetch)(store)(next)(action);
+          expect(store.dispatch.mock.calls[0][0].type).toBe(ADD_TOAST);
+          expect(store.dispatch.mock.calls[0][0].payload.text).toBe(
+            "Reconnecting failed..."
+          );
+        });
       });
     });
   });

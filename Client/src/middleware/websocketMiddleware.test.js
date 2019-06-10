@@ -53,7 +53,12 @@ describe("websocket middleware", () => {
 
   describe("on WEBSOCKET_CONNECT action", () => {
     beforeEach(() => {
-      invoke(connect("roomId"));
+      invoke(
+        connect(
+          "roomId",
+          "userId"
+        )
+      );
     });
 
     afterEach(() => {
@@ -62,7 +67,7 @@ describe("websocket middleware", () => {
 
     it("creates the websocket", () => {
       expect(websocketConstructor).toHaveBeenCalledWith(
-        "ws://localhost:2345/roomId"
+        "ws://localhost:2345/roomId/userId"
       );
     });
   });
