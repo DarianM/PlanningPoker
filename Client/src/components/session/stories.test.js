@@ -10,6 +10,7 @@ describe("Sessioninfo Component", () => {
     allIds: [1],
     activeStoryId: 1
   };
+  const roomId = 1;
 
   const mockNewStory = jest.fn();
   const mockDeleteStory = jest.fn();
@@ -19,6 +20,7 @@ describe("Sessioninfo Component", () => {
         stories={stories}
         newStory={mockNewStory}
         deleteStory={mockDeleteStory}
+        roomId={roomId}
       />
     );
   });
@@ -30,6 +32,7 @@ describe("Sessioninfo Component", () => {
           stories={stories}
           newStory={mockNewStory}
           deleteStory={mockDeleteStory}
+          roomId={roomId}
         />
       );
       const newStoryBtn = wrapper.find(".new_btn");

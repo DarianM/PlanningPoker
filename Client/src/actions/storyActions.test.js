@@ -225,9 +225,8 @@ describe("clear votes thunk mid", () => {
 
 describe("deleting votes", () => {
   it("should return proper action for reducer", () => {
-    const payload = { votes: [] };
-    const result = deletingVotes(payload);
-    expect(result).toEqual({ type: "DELETE_VOTES", payload });
+    const result = deletingVotes();
+    expect(result).toEqual({ type: "DELETE_VOTES" });
   });
 });
 

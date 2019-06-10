@@ -33,18 +33,14 @@ describe("Story Description Component", () => {
     mount(
       <table>
         <tbody>
-          {stories.allIds.map(id =>
-            mount(
-              <StoryDescription
-                key={id}
-                story={stories.byId[id].text}
-                id={id}
-                roomId={1}
-                activeStoryId={stories.activeStoryId}
-                deleteStory={mockDeleteStory}
-              />
-            )
-          )}
+          <StoryDescription
+            key={stories.byId[1].id}
+            story={stories.byId[1].text}
+            id={1}
+            roomId={1}
+            activeStoryId={stories.activeStoryId}
+            deleteStory={mockDeleteStory}
+          />
         </tbody>
       </table>
     );
@@ -67,7 +63,7 @@ describe("Story Description Component", () => {
     });
   });
 
-  describe("admin clicks delete story button from a title, except current active title which hasn't one", () => {
+  describe("admin clicks delete story button from a title, except current active title which hasn't have one", () => {
     it("should render an alert with a message before delete action", () => {
       const mockDeleteConfirm = jest.fn(() => true);
       window.confirm = mockDeleteConfirm;

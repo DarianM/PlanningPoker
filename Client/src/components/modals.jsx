@@ -12,7 +12,7 @@ const Modal = ({ children }) => {
   );
 };
 
-class ConnectedToasts extends Component {
+export class ConnectedToasts extends Component {
   componentDidUpdate() {
     const { toasts, actions } = this.props;
     const hasToasts = Boolean(toasts.length);
