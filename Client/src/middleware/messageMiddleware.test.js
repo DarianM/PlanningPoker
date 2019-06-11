@@ -3,7 +3,6 @@ import {
   ADD_TOAST,
   UPDATE_ROOM,
   NEW_MEMBER,
-  ADD_VOTE,
   FLIP_CARDS,
   USER_VOTE
 } from "../actions/types";

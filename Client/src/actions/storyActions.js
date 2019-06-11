@@ -153,7 +153,7 @@ function endingStory(payload) {
 }
 
 function deleteStory(payload) {
-  //to be treated on server
+  // to be treated on server
   return {
     type: DELETE_STORY,
     payload

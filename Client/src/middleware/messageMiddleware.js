@@ -34,7 +34,10 @@ async function reconnectRoomF(roomId, user, interval, dispatch, fetch) {
       clearInterval(interval);
       const data = await response.json();
       dispatch({ type: UPDATE_ROOM, payload: { ...data, roomId, user } });
-
+      const { votes, activeStoryId } = data;
+      if (votes) {
+        dispatch({ type: "UPDATE_VOTES", payload: { votes, activeStoryId } });
+      }
       dispatch(addToast({ text: "Reconnecting successful..." }));
     } else {
       dispatch(addToast({ text: "Server seems to be offline. Retrying..." }));
