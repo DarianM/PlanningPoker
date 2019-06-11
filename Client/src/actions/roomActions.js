@@ -45,10 +45,7 @@ function createRoom(payload) {
       dispatch(newMember({ member: user, id: memberId }));
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
-      err.map(e => dispatch({ type: LOGIN_FAILURE, payload: e.message }));
-
-      // dispatch(addToast({ text: err.message }));
-      // dispatch({ type: LOGIN_FAILURE });
+      dispatch({ type: LOGIN_FAILURE, payload: err.map(e => e.message) });
     }
   };
 }
@@ -70,13 +67,10 @@ function joinRoom(payload) {
       dispatch({ type: UPDATE_ROOM, payload: roomInfo });
       dispatch({ type: LOGIN_SUCCES });
     } catch (err) {
-      // dispatch(addToast({ text: err.message }));
-      err.map(e =>
-        dispatch({
-          type: LOGIN_FAILURE,
-          payload: { message: e.message, location: e.location }
-        })
-      );
+      dispatch({
+        type: LOGIN_FAILURE,
+        payload: err.map(e => e.message)
+      });
     }
   };
 }

@@ -50,11 +50,12 @@ export class ConnectedLogin extends Component {
   }
 
   handleRoomForm() {
+    this.setState({ error: "" });
     const user = this.user.current.value;
     const validate = userNameValidation(user);
     const { hash } = this.props;
     if (validate.message) {
-      this.setState({ error: validate.message });
+      this.setState({ error: [validate.message] });
     } else if (hash) {
       this.handleJoinSession();
     } else this.showCreateModal();
@@ -99,7 +100,13 @@ export class ConnectedLogin extends Component {
               </button>
             </form>
 
-            {formError && <p className="loginError">{error}</p>}
+            {formError && (
+              <div className="loginError">
+                {formError.map(err => (
+                  <p key={err}>{err}</p>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         {show && (
@@ -120,7 +127,7 @@ ConnectedLogin.propTypes = {
   joinRoom: PropTypes.func.isRequired,
   connection: PropTypes.shape({
     isLoading: PropTypes.bool,
-    error: PropTypes.string
+    error: PropTypes.array
   }).isRequired,
   hash: PropTypes.string
 };

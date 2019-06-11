@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const ButtonsGroup = ({ buttons, onClick }) => {
   const oneBtn = buttons.length === 1;
@@ -20,6 +21,11 @@ const ButtonsGroup = ({ buttons, onClick }) => {
       ))}
     </div>
   );
+};
+
+ButtonsGroup.propTypes = {
+  buttons: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onClick: PropTypes.func.isRequired
 };
 
 export default ButtonsGroup;

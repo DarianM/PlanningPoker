@@ -421,18 +421,6 @@ describe("start story thunk mid", () => {
         });
       });
     });
-    describe("with invalid name", () => {
-      it("should dispatch toast to provide valid name", async () => {
-        const dispatch = jest.fn();
-        const result = editStory({ value: "nw", id: 1, roomId: 1 });
-        await result(dispatch);
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({
-          type: "ADD_TOAST",
-          payload: { expires: 8000, text: "Please provide a valid story name" }
-        });
-      });
-    });
   });
 
   describe("renaming story", () => {

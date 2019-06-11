@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-export const Card = ({ value, onClick }) => (
+const Card = ({ value, onClick }) => (
   <div className="vote-point">
     <p className="corner">{value}</p>
     <p className="corner" />
@@ -19,5 +19,10 @@ export const Card = ({ value, onClick }) => (
     />
   </div>
 );
+
+Card.propTypes = {
+  value: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+};
 
 export default Card;

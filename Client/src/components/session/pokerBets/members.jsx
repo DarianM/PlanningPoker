@@ -41,10 +41,14 @@ ConnectedMembers.propTypes = {
       id: PropTypes.number
     })
   ).isRequired,
-  flip: PropTypes.bool.isRequired,
+  flip: PropTypes.bool,
   activeStory: PropTypes.shape({
     votes: PropTypes.array
   }).isRequired
+};
+
+ConnectedMembers.defaultProps = {
+  flip: PropTypes.instanceOf(undefined)
 };
 
 export default connect(

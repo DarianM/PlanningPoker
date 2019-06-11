@@ -100,6 +100,7 @@ Header.propTypes = {
 ConnectedStory.propTypes = {
   story: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
+  roomId: PropTypes.number.isRequired,
   close: PropTypes.func.isRequired,
   children: PropTypes.node,
   editStory: PropTypes.func.isRequired

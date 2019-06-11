@@ -15,7 +15,7 @@ export default function fetchMethod(method, url, payload, receivedFetch) {
       if (response.ok) {
         resolve(data);
       } else {
-        reject(data.error);
+        reject(data.error.map(e => new Error(e.message)));
       }
     } catch (error) {
       reject(new Error("Check your internet connection"));

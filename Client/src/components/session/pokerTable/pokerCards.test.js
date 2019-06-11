@@ -1,7 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
 import { ConnectedPokerCards } from "./pokerCards";
-import { Card } from "./card";
+import Card from "./card";
 
 describe("Card Component", () => {
   it("renders card without crashing", () => {

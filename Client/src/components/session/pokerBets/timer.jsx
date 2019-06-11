@@ -77,6 +77,21 @@ export class ConnectedTimer extends Component {
     );
   }
 }
+
+ConnectedTimer.propTypes = {
+  activeStory: PropTypes.shape({
+    id: PropTypes.number,
+    text: PropTypes.string,
+    start: PropTypes.instanceOf(Date),
+    end: PropTypes.instanceOf(Date),
+    votes: PropTypes.array
+  })
+};
+
+ConnectedTimer.defaultProps = {
+  activeStory: PropTypes.object
+};
+
 export default connect(
   mapStateToProps,
   null

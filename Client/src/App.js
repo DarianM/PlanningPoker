@@ -31,7 +31,7 @@ ConnectedApp.propTypes = {
   ).isRequired,
   connection: PropTypes.shape({
     isLoading: PropTypes.bool,
-    error: PropTypes.string
+    error: PropTypes.array
   }).isRequired,
   hash: PropTypes.string.isRequired
 };

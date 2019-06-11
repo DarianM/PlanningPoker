@@ -9,7 +9,7 @@ describe("New Story Modal", () => {
     const mockMany = jest.fn();
     mount(
       <Modal>
-        <NewStory addNewStory={mocknewStory} addMany={mockMany} />
+        <NewStory roomId={-1} addNewStory={mocknewStory} addMany={mockMany} />
       </Modal>
     );
   });
@@ -56,7 +56,11 @@ describe("New Story Modal", () => {
 
       const wrapper = mount(
         <Modal>
-          <NewStory addNewStory={mocknewStoryFunc} addMany={mockMany} />
+          <NewStory
+            roomId={1}
+            addNewStory={mocknewStoryFunc}
+            addMany={mockMany}
+          />
         </Modal>
       );
       const textarea = wrapper

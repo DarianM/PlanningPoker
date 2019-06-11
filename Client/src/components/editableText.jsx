@@ -4,13 +4,14 @@ import PropTypes from "prop-types";
 class EditableText extends Component {
   constructor(props) {
     super(props);
-    this.state = { edit: false, value: "" };
+    this.state = { edit: false, error: "", value: "" };
     this.textInput = React.createRef();
     this.editText = this.editText.bind(this);
 
     this.normalMode = this.normalMode.bind(this);
     this.editMode = this.editMode.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
 
   componentDidUpdate() {
@@ -27,6 +28,10 @@ class EditableText extends Component {
     this.setState({ value: event.target.value });
   }
 
+  handleError(error) {
+    this.setState({ error });
+  }
+
   normalMode(text) {
     return (
       <div
@@ -34,6 +39,7 @@ class EditableText extends Component {
         onClick={e => {
           e.preventDefault();
           this.editText(true);
+          this.handleError("");
         }}
         onKeyDown={e => {
           e.preventDefault();
@@ -47,51 +53,62 @@ class EditableText extends Component {
     );
   }
 
-  editMode(commit, text) {
+  editMode(commit, text, validation, error) {
     return (
-      <div className="editable-input">
-        <input
-          ref={this.textInput}
-          tabIndex="0"
-          className="activestory-input"
-          type="text"
-          defaultValue={text}
-          onChange={this.handleChange}
-          onBlur={e => {
-            if (
-              !e.relatedTarget ||
-              e.relatedTarget.className !== "editable-submit"
-            )
-              this.editText(false);
-          }}
-        />
-        <button
-          className="editable-submit"
-          type="button"
-          onClick={e => {
-            e.preventDefault();
-            const { value } = this.state;
-            commit({ value });
-            this.editText(false);
-          }}
-        >
-          <i className="fas fa-check" />
-        </button>
-      </div>
+      <>
+        <div className="editable-input">
+          <input
+            ref={this.textInput}
+            tabIndex="0"
+            className="activestory-input"
+            type="text"
+            defaultValue={text}
+            onChange={this.handleChange}
+            onBlur={e => {
+              if (
+                !e.relatedTarget ||
+                e.relatedTarget.className !== "editable-submit"
+              )
+                this.editText(false);
+            }}
+          />
+          <button
+            className="editable-submit"
+            type="button"
+            onClick={async e => {
+              e.preventDefault();
+              const { value } = this.state;
+              try {
+                await validation(value);
+                commit({ value });
+                this.editText(false);
+              } catch (err) {
+                this.handleError(err.message);
+              }
+            }}
+          >
+            <i className="fas fa-check" />
+          </button>
+        </div>
+        {error && <p>{error}</p>}
+      </>
     );
   }
 
   render() {
-    const { text, commit } = this.props;
-    const { value, edit } = this.state;
+    const { text, commit, validation } = this.props;
+    const { value, error, edit } = this.state;
 
-    return edit ? this.editMode(commit, value) : this.normalMode(text);
+    return edit
+      ? this.editMode(commit, value, validation, error)
+      : this.normalMode(text);
   }
 }
 
 EditableText.propTypes = {
   text: PropTypes.string.isRequired,
-  commit: PropTypes.func.isRequired
+  commit: PropTypes.func.isRequired,
+  validation: PropTypes.func.isRequired
 };
 
 export default EditableText;
