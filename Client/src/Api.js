@@ -48,8 +48,8 @@ const updateRoomName = (roomId, roomName) =>
 const addStory = (story, roomId, active) =>
   fetchMethod(POST, "/api/story/add", { story, roomId, active });
 
-const editStory = (description, id, roomId) =>
-  fetchMethod(PUT, "/api/story/rename", { description, id, roomId });
+const editStory = (story, storyId, roomId) =>
+  fetchMethod(PUT, "/api/story/rename", { story, storyId, roomId });
 
 const resetTimer = (roomId, storyId) =>
   fetchMethod(PUT, "/api/story/reset", { roomId, storyId });

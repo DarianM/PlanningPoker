@@ -34,10 +34,16 @@ const allowedVotes = [
 
 const user = joi
   .string()
-  .not("")
-  .error(() => "Please insert a username");
+  .min(4)
+  .max(20)
+  .error(() => "Please insert a valid username");
 const userId = joi.number().integer();
-const roomName = joi.string().allow("");
+const roomName = joi
+  .string()
+  .allow("")
+  .min(5)
+  .max(30)
+  .error(() => "Room name must have between 5-30 characters");
 const roomId = joi
   .number()
   .integer()
@@ -48,7 +54,11 @@ const value = joi
   .error(() => "Please provide a valid vote");
 const storyId = joi.number().integer();
 const active = joi.boolean();
-const story = joi.string().not("");
+const story = joi
+  .string()
+  .min(5)
+  .max(40)
+  .error(() => "Story description must have between 5-40 characters");
 const date = joi.date();
 
 module.exports = {
@@ -82,6 +92,15 @@ module.exports = {
       story,
       roomId,
       active
+    });
+    validate(req.body, schema, res, next);
+  },
+
+  renameStory: async (req, res, next) => {
+    const schema = joi.object().keys({
+      story,
+      storyId,
+      roomId
     });
     validate(req.body, schema, res, next);
   },

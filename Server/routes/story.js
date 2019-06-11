@@ -16,14 +16,19 @@ router.post("/add", validate.newStory, async (req, res) => {
   res.send({}).status(200);
 });
 
-router.put("/rename", async (req, res) => {
-  const { description, id, roomId } = req.body;
-  await db.editStory(description, id);
-  server.broadcast(roomId, {
-    reason: "STORY_RENAMED",
-    data: { description, id }
-  });
-  res.send({}).status(200);
+router.put("/rename", validate.renameStory, async (req, res) => {
+  const { story: description, storyId: id, roomId } = req.body;
+  const story = await db.checkStory(id);
+  if (!story)
+    return res.status(404).send({ error: [{ message: "Story not found" }] });
+  else {
+    await db.editStory(description, id);
+    server.broadcast(roomId, {
+      reason: "STORY_RENAMED",
+      data: { description, id }
+    });
+    res.send({}).status(200);
+  }
 });
 
 router.post("/start", validate.date, validate.gameStart, async (req, res) => {
@@ -39,15 +44,6 @@ router.post("/start", validate.date, validate.gameStart, async (req, res) => {
   res.send({}).status(200);
 });
 
-router.put("/reset", async (req, res) => {
-  // validations
-  const { roomId, storyId } = req.body;
-  const newDate = Date.now();
-  await db.resetTimer(storyId, newDate);
-  server.broadcast(roomId, { reason: "TIMER_RESET", data: { newDate } });
-  res.send({}).status(200);
-});
-
 router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   const { date, roomId, storyId } = req.body;
   await db.endStory(date, storyId);
@@ -58,6 +54,15 @@ router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   };
 
   server.broadcast(roomId, data);
+  res.send({}).status(200);
+});
+
+router.put("/reset", async (req, res) => {
+  // validations
+  const { roomId, storyId } = req.body;
+  const newDate = Date.now();
+  await db.resetTimer(storyId, newDate);
+  server.broadcast(roomId, { reason: "TIMER_RESET", data: { newDate } });
   res.send({}).status(200);
 });
 

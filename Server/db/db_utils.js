@@ -136,6 +136,15 @@ const flipVotes = async (roomId, storyId) => {
     .where({ roomId });
 };
 
+const checkStory = async id => {
+  return (
+    (await knex("stories")
+      .select()
+      .where({ id })
+      .first()) && true
+  );
+};
+
 const startStory = async (started, id) => {
   await knex("stories")
     .update({ started, isActive: true })
@@ -171,6 +180,7 @@ module.exports = {
   createRoom,
   addUserToRoom,
   addMemberVote,
+  checkStory,
   startStory,
   endStory,
   deleteRoomVotes,

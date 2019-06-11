@@ -181,5 +181,19 @@ export default function(state = initialState, action) {
     };
   }
 
+  if (action.type === "UPDATE_VOTES") {
+    const { votes, activeStoryId } = action.payload;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          votes
+        }
+      }
+    };
+  }
+
   return state;
 }

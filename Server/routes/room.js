@@ -10,13 +10,24 @@ const db = require("../db/db_utils");
 router.get("/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
   const isRoomAvailable = await db.checkRoomAvailability(roomId);
-  if (isRoomAvailable === undefined) {
+  if (!isRoomAvailable) {
     return res.status(400).send({ error: "Room not available" });
   }
   const roomMembers = await db.getRoomMembers(roomId);
-  let { roomName, started, flipped } = await db.getRoomStats(roomId);
-  flipped = flipped === 1;
-  res.send({ roomMembers, roomName, started, flipped });
+  const roomStories = await db.getRoomStories(roomId);
+  let { roomName } = await db.getRoomStats(roomId);
+  const activeStory = roomStories.find(story => story.isActive);
+  let votes,
+    activeStoryId = null;
+  if (activeStory) {
+    activeStoryId = activeStory.id;
+    const nullVotes = await db.checkUserVotes(roomId);
+    if (nullVotes.length === 0) {
+      votes = await db.flipVotes(roomId, activeStoryId);
+      server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
+    }
+  }
+  res.send({ roomMembers, roomStories, roomName, votes, activeStoryId });
 });
 
 router.post("/create", validate.newRoom, async (req, res) => {
@@ -44,9 +55,7 @@ router.post("/join", validate.joinRoom, async (req, res) => {
   if (!isUsernameTaken) {
     let roomInfo = await db.addUserToRoom(user, roomId, roomMembers);
     const roomStories = await db.getRoomStories(roomId);
-    let { started, flipped } = await db.getRoomStats(roomId);
-    flipped = flipped === 1;
-    roomInfo = { ...roomInfo, roomStories, started, flipped };
+    roomInfo = { ...roomInfo, roomStories };
     const { userId } = roomInfo;
     let data = {
       reason: "USER_JOINED",
@@ -81,9 +90,9 @@ router.put("/rename/:roomId", validate.rename, async (req, res) => {
 
 router.put("/forceflip/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
-  const votes = await db.flipVotes(roomId, true);
-  console.log(votes);
+  const votes = await db.flipVotes(roomId);
   server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
+  console.log(roomId);
   res.send({}).status(200);
 });
 
