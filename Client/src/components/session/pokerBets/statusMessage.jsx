@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { isFlipped, isStarted, isEnded } from "../../../selectors";
 
 const mapStateToProps = state => {
-  console.log(isStarted(state));
   return {
     start: isStarted(state),
     flip: isFlipped(state),
@@ -46,7 +45,7 @@ export default connect(
 ConnectedStatusMessage.propTypes = {
   start: PropTypes.instanceOf(Date),
   end: PropTypes.oneOfType([PropTypes.func, PropTypes.instanceOf(Date)]),
-  flip: PropTypes.bool.isRequired,
+  flip: PropTypes.bool,
   members: PropTypes.arrayOf(
     PropTypes.shape({
       member: PropTypes.string,
@@ -57,5 +56,6 @@ ConnectedStatusMessage.propTypes = {
 
 ConnectedStatusMessage.defaultProps = {
   start: PropTypes.instanceOf(undefined),
-  end: PropTypes.instanceOf(undefined)
+  end: PropTypes.instanceOf(undefined),
+  flip: PropTypes.instanceOf(undefined)
 };

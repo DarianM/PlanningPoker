@@ -5,7 +5,10 @@ import EditableText from "./editableText";
 describe("EditableText Component", () => {
   describe("renders without crashing", () => {
     const save = jest.fn();
-    const component = mount(<EditableText text="test" commit={save} />);
+    const validation = jest.fn();
+    const component = mount(
+      <EditableText text="test" commit={save} validation={validation} />
+    );
     it("should display text by default", () => {
       expect(component.find(".activestory").text()).toEqual("test");
     });
@@ -13,7 +16,14 @@ describe("EditableText Component", () => {
 
   describe("user clicks on text to modify it", () => {
     const mockSaveFunc = jest.fn();
-    const wrapper = mount(<EditableText text="test" commit={mockSaveFunc} />);
+    const mockValidation = jest.fn();
+    const wrapper = mount(
+      <EditableText
+        text="test"
+        commit={mockSaveFunc}
+        validation={mockValidation}
+      />
+    );
     let text = wrapper.find(".activestory");
     text.simulate("click", { preventDefault() {} });
 
@@ -25,18 +35,27 @@ describe("EditableText Component", () => {
 });
 
 describe("user clicks save button after modifying the value", () => {
-  it("should commit to the store with the new value", () => {
+  it("should commit to the store with the new value", async () => {
     let newText;
     const mockSaveFunc = changeData => {
       newText = changeData.value;
     };
-    const wrapper = mount(<EditableText text="test" commit={mockSaveFunc} />);
+    const mockValidation = () =>
+      new Promise((resolve, reject) => resolve(true));
+
+    const wrapper = mount(
+      <EditableText
+        text="test"
+        commit={mockSaveFunc}
+        validation={mockValidation}
+      />
+    );
     wrapper.setState({ edit: true });
 
     const input = wrapper.find(".activestory-input");
     const saveButton = wrapper.find(".editable-submit");
     input.simulate("change", { target: { value: "new text" } });
-    saveButton.simulate("click", { preventDefault() {} });
+    await saveButton.simulate("click", { preventDefault() {} });
 
     expect(newText).toBe("new text");
   });

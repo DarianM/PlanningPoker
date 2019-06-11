@@ -46,9 +46,9 @@ describe("Login Component", () => {
           wrapper
             .find(".enter-button")
             .simulate("click", { preventDefault() {} });
-          expect(wrapper.state().error).toEqual(
-            "Please enter no more than 10 characters"
-          );
+          expect(wrapper.state().error).toEqual([
+            "Please enter no more than 20 characters"
+          ]);
           expect(wrapper.find(".loginError").exists()).toBe(true);
         });
       });

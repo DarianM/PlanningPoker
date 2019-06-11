@@ -6,7 +6,7 @@ export function userNameValidation(user) {
       .string()
       .required("Please enter a user name")
       .min(4, "minimum 4 characters")
-      .max(10, "Please enter no more than 10 characters")
+      .max(20, "Please enter no more than 20 characters")
   });
   try {
     schema.validateSync({ user });
@@ -18,7 +18,7 @@ export function userNameValidation(user) {
 
 export function roomNameValidation(roomName) {
   const schema = yup.object().shape({
-    roomName: yup.string().max(10, "max 10 characters")
+    roomName: yup.string().max(30, "max 30 characters")
   });
   try {
     schema.validateSync({ roomName });

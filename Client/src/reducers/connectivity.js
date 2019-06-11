@@ -21,7 +21,7 @@ import {
 
 const initialState = {
   isLoading: false,
-  error: ""
+  error: []
 };
 
 export default function connection(state = initialState, action) {

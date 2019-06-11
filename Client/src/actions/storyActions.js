@@ -153,7 +153,7 @@ function endingStory(payload) {
 }
 
 function deleteStory(payload) {
-  //to be treated on server
+  // to be treated on server
   return {
     type: DELETE_STORY,
     payload
@@ -163,14 +163,10 @@ function deleteStory(payload) {
 function editStory(payload) {
   return async dispatch => {
     const { value, id, roomId } = payload;
-    if (new RegExp(/\S{3,}/, "g").test(value)) {
-      try {
-        await Api.editStory(value, id, roomId);
-      } catch (error) {
-        error.map(e => dispatch(addToast({ text: e.message })));
-      }
-    } else {
-      dispatch(addToast({ text: "Please provide a valid story name" }));
+    try {
+      await Api.editStory(value, id, roomId);
+    } catch (error) {
+      error.map(e => dispatch(addToast({ text: e.message })));
     }
   };
 }

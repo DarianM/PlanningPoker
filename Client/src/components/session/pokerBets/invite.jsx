@@ -15,6 +15,7 @@ const ConnectedInvite = ({ url }) => (
       className="link-input"
       onFocus={e => e.target.select()}
       value={url}
+      readOnly
     />
   </div>
 );

@@ -32,11 +32,36 @@ export const ConnectedSessionInfo = ({
     renameStory({ value, id, roomId });
   const onRoomNameChanged = ({ value }) =>
     renameRoom({ roomName: value, roomId });
+
+  const storyNameValidation = value => {
+    return new Promise((resolve, reject) => {
+      if (new RegExp(/^\S{5,40}$/, "g").test(value)) resolve(true);
+      else reject(new Error("write a story name between 5-40 chars"));
+    });
+  };
+
+  const roomNameValidation = value => {
+    return new Promise((resolve, reject) => {
+      if (new RegExp(/^\S{5,30}$/, "g").test(value)) resolve(true);
+      else reject(new Error("room name must be between 5-30 chars"));
+    });
+  };
+
   return (
     <div className="sessionInfo">
-      <EditableText text={roomName} commit={onRoomNameChanged} />
+      <EditableText
+        text={roomName}
+        commit={onRoomNameChanged}
+        validation={roomNameValidation}
+      />
       <p className="sessionRoomId">{`your room ID: ${roomId}`}</p>
-      {id && <EditableText text={text} commit={onActiveStoryChanged} />}
+      {id && (
+        <EditableText
+          text={text}
+          commit={onActiveStoryChanged}
+          validation={storyNameValidation}
+        />
+      )}
     </div>
   );
 };
@@ -45,8 +70,8 @@ ConnectedSessionInfo.propTypes = {
   roomName: PropTypes.string.isRequired,
   roomId: PropTypes.number.isRequired,
   activeStory: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    text: PropTypes.string.isRequired,
+    id: PropTypes.number,
+    text: PropTypes.string,
     start: PropTypes.instanceOf(Date),
     end: PropTypes.instanceOf(Date),
     votes: PropTypes.array

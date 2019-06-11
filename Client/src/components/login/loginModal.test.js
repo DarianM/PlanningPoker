@@ -24,7 +24,8 @@ describe("room name form is displayed", () => {
     describe("with a invalid room name", () => {
       it("should display error message", () => {
         const wrapper = applyMount();
-        wrapper.instance().input.current.value = "some_long_title..";
+        wrapper.instance().input.current.value =
+          "some_long_ass_title_with_many_many_chars..";
         wrapper
           .find(".modal-footer")
           .childAt(0)

@@ -13,29 +13,39 @@ describe("with server ok", () => {
         ok: true
       })
     );
-  it("should throw exception", async () => {
+  it("should return some data", async () => {
     const result = await Api(POST, url, {}, mockFetch);
     expect(result).toEqual({ user: "name", roomName: "randomName" });
   });
 });
 
-describe("with error from server", () => {
+describe("with data validation error from server", () => {
   const url = "http:fake.com";
   const mockFetch = jest.fn(
     () =>
       new Promise((resolve, reject) =>
         resolve({
           json: () => ({
-            error: "this from server..."
+            error: { message: "this from server..." }
           }),
           status: 400,
           ok: false
         })
       )
   );
-  it("should throw error message", () => {
-    const result = Api(url, { user: "random", roomName: "room" }, mockFetch);
-    expect(result).rejects.toThrowError();
-    expect(result).rejects.toEqual("this from server...");
+  it("should throw error message", async () => {
+    await expect(
+      Api("POST", url, { user: "random", roomName: "room" }, mockFetch)
+    ).rejects.toThrow();
+  });
+});
+
+describe("with not working server", () => {
+  const url = "http:fake.com";
+  const mockFetch = jest.fn(() => new Promise((resolve, reject) => reject()));
+  it("should enter in catch", async () => {
+    await expect(
+      Api("POST", url, { user: "random", roomName: "room" }, mockFetch)
+    ).rejects.toThrowError("Check your internet connection");
   });
 });

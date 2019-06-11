@@ -30,7 +30,7 @@ describe("create room action", () => {
       await result(dispatch);
       expect(dispatch).toBeCalledWith({
         type: "LOGIN_FAILURE",
-        payload: "err"
+        payload: ["err"]
       });
     });
   });
@@ -68,7 +68,7 @@ describe("join room action", () => {
       await result(dispatch);
       expect(dispatch).toBeCalledWith({
         type: "LOGIN_FAILURE",
-        payload: { location: "unknown", message: "err" }
+        payload: ["err"]
       });
     });
   });
