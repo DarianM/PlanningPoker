@@ -11,14 +11,19 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+.modal-open {
+  overflow-y: hidden;
+}
+
 .modal-content {
   background-color: #fafcfe;
-  margin: 15% auto;
+  margin: 10% auto;
   padding-top: 10px;
   padding-bottom: 10px;
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  width: 600px;
+  max-width: 50%;
+  min-width: 300px;
   animation-name: animatetop;
   animation-duration: 0.5s;
 }
@@ -30,6 +35,10 @@
   font-size: 24px;
   padding: 0 10px 10px 10px;
   text-align: center;
+}
+
+.modal-center {
+  display: grid;
 }
 
 .modal-footer {
@@ -87,17 +96,24 @@
   visibility: visible;
   min-width: 250px;
   list-style-type: none;
-  background-color: #6796e6;
+  background-color: var(--control-btn-color);
+  box-shadow: rgb(213, 217, 222) 0px 0px 2.8px 0px;
   color: #fff;
   text-align: center;
-  border-radius: 2px;
+  opacity: 0.8;
+  border-radius: 5px;
   padding: 16px;
   position: relative;
   z-index: 1;
   right: 45px;
   font-size: 17px;
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 1s 2.6s;
+}
+
+.toast:hover {
+  background-color: var(--control-btn-hover);
+  opacity: 1;
+  box-shadow: rgb(185, 189, 194) 0px 0px 4.1px 0px;
 }
 
 .toasts {
@@ -133,17 +149,6 @@
   padding: 0;
 }
 
-@-webkit-keyframes fadein {
-  from {
-    right: 0;
-    opacity: 0;
-  }
-  to {
-    right: 45px;
-    opacity: 1;
-  }
-}
-
 @keyframes fadein {
   from {
     right: 0;
@@ -151,25 +156,14 @@
   }
   to {
     right: 45px;
-    opacity: 1;
-  }
-}
-
-@-webkit-keyframes fadeout {
-  from {
-    right: 45px;
-    opacity: 1;
-  }
-  to {
-    right: 0;
-    opacity: 0;
+    opacity: 0.8;
   }
 }
 
 @keyframes fadeout {
   from {
     right: 45px;
-    opacity: 1;
+    opacity: 0.8;
   }
   to {
     right: 0;
@@ -179,15 +173,26 @@
 
 .story-body {
   display: grid;
+  align-items: center;
   padding: 15px;
-  grid-template-columns: 200px auto;
+  grid-template-columns: minmax(25px, 200px) auto;
   grid-row-gap: 20px;
 }
 
+.story-detail-input {
+  width: 90%;
+  border-radius: 5px;
+  border: 1px solid rgb(213, 217, 222);
+  background-color: white;
+  padding: 9px 8px 11px;
+}
+
+.story-detail-input:hover {
+  border: 1px solid gray;
+}
+
 .newstory-textarea {
-  width: 560px;
   height: 130px;
-  display: block;
   resize: none;
   border-radius: 5px;
   border: 1px solid rgb(139, 139, 140);
