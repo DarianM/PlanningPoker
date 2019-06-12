@@ -92,7 +92,6 @@ router.put("/forceflip/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
   const votes = await db.flipVotes(roomId);
   server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
-  console.log(roomId);
   res.send({}).status(200);
 });
 

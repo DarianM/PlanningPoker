@@ -21,7 +21,9 @@ const getUserById = async id => {
 };
 
 const addStory = async (roomId, story, isActive) => {
-  return await knex("stories").insert({ roomId, description: story, isActive });
+  return await knex("stories")
+    .insert({ roomId, description: story, isActive })
+    .returning("id");
 };
 
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
@@ -56,10 +58,12 @@ async function createRoom(owner, roomName) {
   await knex.transaction(async trx => {
     [memberId] = await knex("members")
       .transacting(trx)
-      .insert({ name: owner });
+      .insert({ name: owner })
+      .returning("id");
     [roomId] = await knex("rooms")
       .transacting(trx)
-      .insert({ name: roomName });
+      .insert({ name: roomName })
+      .returning("id");
     await knex("roomsMembers")
       .transacting(trx)
       .insert({ userId: memberId, roomId });
@@ -72,7 +76,8 @@ const addUserToRoom = async (user, roomId, roomMembers) => {
   await knex.transaction(async trx => {
     [userId] = await knex("members")
       .transacting(trx)
-      .insert({ name: user });
+      .insert({ name: user })
+      .returning("id");
     await knex("roomsMembers")
       .transacting(trx)
       .insert({ userId, roomId });

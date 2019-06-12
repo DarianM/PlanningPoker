@@ -1,3 +1,4 @@
+require("dotenv").config();
 var createError = require("http-errors");
 require("express-async-errors");
 var express = require("express");
@@ -11,10 +12,6 @@ var roomRouter = require("./routes/room");
 var storyRouter = require("./routes/story");
 
 var app = express();
-
-// view engine setup
-//app.set("views", path.join(__dirname, "views"));
-//app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());

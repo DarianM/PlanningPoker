@@ -60,7 +60,7 @@ router.post("/end", validate.date, validate.gameStart, async (req, res) => {
 router.put("/reset", async (req, res) => {
   // validations
   const { roomId, storyId } = req.body;
-  const newDate = Date.now();
+  const newDate = new Date(Date.now());
   await db.resetTimer(storyId, newDate);
   server.broadcast(roomId, { reason: "TIMER_RESET", data: { newDate } });
   res.send({}).status(200);
