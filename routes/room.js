@@ -2,10 +2,15 @@ const express = require("express");
 
 const router = express.Router();
 
-const server = require("../ws/wsServerConfig");
+let { server } = require("../ws/wsServerConfig");
 
 const validate = require("../validations");
 const db = require("../db/db_utils");
+
+const setServer = newServer => {
+  server = newServer;
+  console.log(server);
+};
 
 router.get("/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
@@ -33,6 +38,7 @@ router.get("/:roomId", validate.roomId, async (req, res) => {
 router.post("/create", validate.newRoom, async (req, res) => {
   const roomName = req.body.roomName || "NewRoom";
   const owner = req.body.user;
+  console.log(server);
 
   res.send(await db.createRoom(owner, roomName));
 });
@@ -92,8 +98,7 @@ router.put("/forceflip/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
   const votes = await db.flipVotes(roomId);
   server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
-  console.log(roomId);
   res.send({}).status(200);
 });
 
-module.exports = router;
+module.exports = { router, setServer };

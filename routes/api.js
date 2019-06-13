@@ -5,7 +5,7 @@ const router = express.Router();
 const db = require("../db/db_utils");
 
 const validate = require("../validations");
-const server = require("../ws/wsServerConfig");
+let { server } = require("../ws/wsServerConfig");
 
 async function checkVotes(roomId, storyId) {
   const nullVotes = await db.checkUserVotes(roomId);
@@ -46,4 +46,4 @@ router.post("/vote", validate.vote, async (req, res) => {
   res.send({}).status(200);
 });
 
-module.exports = { router, server };
+module.exports = router;

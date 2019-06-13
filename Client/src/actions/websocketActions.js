@@ -9,7 +9,7 @@ import {
   WEBSOCKET_SEND
 } from "./types";
 
-const WEBSOCKET_PORT = 2345;
+const WEBSOCKET_PORT = 3000;
 const host = () => window.location.hostname || "localhost";
 
 export function connect(roomId, userId) {

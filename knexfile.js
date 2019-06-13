@@ -1,5 +1,3 @@
-// Update with your config settings.
-
 module.exports = {
   development: {
     client: "sqlite3",
@@ -10,6 +8,14 @@ module.exports = {
       directory: "./db/migrations"
     },
     useNullAsDefault: true
+  },
+  production: {
+    client: "postgresql",
+    connection: process.env.DATABASE_URL,
+    ssl: true,
+    migrations: {
+      directory: "./db/migrations"
+    }
   },
   test: {
     client: "sqlite3",

@@ -6,7 +6,7 @@ import { getActiveStory, isFlipped } from "../../../selectors";
 const mapStateToProps = state => {
   return {
     activeStory: getActiveStory(state),
-    flip: isFlipped(state),
+    flip: Boolean(isFlipped(state)),
     members: state.gameRoom.members
   };
 };

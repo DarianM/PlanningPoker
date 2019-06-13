@@ -281,12 +281,12 @@ describe("/api/room route", () => {
         .send({ story: "new story", roomId: 1, active: true });
       await request(app)
         .post("/api/vote")
-        .send({ user: "test", storyId: 1, roomId: 1, value: 8 });
+        .send({ user: "test", storyId: 1, roomId: 1, value: "8" });
       result = await request(app).put("/api/room/forceflip/1");
     });
     it("should return the votes and broadcast", () => {
       expect(result.statusCode).toBe(200);
-      expect(socket.send).toHaveBeenCalledWith(
+      expect(socket.send).toHaveBeenLastCalledWith(
         JSON.stringify({
           reason: "FLIP_CARDS",
           data: { votes: [{ id: 1, name: "test", vote: "8" }] }
