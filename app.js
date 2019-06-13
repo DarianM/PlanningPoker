@@ -7,8 +7,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
-var apiRouter = require("./routes/api").router;
-var roomRouter = require("./routes/room");
+var apiRouter = require("./routes/api");
+var roomRouter = require("./routes/room").router;
 var storyRouter = require("./routes/story");
 
 var app = express();

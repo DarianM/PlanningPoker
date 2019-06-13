@@ -1,9 +1,9 @@
-const ws = require("ws").Server;
+let server;
 
-const wss = new ws({ port: "2345" });
-const wsServer = require("./wsServer");
+const setRealServer = receivedServer => {
+  server = receivedServer;
+};
 
-const server = new wsServer(wss);
-server.listen();
+const updateServer = () => server;
 
-module.exports = server;
+module.exports = { server, updateServer, setRealServer };
