@@ -1,9 +1,6 @@
-let server;
-
-const setRealServer = receivedServer => {
-  server = receivedServer;
+const serverConfig = {
+  server: null
 };
 
-const updateServer = () => server;
-
-module.exports = { server, updateServer, setRealServer };
+module.exports = serverConfig;
+// in www import server, set server

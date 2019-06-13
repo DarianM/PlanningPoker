@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import { createStore, compose, applyMiddleware } from "redux";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from "redux-thunk";
 import rootReducer from "./reducers";
 import websocketMiddleware from "./middleware/websocketMiddleware";
