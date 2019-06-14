@@ -34,7 +34,6 @@ router.get("/:roomId", validate.roomId, async (req, res) => {
 router.post("/create", validate.newRoom, async (req, res) => {
   const roomName = req.body.roomName || "NewRoom";
   const owner = req.body.user;
-  console.log(server);
 
   res.send(await db.createRoom(owner, roomName));
 });
@@ -64,6 +63,7 @@ router.post("/join", validate.joinRoom, async (req, res) => {
       reason: "USER_JOINED",
       data: { user, userId }
     };
+
     server.broadcast(roomId, data);
     data = {
       reason: "FLIP_CARDS",
@@ -102,4 +102,4 @@ router.put("/forceflip/:roomId", validate.roomId, async (req, res) => {
   res.send({}).status(200);
 });
 
-module.exports = { router, setServer };
+module.exports = router;

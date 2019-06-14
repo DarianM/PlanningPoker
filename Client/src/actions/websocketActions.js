@@ -9,13 +9,13 @@ import {
   WEBSOCKET_SEND
 } from "./types";
 
-const WEBSOCKET_PORT = 3000;
-const host = () => window.location.hostname || "localhost";
+// const WEBSOCKET_PORT = 3000;
+const host = () => window.location.host || "localhost";
 
 export function connect(roomId, userId) {
   return {
     type: WEBSOCKET_CONNECT,
-    payload: `ws://${host()}:${WEBSOCKET_PORT}/${roomId}/${userId}`
+    payload: `ws://${host()}/ws/${roomId}/${userId}`
   };
 }
 

@@ -5,7 +5,7 @@ const router = express.Router();
 const db = require("../db/db_utils");
 
 const validate = require("../validations");
-let { server } = require("../ws/wsServerConfig");
+let serverConfig = require("../ws/wsServerConfig");
 
 async function checkVotes(roomId, storyId) {
   const nullVotes = await db.checkUserVotes(roomId);
@@ -19,6 +19,8 @@ router.delete("/user/:userId", validate.delete, async (req, res) => {
   const { userId } = req.params;
   const { roomId } = req.body;
   const { name } = await db.getUserById(userId);
+  const { server } = serverConfig;
+
   await db.deleteUser(userId);
   server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
   await checkVotes(roomId);
@@ -28,6 +30,8 @@ router.delete("/user/:userId", validate.delete, async (req, res) => {
 router.delete("/votes/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
   await db.deleteRoomVotes(roomId);
+  const { server } = serverConfig;
+
   server.broadcast(roomId, {
     reason: "CLEAR_VOTES"
   });
@@ -41,6 +45,8 @@ router.post("/vote", validate.vote, async (req, res) => {
     reason: "USER_VOTED",
     data: { user, value, id }
   };
+  const { server } = serverConfig;
+
   server.broadcast(roomId, data);
   await checkVotes(roomId, storyId);
   res.send({}).status(200);

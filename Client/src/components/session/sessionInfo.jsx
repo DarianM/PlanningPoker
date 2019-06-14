@@ -68,7 +68,7 @@ export const ConnectedSessionInfo = ({
 
 ConnectedSessionInfo.propTypes = {
   roomName: PropTypes.string.isRequired,
-  roomId: PropTypes.number.isRequired,
+  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activeStory: PropTypes.shape({
     id: PropTypes.number,
     text: PropTypes.string,

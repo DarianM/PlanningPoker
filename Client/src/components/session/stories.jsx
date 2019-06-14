@@ -99,7 +99,7 @@ ConnectedStories.propTypes = {
     allIds: PropTypes.arrayOf(Number),
     activeStoryId: PropTypes.number
   }),
-  roomId: PropTypes.number.isRequired,
+  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   newStory: PropTypes.func.isRequired,
   deleteStory: PropTypes.func.isRequired
 };

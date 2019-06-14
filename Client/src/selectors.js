@@ -5,12 +5,12 @@ const getActiveStory = state => {
 
 const isFlipped = state => {
   const { votes } = getActiveStory(state);
-  return votes && votes.some(vote => vote.vote !== undefined);
+  return Boolean(votes && votes.some(vote => vote.vote !== undefined));
 };
-const isStarted = state => {
+const hasStarted = state => {
   const { start } = getActiveStory(state);
-  return start || null;
+  return Boolean(start || null);
 };
-const isEnded = state => getActiveStory(state).end;
+const hasEnded = state => Boolean(getActiveStory(state).end || null);
 
-export { getActiveStory, isFlipped, isStarted, isEnded };
+export { getActiveStory, isFlipped, hasStarted, hasEnded };

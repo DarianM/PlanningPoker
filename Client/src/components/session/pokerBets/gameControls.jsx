@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { isStarted, isEnded, isFlipped } from "../../../selectors";
+import { hasStarted, hasEnded, isFlipped } from "../../../selectors";
 import {
   startStory,
   deleteVotes,
@@ -12,9 +12,9 @@ import {
 import ButtonsGroup from "./buttonsGroup";
 
 const mapStateToProps = state => {
-  const start = isStarted(state);
+  const start = hasStarted(state);
   const flip = isFlipped(state);
-  const end = isEnded(state);
+  const end = hasEnded(state);
 
   const gameStarted = ["flip", "reset", "clear", "next"];
   const flipped = ["end", "reset", "next", "clear"];

@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { isFlipped, isStarted, isEnded } from "../../../selectors";
+import { isFlipped, hasStarted, hasEnded } from "../../../selectors";
 
 const mapStateToProps = state => {
   return {
-    start: isStarted(state),
+    start: hasStarted(state),
     flip: isFlipped(state),
-    end: isEnded(state),
+    end: hasEnded(state),
     members: state.gameRoom.members
   };
 };
@@ -43,19 +43,13 @@ export default connect(
 )(ConnectedStatusMessage);
 
 ConnectedStatusMessage.propTypes = {
-  start: PropTypes.instanceOf(Date),
-  end: PropTypes.oneOfType([PropTypes.func, PropTypes.instanceOf(Date)]),
-  flip: PropTypes.bool,
+  start: PropTypes.bool.isRequired,
+  end: PropTypes.bool.isRequired,
+  flip: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
     PropTypes.shape({
       member: PropTypes.string,
       voted: PropTypes.bool
     })
   ).isRequired
-};
-
-ConnectedStatusMessage.defaultProps = {
-  start: PropTypes.instanceOf(undefined),
-  end: PropTypes.instanceOf(undefined),
-  flip: PropTypes.instanceOf(undefined)
 };

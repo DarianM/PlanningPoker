@@ -165,7 +165,7 @@ export default function(state = initialState, action) {
         [story.id]: {
           id,
           text,
-          start: new Date(start),
+          start,
           end,
           votes: []
         }

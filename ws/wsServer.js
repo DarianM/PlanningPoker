@@ -31,7 +31,7 @@ module.exports = class wsServer {
     this._usersSockets = this._usersSockets.filter(
       user => user.userId !== userId
     );
-    await fetch(`http://localhost:3000/api/user/${userId}`, {
+    await fetch(`/api/user/${userId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ roomId })
@@ -45,9 +45,10 @@ module.exports = class wsServer {
   }
 
   decomposeUrl(url) {
-    const separatorIndex = url.lastIndexOf("/");
-    const roomId = url.substring(1, separatorIndex);
-    const userId = url.substring(separatorIndex + 1);
+    const regex = /\/ws\/(\d{1,5})\/(\d{1,5})/;
+    const match = regex.exec(url);
+    const roomId = match[1];
+    const userId = match[2];
     return { roomId, userId };
   }
 

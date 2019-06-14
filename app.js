@@ -8,7 +8,7 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var apiRouter = require("./routes/api");
-var roomRouter = require("./routes/room").router;
+var roomRouter = require("./routes/room");
 var storyRouter = require("./routes/story");
 
 var app = express();

@@ -35,6 +35,7 @@ serverConfig.server = websocketServer;
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
+websocketServer.listen();
 
 /**
  * Normalize a port into a number, string, or false.

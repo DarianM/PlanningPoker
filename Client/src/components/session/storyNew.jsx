@@ -74,7 +74,7 @@ class NewStory extends Component {
 NewStory.propTypes = {
   addNewStory: PropTypes.func.isRequired,
   addMany: PropTypes.func.isRequired,
-  roomId: PropTypes.number.isRequired
+  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired
 };
 
 export default NewStory;
