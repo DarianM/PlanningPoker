@@ -9,6 +9,7 @@ let serverConfig = require("../ws/wsServerConfig");
 
 async function checkVotes(roomId, storyId) {
   const nullVotes = await db.checkUserVotes(roomId);
+  const { server } = serverConfig;
   if (nullVotes.length === 0) {
     const votes = await db.flipVotes(roomId, storyId);
     server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
