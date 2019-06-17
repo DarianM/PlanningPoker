@@ -8,6 +8,7 @@ const validate = require("../validations");
 let serverConfig = require("../ws/wsServerConfig");
 
 async function checkVotes(roomId, storyId) {
+  const { server } = serverConfig;
   const nullVotes = await db.checkUserVotes(roomId);
   if (nullVotes.length === 0) {
     const votes = await db.flipVotes(roomId, storyId);
@@ -15,17 +16,17 @@ async function checkVotes(roomId, storyId) {
   }
 }
 
-router.delete("/user/:userId", validate.delete, async (req, res) => {
-  const { userId } = req.params;
-  const { roomId } = req.body;
-  const { name } = await db.getUserById(userId);
-  const { server } = serverConfig;
+// router.delete("/user/:userId", validate.delete, async (req, res) => {
+//   const { userId } = req.params;
+//   const { roomId } = req.body;
+//   const { name } = await db.getUserById(userId);
+//   const { server } = serverConfig;
 
-  await db.deleteUser(userId);
-  server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
-  await checkVotes(roomId);
-  res.send({}).status(200);
-});
+//   await db.deleteUser(userId);
+//   server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
+//   await checkVotes(roomId);
+//   res.send({}).status(200);
+// });
 
 router.delete("/votes/:roomId", validate.roomId, async (req, res) => {
   const { roomId } = req.params;
