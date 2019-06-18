@@ -13,6 +13,7 @@ import {
 const host = () => window.location.host || "localhost";
 
 export function connect(roomId, userId) {
+  console.log(`ws://${host()}/ws/${roomId}/${userId}`);
   return {
     type: WEBSOCKET_CONNECT,
     payload: `ws://${host()}/ws/${roomId}/${userId}`

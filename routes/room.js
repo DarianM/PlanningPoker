@@ -55,8 +55,10 @@ router.post("/join", validate.joinRoom, async (req, res) => {
   );
 
   if (!isUsernameTaken) {
+    await db.update("stories", "ended", null, { roomId, isActive: 1 });
     let roomInfo = await db.addUserToRoom(user, roomId, roomMembers);
     const roomStories = await db.getRoomStories(roomId);
+
     roomInfo = { ...roomInfo, roomStories };
     const { userId } = roomInfo;
     let data = {
@@ -68,6 +70,11 @@ router.post("/join", validate.joinRoom, async (req, res) => {
     data = {
       reason: "FLIP_CARDS",
       data: { votes: [] }
+    };
+    server.broadcast(roomId, data);
+
+    data = {
+      reason: "STORY_RESET"
     };
     server.broadcast(roomId, data);
     await res.send({ roomInfo });

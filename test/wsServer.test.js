@@ -30,7 +30,7 @@ describe("websocket server", () => {
       expect(wss.on).toHaveBeenCalledWith("connection", cbFunc);
     });
     describe("new socket connects", () => {
-      cbFunc(socket, { url: "/1/2" });
+      cbFunc(socket, { url: "/ws/1/2" });
       it("should add the new socket in the roomsSockets object", () => {
         expect(server._roomsSockets).toEqual({ 1: [socket] });
       });
@@ -69,11 +69,9 @@ describe("websocket server", () => {
     const server = new wsServer(wss);
     const roomId = 1;
     server._usersSockets = [{ userId: 1, socket }];
-    const fetch = jest.fn();
-    server.fetchNormalClosure(socket, roomId, fetch);
+    server.fetchNormalClosure(socket, roomId);
     it("should remove the mapped user to the socket", () => {
       expect(server._usersSockets).toEqual([]);
-      expect(fetch).toHaveBeenCalled();
     });
   });
 });

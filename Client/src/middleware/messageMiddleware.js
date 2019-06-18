@@ -8,6 +8,7 @@ import {
 import {
   addingStory,
   startingStory,
+  resetingStory,
   endingStory,
   renamingStory,
   flippingCards,
@@ -86,6 +87,9 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "TIMER_RESET") {
       store.dispatch(resetingTimer(data));
+    }
+    if (reason === "STORY_RESET") {
+      store.dispatch(resetingStory());
     }
     return {};
   }

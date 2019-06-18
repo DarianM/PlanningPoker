@@ -4,23 +4,34 @@ import PropTypes from "prop-types";
 class NewStory extends Component {
   constructor(props) {
     super(props);
-    this.state = { story: "" };
+    this.state = { story: "", error: "" };
     this.handleChange = this.handleChange.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
 
-  handleSaveStory() {
+  async handleSaveStory(isMoreToAdd) {
     const { story } = this.state;
-    const { addNewStory, roomId } = this.props;
-    addNewStory({ story, roomId });
-    this.setState({ story: "" });
+    const { addNewStory, addMany, roomId, validation } = this.props;
+    try {
+      await validation(story);
+      addNewStory({ story, roomId });
+      addMany(isMoreToAdd);
+      if (isMoreToAdd) this.setState({ story: "", error: "" });
+    } catch (error) {
+      this.handleError(error.message);
+    }
   }
 
   handleChange(event) {
     this.setState({ story: event.target.value });
   }
 
+  handleError(error) {
+    this.setState({ error });
+  }
+
   render() {
-    const { story } = this.state;
+    const { story, error } = this.state;
     const { addMany } = this.props;
     return (
       <React.Fragment>
@@ -39,7 +50,7 @@ class NewStory extends Component {
             type="button"
             onClick={e => {
               e.preventDefault();
-              this.handleSaveStory();
+              this.handleSaveStory(true);
             }}
           >
             {`Save \u0026 Add New`}
@@ -49,8 +60,7 @@ class NewStory extends Component {
             type="button"
             onClick={e => {
               e.preventDefault();
-              this.handleSaveStory();
-              addMany(false);
+              this.handleSaveStory(false);
             }}
           >
             {`Save \u0026 Close`}
@@ -65,6 +75,7 @@ class NewStory extends Component {
           >
             {`Cancel`}
           </button>
+          {error && <p>{error}</p>}
         </div>
       </React.Fragment>
     );
@@ -74,7 +85,8 @@ class NewStory extends Component {
 NewStory.propTypes = {
   addNewStory: PropTypes.func.isRequired,
   addMany: PropTypes.func.isRequired,
-  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired
+  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  validation: PropTypes.func.isRequired
 };
 
 export default NewStory;

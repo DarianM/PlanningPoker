@@ -194,7 +194,10 @@ describe("clear votes thunk mid", () => {
     );
     it("should call Api.clearVotes ", async () => {
       const dispatch = jest.fn();
-      const getState = jest.fn(() => ({ gameRoom: { id: 1 } }));
+      const getState = jest.fn(() => ({
+        gameRoom: { id: 1 },
+        stories: { activeStoryId: 1 }
+      }));
       const result = deleteVotes();
       await result(dispatch, getState);
       expect(Api.clearVotes).toHaveBeenCalled();
@@ -215,7 +218,10 @@ describe("clear votes thunk mid", () => {
     );
     it("should dispatch toast with error ", async () => {
       const dispatch = jest.fn();
-      const getState = jest.fn(() => ({ gameRoom: { id: 1 } }));
+      const getState = jest.fn(() => ({
+        gameRoom: { id: 1 },
+        stories: { activeStoryId: 1 }
+      }));
       const result = deleteVotes();
       await result(dispatch, getState);
       expect(dispatch).toHaveBeenCalled();

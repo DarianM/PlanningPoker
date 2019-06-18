@@ -35,7 +35,8 @@ const create = (user, roomName) =>
 const start = (date, roomId, storyId) =>
   fetchMethod(POST, "/api/story/start", { date, roomId, storyId });
 
-const clearVotes = roomId => fetchMethod(DELETE, `/api/votes/${roomId}`, {});
+const clearVotes = (roomId, storyId) =>
+  fetchMethod(DELETE, `/api/votes/${roomId}`, { storyId });
 
 const flip = roomId => fetchMethod(PUT, `/api/room/forceflip/${roomId}`, {});
 

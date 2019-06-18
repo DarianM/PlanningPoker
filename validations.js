@@ -142,6 +142,13 @@ module.exports = {
     } else validate(req.params, schema, res, next);
   },
 
+  storyId: async (req, res, next) => {
+    const schema = joi.object().keys({
+      storyId
+    });
+    validate(req.body, schema, res, next);
+  },
+
   date: async (req, res, next) => {
     const { date } = req.body;
     const dateInstance = new Date(date);

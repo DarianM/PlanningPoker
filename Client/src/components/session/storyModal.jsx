@@ -12,16 +12,28 @@ function mapDispatchToProps(dispatch) {
 export class ConnectedStory extends Component {
   constructor(props) {
     super(props);
-    this.state = { newTitle: "" };
+    this.state = { newTitle: "", error: "" };
     this.handleNewTitle = this.handleNewTitle.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
 
   handleNewTitle(event) {
     this.setState({ newTitle: event.target.value });
   }
 
+  handleError(error) {
+    this.setState({ error });
+  }
+
   render() {
     const { story, id, roomId, close, editStory, children } = this.props;
+    const { error } = this.state;
+    const validateStory = value => {
+      return new Promise((resolve, reject) => {
+        if (new RegExp(/^\S{5,30}$/, "g").test(value)) resolve(true);
+        else reject(new Error("Story name must have between 5-40 characters"));
+      });
+    };
 
     return (
       <React.Fragment>
@@ -42,11 +54,16 @@ export class ConnectedStory extends Component {
           <button
             className="votes-blue"
             type="button"
-            onClick={e => {
+            onClick={async e => {
               e.preventDefault();
               const { newTitle } = this.state;
-              editStory({ value: newTitle, id, roomId });
-              close();
+              try {
+                await validateStory(newTitle);
+                editStory({ value: newTitle, id, roomId });
+                close();
+              } catch (err) {
+                this.handleError(err.message);
+              }
             }}
           >
             {`Save`}
@@ -61,6 +78,7 @@ export class ConnectedStory extends Component {
           >
             {`Close`}
           </button>
+          {error && <p>{error}</p>}
         </div>
       </React.Fragment>
     );

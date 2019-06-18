@@ -33,6 +33,12 @@ export class ConnectedStories extends Component {
   }
 
   render() {
+    const validateStory = value => {
+      return new Promise((resolve, reject) => {
+        if (new RegExp(/^\S{5,30}$/, "g").test(value)) resolve(true);
+        else reject(new Error("Story name must have between 5-40 characters"));
+      });
+    };
     const { stories, roomId, newStory, deleteStory } = this.props;
     const { add } = this.state;
     if (add) document.body.classList.add("modal-open");
@@ -44,6 +50,7 @@ export class ConnectedStories extends Component {
               roomId={roomId}
               addNewStory={newStory}
               addMany={this.handleNewStory}
+              validation={validateStory}
             />
           </Modal>
         )}

@@ -1,5 +1,5 @@
-const nodeFetch = require("node-fetch");
 const connectedSocket = require("./connectedSocket");
+const { getUserById, deleteUser } = require("../db/db_utils");
 
 module.exports = class wsServer {
   constructor(server) {
@@ -25,17 +25,14 @@ module.exports = class wsServer {
     });
   }
 
-  async fetchNormalClosure(socket, roomId, optionalFetch) {
-    const fetch = optionalFetch || nodeFetch;
+  async fetchNormalClosure(socket, roomId) {
     const { userId } = this._usersSockets.find(user => user.socket === socket);
     this._usersSockets = this._usersSockets.filter(
       user => user.userId !== userId
     );
-    await fetch(`/api/user/${userId}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId })
-    });
+    const { name } = await getUserById(userId);
+    await deleteUser(userId);
+    this.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
   }
 
   disconnect(client, roomId) {
