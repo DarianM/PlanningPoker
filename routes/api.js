@@ -16,22 +16,11 @@ async function checkVotes(roomId, storyId) {
   }
 }
 
-async function disconnectUser(userId, roomId, server) {
-  const { name } = await db.getUserById(userId);
-  await db.deleteUser(userId);
-  server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
-  const nullVotes = await db.checkUserVotes(roomId);
-  if (nullVotes.length === 0) {
-    const votes = await db.flipVotes(roomId);
-    server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
-  }
-}
-
 router.delete("/user/:userId", validate.delete, async (req, res) => {
   const { userId } = req.params;
   const { roomId } = req.body;
   const { server } = serverConfig;
-  await disconnectUser(userId, roomId, server);
+  await db.disconnectUser(userId, roomId, server);
   res.send({}).status(200);
 });
 
