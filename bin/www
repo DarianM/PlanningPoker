@@ -6,7 +6,7 @@
 
 var app = require("../app");
 var debug = require("debug")("server:server");
-var http = require("http");
+var http = require("https");
 const ws = require("ws").Server;
 const serverConfig = require("../ws/wsServerConfig");
 const wsServer = require("../ws/wsServer");
