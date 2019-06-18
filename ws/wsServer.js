@@ -1,5 +1,5 @@
 const connectedSocket = require("./connectedSocket");
-const { getUserById, deleteUser } = require("../db/db_utils");
+const { disconnectUser } = require("../db/db_utils");
 
 module.exports = class wsServer {
   constructor(server) {
@@ -30,9 +30,7 @@ module.exports = class wsServer {
     this._usersSockets = this._usersSockets.filter(
       user => user.userId !== userId
     );
-    const { name } = await getUserById(userId);
-    await deleteUser(userId);
-    this.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
+    disconnectUser(userId, roomId, this);
   }
 
   disconnect(client, roomId) {
