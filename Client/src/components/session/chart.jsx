@@ -20,10 +20,10 @@ const ConnectedChart = ({ story, players, average }) => (
     <div className="chart-donut">
       <div className="donut-circle1">
         {players}
-        {players > 1 ? "Players" : "Player"}
+        {players > 1 ? " Players" : " Player"}
       </div>
       <div className="donut-circle2">voted</div>
-      <div className="donut-circle3">Avg: {average}</div>
+      <div className="donut-circle3">Avg: {average.toFixed(2)}</div>
     </div>
     <div className="chart-votes">
       <ul>

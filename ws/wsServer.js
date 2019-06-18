@@ -1,4 +1,3 @@
-const nodeFetch = require("node-fetch");
 const connectedSocket = require("./connectedSocket");
 const { getUserById, deleteUser } = require("../db/db_utils");
 

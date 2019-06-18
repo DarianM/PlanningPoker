@@ -195,5 +195,19 @@ export default function(state = initialState, action) {
     };
   }
 
+  if (action.type === "RESET_STORY") {
+    const { activeStoryId } = action.payload;
+    return {
+      ...state,
+      byId: {
+        ...state.byId,
+        [activeStoryId]: {
+          ...state.byId[activeStoryId],
+          end: null
+        }
+      }
+    };
+  }
+
   return state;
 }

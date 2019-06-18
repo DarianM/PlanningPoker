@@ -71,8 +71,9 @@ function deleteVotes() {
   return async (dispatch, getState) => {
     dispatch({ type: CLEAR_STARTING });
     const { id: roomId } = getState().gameRoom;
+    const { activeStoryId } = getState().stories;
     try {
-      await Api.clearVotes(roomId);
+      await Api.clearVotes(roomId, activeStoryId);
       dispatch({ type: CLEAR_SUCCESS });
     } catch (error) {
       dispatch({ type: CLEAR_FAILURE });
@@ -129,6 +130,15 @@ function startStory() {
 
 function startingStory(payload) {
   return { type: START_STORY, payload };
+}
+
+function resetingStory() {
+  return async (dispatch, getState) => {
+    const { activeStoryId } = getState().stories;
+    if (activeStoryId) {
+      dispatch({ type: "RESET_STORY", payload: { activeStoryId } });
+    }
+  };
 }
 
 function endStory() {
@@ -210,6 +220,7 @@ export {
   deleteStory,
   editStory,
   resetTimer,
+  resetingStory,
   resetingTimer,
   renamingStory
 };

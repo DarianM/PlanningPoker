@@ -123,7 +123,7 @@ describe("/api/room route", () => {
       expect(result.statusCode).toBe(200);
     });
     it("should notify other users about the newcomer", () => {
-      expect(broadcast).toHaveBeenCalledTimes(2);
+      expect(broadcast).toHaveBeenCalledTimes(3);
       expect(socket.send).toHaveBeenCalledWith(
         JSON.stringify({
           reason: "USER_JOINED",

@@ -70,7 +70,9 @@ describe("Route: /api", () => {
       await request(app)
         .post("/api/room/create")
         .send({ user: "test" });
-      result = await request(app).delete("/api/votes/1");
+      result = await request(app)
+        .delete("/api/votes/1")
+        .send({ storyId: 1 });
     });
     it("should delete votes", () => {
       expect(result.statusCode).toBe(200);

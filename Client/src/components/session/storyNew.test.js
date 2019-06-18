@@ -21,6 +21,8 @@ describe("New Story Modal", () => {
         newText = changeData.story;
       };
       const mockMany = jest.fn();
+      const mockValidation = () =>
+        new Promise((resolve, reject) => resolve(true));
 
       const wrapper = mount(
         <Modal>
@@ -28,6 +30,7 @@ describe("New Story Modal", () => {
             roomId={1}
             addNewStory={mocknewStoryFunc}
             addMany={mockMany}
+            validation={mockValidation}
           />
         </Modal>
       );

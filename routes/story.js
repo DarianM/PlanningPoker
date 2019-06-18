@@ -62,6 +62,12 @@ router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   res.send({}).status(200);
 });
 
+router.put("/keep-alive", validate.storyId, async (req, res) => {
+  const { storyId } = req.body;
+  await db.resetStory(storyId);
+  res.send({}).status(200);
+});
+
 router.put("/reset", async (req, res) => {
   // validations
   const { roomId, storyId } = req.body;

@@ -16,7 +16,7 @@ class NewStory extends Component {
       await validation(story);
       addNewStory({ story, roomId });
       addMany(isMoreToAdd);
-      if (isMoreToAdd) this.setState({ story: "" });
+      if (isMoreToAdd) this.setState({ story: "", error: "" });
     } catch (error) {
       this.handleError(error.message);
     }
