@@ -6,7 +6,7 @@
     "start": "nodemon ./bin/www",
     "knex": "knex",
     "lint": "eslint ./",
-    "test": "jest"
+    "test": "jest ./test"
   },
   "engines": {
     "node": "11.x"

@@ -1,10 +1,6 @@
 process.env.NODE_ENV = "test";
-const wss = {
-  on: jest.fn(),
-  clients: [],
-  options: { host: "testhost", port: "0000" }
-};
-require("ws").Server = jest.fn(() => wss);
+const broadcast = jest.fn((roomId, data) => socket.send(JSON.stringify(data)));
+require("../ws/wsServerConfig").server = { broadcast };
 const request = require("supertest");
 const knex = require("../db/config");
 const app = require("../app");
@@ -20,19 +16,17 @@ const socket = {
   isAlive: true,
   readyState: 1
 };
-const incomingMessage = { url: "/1/2" };
-
-describe("websocket server", () => {
-  describe("on connection", () => {
-    const cbFunc = wss.on.mock.calls[0][1];
-    cbFunc(socket, incomingMessage);
-    it("test", () => {
-      const onMessage = socket.on.mock.calls[1][1];
-      onMessage(JSON.stringify({ reason: "USER_VOTED", data: { vote: 2 } }));
-      expect(socket.send).toHaveBeenCalled();
-    });
-  });
-});
+// describe("websocket server", () => {
+//   describe("on connection", () => {
+//     const cbFunc = wss.on.mock.calls[0][1];
+//     cbFunc(socket, incomingMessage);
+//     it("test", () => {
+//       const onMessage = socket.on.mock.calls[1][1];
+//       onMessage(JSON.stringify({ reason: "USER_VOTED", data: { vote: 2 } }));
+//       expect(socket.send).toHaveBeenCalled();
+//     });
+//   });
+// });
 
 describe("/api/room route", () => {
   beforeEach(() => {
@@ -116,7 +110,7 @@ describe("/api/room route", () => {
   describe("joining a user in an existing room", () => {
     let result;
     beforeEach(async () => {
-      socket.send.mockReset();
+      broadcast.mockClear();
       await request(app)
         .post("/api/room/create")
         .send({ user: "test" });
@@ -129,10 +123,11 @@ describe("/api/room route", () => {
       expect(result.statusCode).toBe(200);
     });
     it("should notify other users about the newcomer", () => {
+      expect(broadcast).toHaveBeenCalledTimes(3);
       expect(socket.send).toHaveBeenCalledWith(
         JSON.stringify({
           reason: "USER_JOINED",
-          data: { user: "meee", userId: result.body.roomInfo.userId }
+          data: { user: "meee", userId: 2 }
         })
       );
     });
@@ -261,6 +256,7 @@ describe("/api/room route", () => {
     });
     it("should update room's name", () => {
       expect(result.statusCode).toBe(200);
+      expect(broadcast).toHaveBeenCalled();
       expect(socket.send).toHaveBeenCalledWith(
         JSON.stringify({
           reason: "ROOM_NAME_UPDATED",
@@ -286,6 +282,7 @@ describe("/api/room route", () => {
     });
     it("should return the votes and broadcast", () => {
       expect(result.statusCode).toBe(200);
+      expect(broadcast).toHaveBeenCalled();
       expect(socket.send).toHaveBeenLastCalledWith(
         JSON.stringify({
           reason: "FLIP_CARDS",

@@ -36,7 +36,7 @@ export const ConnectedSessionInfo = ({
   const storyNameValidation = value => {
     return new Promise((resolve, reject) => {
       if (new RegExp(/^\S{5,40}$/, "g").test(value)) resolve(true);
-      else reject(new Error("write a story name between 5-40 chars"));
+      else reject(new Error("Story name must have between 5-40 characters"));
     });
   };
 

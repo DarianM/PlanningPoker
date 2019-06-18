@@ -67,7 +67,7 @@ describe("websocket middleware", () => {
 
     it("creates the websocket", () => {
       expect(websocketConstructor).toHaveBeenCalledWith(
-        "ws://localhost:2345/roomId/userId"
+        "ws://localhost/ws/roomId/userId"
       );
     });
   });

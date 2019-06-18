@@ -113,11 +113,14 @@ const addMemberVote = async (user, roomId, vote) => {
   return id;
 };
 
-const deleteRoomVotes = async roomId => {
+const deleteRoomVotes = async (roomId, storyId) => {
   const ids = await knex("members")
     .select("id")
     .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
     .where({ roomId });
+  await knex("stories")
+    .update({ ended: null })
+    .where({ id: storyId });
   ids.forEach(
     async id =>
       await knex("members")
@@ -158,7 +161,7 @@ const startStory = async (started, id) => {
 
 const endStory = async (ended, id) => {
   await knex("stories")
-    .update({ ended, isActive: false })
+    .update({ ended })
     .where({ id });
 };
 
