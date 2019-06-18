@@ -347,7 +347,7 @@ describe("stories reducer", () => {
           1: {
             id: 1,
             text: "story",
-            start: new Date(startDate),
+            start: "2019-06-10T11:58:35",
             end: null,
             votes: []
           }

@@ -13,6 +13,7 @@ describe("Story Modal", () => {
           <ConnectedStory
             story="text"
             id={1}
+            roomId={1}
             close={mockCloseModal}
             editStory={mockEditStory}
           >
@@ -31,7 +32,7 @@ describe("Story Modal", () => {
   });
 
   describe("user clicks save button after modifying the value", () => {
-    it("should commit to the store with the new value", () => {
+    it("should commit to the store with the new value", async () => {
       let newText;
       const mockSaveFunc = changeData => {
         newText = changeData.value;
@@ -41,6 +42,7 @@ describe("Story Modal", () => {
           <ConnectedStory
             story="text"
             id={1}
+            roomId={1}
             close={mockCloseModal}
             editStory={mockSaveFunc}
           >
@@ -55,7 +57,7 @@ describe("Story Modal", () => {
         .childAt(1);
       const saveButton = wrapper.find(".votes-blue");
       input.simulate("change", { target: { value: "new title for story" } });
-      saveButton.simulate("click", { preventDefault() {} });
+      await saveButton.simulate("click", { preventDefault() {} });
 
       expect(newText).toBe("new title for story");
     });
@@ -68,6 +70,7 @@ describe("Story Modal", () => {
           <ConnectedStory
             story="text"
             id={1}
+            roomId={1}
             close={mockCloseModal}
             editStory={mockEditStory}
           >

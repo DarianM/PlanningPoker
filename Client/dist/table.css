@@ -60,35 +60,6 @@
   top: 1px;
 }
 
-/* .header {
-  grid-area: header;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  border-bottom: 1px solid #d5d9de;
-  background-color: #fff;
-}
-
-.header-userImg {
-  content: url(./images/user_logo.png);
-  width: 60px;
-  border-radius: 50%;
-}
-
-.header-logo {
-  content: url(./images/pokerIT.png);
-  padding: 15px 15px;
-  width: 110px;
-}
-
-.user-loged {
-  display: grid;
-  grid-template-columns: auto auto;
-  padding: 5px;
-  align-items: center;
-  align-content: space-around;
-  grid-column-gap: 10px;
-} */
-
 .invite-link {
   grid-area: 5/1/5/3;
   padding-top: 25px;
@@ -244,7 +215,6 @@
 
 .poker-cards {
   grid-area: game;
-  border: 1px solid white;
   margin: 0 35px;
   min-width: 300px;
   max-width: 770px;

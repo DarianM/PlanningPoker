@@ -15,6 +15,7 @@ export class ConnectedStory extends Component {
     this.state = { newTitle: "", error: "" };
     this.handleNewTitle = this.handleNewTitle.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.validateEditStory = this.validateEditStory.bind(this);
   }
 
   handleNewTitle(event) {
@@ -25,18 +26,19 @@ export class ConnectedStory extends Component {
     this.setState({ error });
   }
 
+  validateEditStory() {
+    const { newTitle } = this.state;
+    return new Promise((resolve, reject) => {
+      if (new RegExp(/^.{5,30}$/, "g").test(newTitle)) resolve(true);
+      else reject(new Error("Story name must have between 5-40 characters"));
+    });
+  }
+
   render() {
     const { story, id, roomId, close, editStory, children } = this.props;
     const { error } = this.state;
-    const validateStory = value => {
-      return new Promise((resolve, reject) => {
-        if (new RegExp(/^\S{5,30}$/, "g").test(value)) resolve(true);
-        else reject(new Error("Story name must have between 5-40 characters"));
-      });
-    };
-
     return (
-      <React.Fragment>
+      <>
         <Header close={close} />
         <div className="story-body">
           <div>Title:</div>
@@ -58,7 +60,7 @@ export class ConnectedStory extends Component {
               e.preventDefault();
               const { newTitle } = this.state;
               try {
-                await validateStory(newTitle);
+                await this.validateEditStory();
                 editStory({ value: newTitle, id, roomId });
                 close();
               } catch (err) {
@@ -80,7 +82,7 @@ export class ConnectedStory extends Component {
           </button>
           {error && <p>{error}</p>}
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

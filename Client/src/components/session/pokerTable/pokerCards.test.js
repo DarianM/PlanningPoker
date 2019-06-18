@@ -13,7 +13,7 @@ describe("Card Component", () => {
   describe("user clicks card before game started", () => {
     it("should appear a toast message with game hasn't started yet", () => {
       const mockAddVote = jest.fn();
-      const cardWrapper = mount(<Card onClick={mockAddVote} />);
+      const cardWrapper = mount(<Card value="1/2" onClick={mockAddVote} />);
 
       cardWrapper.find(".poker-card-button").simulate("click");
       expect(mockAddVote).toHaveBeenCalledTimes(1);

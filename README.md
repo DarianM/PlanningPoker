@@ -62,7 +62,9 @@ npm run start
 
 Note: When you run npm start, a server will be launched in your terminal for development. You can then open http://localhost:3000 to access the server and see the app.
 
-Serve client UI: in `/Client`
+`webpack.config.js` devServer is configured to proxy all `/api` and `/ws` calls to the server running on localhost:3000.
+
+in `/Client`
 
 ```sh
 npm run start
@@ -72,13 +74,13 @@ Note: Project is now running at http://localhost:8080
 
 ## Run tests
 
-for client's tests in `/Client` run
+for client's tests on `/Client` run
 
 ```sh
 npm run test
 ```
 
-for integration tests in root directory
+for integration tests found on Server in root directory
 
 ```sh
 npm run test

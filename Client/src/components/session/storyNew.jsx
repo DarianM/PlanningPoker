@@ -7,19 +7,28 @@ class NewStory extends Component {
     this.state = { story: "", error: "" };
     this.handleChange = this.handleChange.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.validateNewStory = this.validateNewStory.bind(this);
   }
 
   async handleSaveStory(isMoreToAdd) {
     const { story } = this.state;
-    const { addNewStory, addMany, roomId, validation } = this.props;
+    const { addNewStory, addMany, roomId } = this.props;
     try {
-      await validation(story);
+      await this.validateNewStory();
       addNewStory({ story, roomId });
       addMany(isMoreToAdd);
       if (isMoreToAdd) this.setState({ story: "", error: "" });
     } catch (error) {
       this.handleError(error.message);
     }
+  }
+
+  validateNewStory() {
+    const { story } = this.state;
+    return new Promise((resolve, reject) => {
+      if (new RegExp(/^.{5,30}$/, "g").test(story)) resolve(true);
+      else reject(new Error("Story name must have between 5-40 characters"));
+    });
   }
 
   handleChange(event) {
@@ -48,9 +57,9 @@ class NewStory extends Component {
           <button
             className="votes-blue"
             type="button"
-            onClick={e => {
+            onClick={async e => {
               e.preventDefault();
-              this.handleSaveStory(true);
+              await this.handleSaveStory(true);
             }}
           >
             {`Save \u0026 Add New`}
@@ -58,9 +67,9 @@ class NewStory extends Component {
           <button
             className="votes-blue"
             type="button"
-            onClick={e => {
+            onClick={async e => {
               e.preventDefault();
-              this.handleSaveStory(false);
+              await this.handleSaveStory(false);
             }}
           >
             {`Save \u0026 Close`}
@@ -85,8 +94,7 @@ class NewStory extends Component {
 NewStory.propTypes = {
   addNewStory: PropTypes.func.isRequired,
   addMany: PropTypes.func.isRequired,
-  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  validation: PropTypes.func.isRequired
+  roomId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired
 };
 
 export default NewStory;

@@ -15,14 +15,12 @@ describe("New Story Modal", () => {
   });
 
   describe("a textarea appears were admin can write stories", () => {
-    it("should commit to the store with one story at a time", () => {
+    it("should commit to the store with one story at a time", async () => {
       let newText;
       const mocknewStoryFunc = changeData => {
         newText = changeData.story;
       };
       const mockMany = jest.fn();
-      const mockValidation = () =>
-        new Promise((resolve, reject) => resolve(true));
 
       const wrapper = mount(
         <Modal>
@@ -30,7 +28,6 @@ describe("New Story Modal", () => {
             roomId={1}
             addNewStory={mocknewStoryFunc}
             addMany={mockMany}
-            validation={mockValidation}
           />
         </Modal>
       );
@@ -43,14 +40,14 @@ describe("New Story Modal", () => {
         .childAt(2)
         .childAt(1);
       textarea.simulate("change", { target: { value: "it's new" } });
-      saveButton.simulate("click", { preventDefault() {} });
+      await saveButton.simulate("click", { preventDefault() {} });
 
       expect(newText).toBe("it's new");
     });
   });
 
   describe("admin clicks Save And Add New button", () => {
-    it("should allow admin to enter as many stories as he wants, without closing the modal", () => {
+    it("should allow admin to enter as many stories as he wants, without closing the modal", async () => {
       let newText;
       const mocknewStoryFunc = changeData => {
         newText = changeData.story;
@@ -77,7 +74,7 @@ describe("New Story Modal", () => {
       textarea.simulate("change", {
         target: { value: "add as many as you want" }
       });
-      saveManyButton.simulate("click", { preventDefault() {} });
+      await saveManyButton.simulate("click", { preventDefault() {} });
 
       expect(newText).toBe("add as many as you want");
     });
