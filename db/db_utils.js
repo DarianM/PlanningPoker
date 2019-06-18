@@ -1,5 +1,16 @@
 const knex = require("./config.js");
 
+async function disconnectUser(userId, roomId, server) {
+  const { name } = await getUserById(userId);
+  await deleteUser(userId);
+  server.broadcast(roomId, { reason: "USER_LEFT", data: { name } });
+  const nullVotes = await checkUserVotes(roomId);
+  if (nullVotes.length === 0) {
+    const votes = await flipVotes(roomId);
+    server.broadcast(roomId, { reason: "FLIP_CARDS", data: { votes } });
+  }
+}
+
 const getRoomMembers = async roomId => {
   return await knex("members")
     .select(["name as member", "vote as voted", "id"])
@@ -197,5 +208,6 @@ module.exports = {
   update,
   addStory,
   editStory,
-  resetTimer
+  resetTimer,
+  disconnectUser
 };
