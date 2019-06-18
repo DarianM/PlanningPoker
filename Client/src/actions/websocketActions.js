@@ -13,10 +13,10 @@ import {
 const host = () => window.location.host || "localhost";
 
 export function connect(roomId, userId) {
-  console.log(`ws://${host()}/ws/${roomId}/${userId}`);
+  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
   return {
     type: WEBSOCKET_CONNECT,
-    payload: `ws://${host()}/ws/${roomId}/${userId}`
+    payload: `${protocol}://${host()}/ws/${roomId}/${userId}`
   };
 }
 
