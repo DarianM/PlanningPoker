@@ -35,14 +35,14 @@ export const ConnectedSessionInfo = ({
 
   const storyNameValidation = value => {
     return new Promise((resolve, reject) => {
-      if (new RegExp(/^.{5,40}$/, "g").test(value)) resolve(true);
+      if (new RegExp(/^\s*(\S\s*){5,40}$/, "g").test(value)) resolve(true);
       else reject(new Error("Story name must have between 5-40 characters"));
     });
   };
 
   const roomNameValidation = value => {
     return new Promise((resolve, reject) => {
-      if (new RegExp(/^.{5,30}$/, "g").test(value)) resolve(true);
+      if (new RegExp(/^\s*(\S\s*){5,30}$/, "g").test(value)) resolve(true);
       else reject(new Error("room name must be between 5-30 chars"));
     });
   };

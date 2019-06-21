@@ -86,7 +86,7 @@ function removeMember(payload) {
 function editRoomName(payload) {
   return async dispatch => {
     const { roomName, roomId } = payload;
-    if (new RegExp(/\S{3,}/, "g").test(roomName)) {
+    if (new RegExp(/^\s*(\S\s*){5,30}$/, "g").test(roomName)) {
       await Api.updateRoomName(roomId, roomName);
     } else dispatch(addToast({ text: "Please provide a valid room name" }));
   };

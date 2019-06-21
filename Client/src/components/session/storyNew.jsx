@@ -26,7 +26,7 @@ class NewStory extends Component {
   validateNewStory() {
     const { story } = this.state;
     return new Promise((resolve, reject) => {
-      if (new RegExp(/^.{5,30}$/, "g").test(story)) resolve(true);
+      if (new RegExp(/^\s*(\S\s*){5,30}$/, "g").test(story)) resolve(true);
       else reject(new Error("Story name must have between 5-40 characters"));
     });
   }
