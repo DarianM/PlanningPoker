@@ -8,6 +8,12 @@ class StoryDescription extends Component {
     super(props);
     this.state = { show: false };
     this.hideModal = this.hideModal.bind(this);
+    this.onEditStory = this.onEditStory.bind(this);
+  }
+
+  onEditStory() {
+    this.setState({ show: true });
+    document.body.classList.add("modal-open");
   }
 
   hideModal() {
@@ -18,18 +24,14 @@ class StoryDescription extends Component {
   render() {
     const { story, activeStoryId, deleteStory, id, roomId } = this.props;
     const { show } = this.state;
-    const onEditStory = e => {
-      e.preventDefault();
-      this.setState({ show: true });
-      document.body.classList.add("modal-open");
-    };
+
     return (
       <>
         <tr>
           <td>
             <button
               type="button"
-              onClick={onEditStory}
+              onClick={this.onEditStory}
               tabIndex="0"
               className="table-title"
             >

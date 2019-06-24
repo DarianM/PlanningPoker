@@ -58,7 +58,10 @@ export class ConnectedLogin extends Component {
       this.setState({ error: [validate.message] });
     } else if (hash) {
       this.handleJoinSession();
-    } else this.showCreateModal();
+    } else {
+      this.showCreateModal();
+      document.body.classList.add("modal-open");
+    }
   }
 
   render() {
