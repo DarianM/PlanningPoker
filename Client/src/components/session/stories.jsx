@@ -23,8 +23,16 @@ const mapStateToProps = state => {
 export class ConnectedStories extends Component {
   constructor(props) {
     super(props);
-    this.state = { add: true };
+    this.state = { add: true, showme: [] };
     this.handleNewStory = this.handleNewStory.bind(this);
+    this.showStories = this.showStories.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { stories } = this.props;
+    if (stories !== prevProps.stories) {
+      this.showStories("active");
+    }
   }
 
   handleNewStory(storyModal) {
@@ -32,9 +40,25 @@ export class ConnectedStories extends Component {
     if (!storyModal) document.body.classList.remove("modal-open");
   }
 
+  showStories(state) {
+    const { stories } = this.props;
+    let those = stories.allIds;
+    switch (state) {
+      case "active":
+        those = stories.allIds.filter(id => !stories.byId[id].end);
+        break;
+      case "completed":
+        those = stories.allIds.filter(id => stories.byId[id].end);
+        break;
+      default:
+        break;
+    }
+    this.setState({ showme: those });
+  }
+
   render() {
     const { stories, roomId, newStory, deleteStory } = this.props;
-    const { add } = this.state;
+    const { add, showme } = this.state;
     if (add) document.body.classList.add("modal-open");
     return (
       <div className="stories">
@@ -49,13 +73,37 @@ export class ConnectedStories extends Component {
         )}
         <ul className="nav-story">
           <li>
-            <span className="active-story">Active</span>
+            <button
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                this.showStories("active");
+              }}
+            >
+              <span className="active-story">Active</span>
+            </button>
           </li>
           <li>
-            <span>Completed</span>
+            <button
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                this.showStories("completed");
+              }}
+            >
+              <span>Completed</span>
+            </button>
           </li>
           <li>
-            <span>All</span>
+            <button
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                this.showStories();
+              }}
+            >
+              <span>All</span>
+            </button>
           </li>
           <li className="newstory-btn">
             <button
@@ -73,9 +121,9 @@ export class ConnectedStories extends Component {
         <div id="roomstory" className="todaystory">
           <table className="storytable">
             <tbody>
-              {stories.allIds.map(id => {
+              {showme.map(id => {
                 const { id: storyId, text } = stories.byId[id];
-                return !stories.byId[id].end ? (
+                return (
                   <StoryDescription
                     key={storyId}
                     story={text}
@@ -84,7 +132,7 @@ export class ConnectedStories extends Component {
                     activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
                   />
-                ) : null;
+                );
               })}
             </tbody>
           </table>

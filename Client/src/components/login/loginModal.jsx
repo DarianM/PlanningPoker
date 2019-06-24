@@ -55,6 +55,7 @@ class LoginForm extends Component {
             onClick={e => {
               e.preventDefault();
               cancel();
+              document.body.classList.remove("modal-open");
             }}
           >
             {`Cancel`}
