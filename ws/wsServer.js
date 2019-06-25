@@ -30,7 +30,7 @@ module.exports = class wsServer {
     this._usersSockets = this._usersSockets.filter(
       user => user.userId !== userId
     );
-    disconnectUser(userId, roomId, this);
+    await disconnectUser(userId, roomId, this);
   }
 
   disconnect(client, roomId) {

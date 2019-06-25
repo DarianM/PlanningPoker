@@ -23,15 +23,28 @@ const mapStateToProps = state => {
 export class ConnectedStories extends Component {
   constructor(props) {
     super(props);
-    this.state = { add: true, showme: [] };
+    this.state = {
+      add: true,
+      showme: [],
+      currentShow: "active",
+      activeLength: 0,
+      completedLength: 0,
+      allLength: 0,
+      storiesCount: { active: 0, completed: 0, all: 0 }
+    };
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
   }
 
+  componentDidMount() {
+    this.showStories("active");
+  }
+
   componentDidUpdate(prevProps) {
     const { stories } = this.props;
+    const { currentShow } = this.state;
     if (stories !== prevProps.stories) {
-      this.showStories("active");
+      this.showStories(currentShow);
     }
   }
 
@@ -42,23 +55,46 @@ export class ConnectedStories extends Component {
 
   showStories(state) {
     const { stories } = this.props;
-    let those = stories.allIds;
+    const allLength = stories.allIds.length;
+    let those;
+    let activeLength;
+    let completedLength;
     switch (state) {
       case "active":
         those = stories.allIds.filter(id => !stories.byId[id].end);
+        activeLength = those.length;
+        completedLength = allLength - activeLength;
         break;
       case "completed":
         those = stories.allIds.filter(id => stories.byId[id].end);
+        completedLength = those.length;
+        activeLength = allLength - completedLength;
         break;
       default:
+        those = stories.allIds;
+        activeLength = stories.allIds.filter(id => !stories.byId[id].end)
+          .length;
+        completedLength = those.length - activeLength;
         break;
     }
-    this.setState({ showme: those });
+    this.setState({
+      showme: those,
+      activeLength,
+      completedLength,
+      allLength,
+      currentShow: state
+    });
   }
 
   render() {
     const { stories, roomId, newStory, deleteStory } = this.props;
-    const { add, showme } = this.state;
+    const {
+      add,
+      showme,
+      activeLength,
+      completedLength,
+      allLength
+    } = this.state;
     if (add) document.body.classList.add("modal-open");
     return (
       <div className="stories">
@@ -75,34 +111,39 @@ export class ConnectedStories extends Component {
           <li>
             <button
               type="button"
+              className="story-state-choice"
               onClick={e => {
                 e.preventDefault();
                 this.showStories("active");
               }}
             >
-              <span className="active-story">Active</span>
+              <span className="active-story">
+                {`Active ( ${activeLength} )`}
+              </span>
             </button>
           </li>
           <li>
             <button
               type="button"
+              className="story-state-choice"
               onClick={e => {
                 e.preventDefault();
                 this.showStories("completed");
               }}
             >
-              <span>Completed</span>
+              <span>{`Completed ( ${completedLength} )`}</span>
             </button>
           </li>
           <li>
             <button
               type="button"
+              className="story-state-choice"
               onClick={e => {
                 e.preventDefault();
                 this.showStories();
               }}
             >
-              <span>All</span>
+              <span>{`All ( ${allLength} )`}</span>
             </button>
           </li>
           <li className="newstory-btn">
