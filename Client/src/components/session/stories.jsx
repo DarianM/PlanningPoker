@@ -29,8 +29,7 @@ export class ConnectedStories extends Component {
       currentShow: "active",
       activeLength: 0,
       completedLength: 0,
-      allLength: 0,
-      storiesCount: { active: 0, completed: 0, all: 0 }
+      allLength: 0
     };
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);

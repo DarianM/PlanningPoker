@@ -205,6 +205,27 @@ function resetingTimer(payload) {
   return { type: RESET_TIMER, payload };
 }
 
+function nextStory() {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { id: roomId } = state.gameRoom;
+    const { id: endedStoryId } = getActiveStory(state);
+
+    await Api.next(endedStoryId, roomId);
+  };
+}
+
+function movingToNextStory(payload) {
+  return async dispatch => {
+    const { activeStoryId } = payload;
+    if (!activeStoryId)
+      dispatch(addToast({ text: "There are no more stories in the backlog" }));
+    else {
+      dispatch({ type: "NEXT_STORY", payload: { activeStoryId } });
+    }
+  };
+}
+
 export {
   addVote,
   flipCards,
@@ -217,6 +238,8 @@ export {
   startingStory,
   endStory,
   endingStory,
+  nextStory,
+  movingToNextStory,
   deleteStory,
   editStory,
   resetTimer,

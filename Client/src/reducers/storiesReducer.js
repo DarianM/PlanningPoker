@@ -209,5 +209,10 @@ export default function(state = initialState, action) {
     };
   }
 
+  if (action.type === "NEXT_STORY") {
+    const { activeStoryId } = action.payload;
+    return { ...state, activeStoryId };
+  }
+
   return state;
 }

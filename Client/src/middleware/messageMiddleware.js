@@ -10,6 +10,7 @@ import {
   startingStory,
   resetingStory,
   endingStory,
+  movingToNextStory,
   renamingStory,
   flippingCards,
   deletingVotes,
@@ -90,6 +91,9 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "STORY_RESET") {
       store.dispatch(resetingStory());
+    }
+    if (reason === "NEXT_STORY") {
+      store.dispatch(movingToNextStory(data));
     }
     return {};
   }

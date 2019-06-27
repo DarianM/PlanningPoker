@@ -55,12 +55,16 @@ const editStory = (story, storyId, roomId) =>
 const resetTimer = (roomId, storyId) =>
   fetchMethod(PUT, "/api/story/reset", { roomId, storyId });
 
+const next = (endedStoryId, roomId) =>
+  fetchMethod(PUT, "/api/story/next", { endedStoryId, roomId });
+
 export {
   vote,
   join,
   create,
   start,
   end,
+  next,
   clearVotes,
   flip,
   updateRoomName,
