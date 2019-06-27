@@ -43,6 +43,6 @@ exports.up = async knex => {
 exports.down = async knex => {
   await knex.raw("DROP TABLE if exists members CASCADE");
   await knex.raw("DROP TABLE if exists rooms CASCADE");
-  await knex.raw("DROP TABLE if exists roomMembers CASCADE");
+  await knex.raw("DROP TABLE if exists roomsMembers CASCADE");
   await knex.raw("DROP TABLE if exists stories CASCADE");
 };
