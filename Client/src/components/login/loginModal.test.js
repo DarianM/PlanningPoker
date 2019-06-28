@@ -16,7 +16,7 @@ describe("room name form is displayed", () => {
         wrapper
           .find(".modal-footer")
           .childAt(0)
-          .simulate("click", { preventDefault() {} });
+          .simulate("submit", { preventDefault() {} });
         expect(mockCreateRoom).toHaveBeenCalled();
       });
     });
@@ -29,7 +29,7 @@ describe("room name form is displayed", () => {
         wrapper
           .find(".modal-footer")
           .childAt(0)
-          .simulate("click", { preventDefault() {} });
+          .simulate("submit", { preventDefault() {} });
         expect(wrapper.find(".loginError").exists()).toBe(true);
       });
     });

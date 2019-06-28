@@ -49,7 +49,8 @@ export class ConnectedLogin extends Component {
     this.setState(state => ({ show: !state.show }));
   }
 
-  handleRoomForm() {
+  handleRoomForm(e) {
+    e.preventDefault();
     this.setState({ error: "" });
     const user = this.user.current.value;
     const validate = userNameValidation(user);
@@ -79,7 +80,7 @@ export class ConnectedLogin extends Component {
             <div className="sub-header">
               {!hash ? `Create the room:` : `Join the room:`}
             </div>
-            <form className="form-login">
+            <form className="form-login" onSubmit={this.handleRoomForm}>
               <div className="user-log">
                 <i className="far fa-user" />
                 <input
@@ -92,11 +93,10 @@ export class ConnectedLogin extends Component {
               </div>
 
               <button
-                type="button"
+                type="submit"
                 id="startSession"
                 className="enter-button"
                 disabled={isLoading}
-                onClick={this.handleRoomForm}
               >
                 {(isLoading && "Processing...") ||
                   (!hash ? "Start a Session" : "Join a Session")}
