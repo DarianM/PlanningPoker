@@ -7,6 +7,7 @@ import {
   deleteVotes,
   flipCards,
   endStory,
+  nextStory,
   resetTimer
 } from "../../../actions/storyActions";
 import ButtonsGroup from "./buttonsGroup";
@@ -33,6 +34,7 @@ export const ConnectedGameControls = ({
   deleteVotes,
   flipCards,
   endStory,
+  nextStory,
   resetTimer
 }) => {
   const buttons = [
@@ -96,6 +98,9 @@ export const ConnectedGameControls = ({
       case "reset":
         resetTimer();
         break;
+      case "next":
+        nextStory();
+        break;
       default:
         break;
     }
@@ -112,7 +117,7 @@ export const ConnectedGameControls = ({
 
 const ControlButtons = connect(
   mapStateToProps,
-  { startStory, deleteVotes, flipCards, endStory, resetTimer }
+  { startStory, deleteVotes, flipCards, endStory, nextStory, resetTimer }
 )(ConnectedGameControls);
 export default ControlButtons;
 

@@ -9,6 +9,12 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+function mapStateToProps(state) {
+  return {
+    stories: state.stories
+  };
+}
+
 export class ConnectedStory extends Component {
   constructor(props) {
     super(props);
@@ -34,6 +40,19 @@ export class ConnectedStory extends Component {
     });
   }
 
+  getVotingDuration(storyId) {
+    const { stories } = this.props;
+    const { start, end } = stories.byId[storyId];
+    const time = Math.round((end - start) / 1000);
+    console.log(time);
+    const duration = {
+      hours: Math.floor(time / 3600),
+      minutes: Math.floor((time / 60) % 60),
+      seconds: time % 60
+    };
+    return `${duration.hours}:${duration.minutes}:${duration.seconds}`;
+  }
+
   render() {
     const { story, id, roomId, close, editStory, children } = this.props;
     const { error } = this.state;
@@ -49,7 +68,7 @@ export class ConnectedStory extends Component {
             onChange={this.handleNewTitle}
           />
           <div>Voting duration:</div>
-          <div>00:00</div>
+          <div>{this.getVotingDuration(id)}</div>
           {children}
         </div>
         <div className="modal-footer">
@@ -108,7 +127,7 @@ const Header = ({ close }) => (
 );
 
 const StoryModal = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ConnectedStory);
 export default StoryModal;

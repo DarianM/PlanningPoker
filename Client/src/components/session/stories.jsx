@@ -25,11 +25,11 @@ export class ConnectedStories extends Component {
     super(props);
     this.state = {
       add: true,
-      showStories: [],
+      showme: [],
       currentShow: "active",
-      active: 0,
-      completed: 0,
-      all: 0
+      activeLength: 0,
+      completedLength: 0,
+      allLength: 0
     };
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
@@ -41,8 +41,8 @@ export class ConnectedStories extends Component {
 
   componentDidUpdate(prevProps) {
     const { stories } = this.props;
+    const { currentShow } = this.state;
     if (stories !== prevProps.stories) {
-      const { currentShow } = this.state;
       this.showStories(currentShow);
     }
   }
@@ -52,29 +52,48 @@ export class ConnectedStories extends Component {
     if (!storyModal) document.body.classList.remove("modal-open");
   }
 
-  showStories(list) {
+  showStories(state) {
     const { stories } = this.props;
-    const filterStoriesIds = storyFilter =>
-      stories.allIds.filter(id => storyFilter(stories.byId[id]));
-
-    const storiesIds = {
-      all: stories.allIds,
-      active: filterStoriesIds(s => Boolean(!s.end)),
-      completed: filterStoriesIds(s => Boolean(s.end))
-    };
-
+    const allLength = stories.allIds.length;
+    let those;
+    let activeLength;
+    let completedLength;
+    switch (state) {
+      case "active":
+        those = stories.allIds.filter(id => !stories.byId[id].end);
+        activeLength = those.length;
+        completedLength = allLength - activeLength;
+        break;
+      case "completed":
+        those = stories.allIds.filter(id => stories.byId[id].end);
+        completedLength = those.length;
+        activeLength = allLength - completedLength;
+        break;
+      default:
+        those = stories.allIds;
+        activeLength = stories.allIds.filter(id => !stories.byId[id].end)
+          .length;
+        completedLength = those.length - activeLength;
+        break;
+    }
     this.setState({
-      showStories: storiesIds[list],
-      active: storiesIds.active.length,
-      completed: storiesIds.completed.length,
-      all: storiesIds.all.length,
-      currentShow: list
+      showme: those,
+      activeLength,
+      completedLength,
+      allLength,
+      currentShow: state
     });
   }
 
   render() {
     const { stories, roomId, newStory, deleteStory } = this.props;
-    const { add, showStories, active, completed, all } = this.state;
+    const {
+      add,
+      showme,
+      activeLength,
+      completedLength,
+      allLength
+    } = this.state;
     if (add) document.body.classList.add("modal-open");
     return (
       <div className="stories">
@@ -97,7 +116,9 @@ export class ConnectedStories extends Component {
                 this.showStories("active");
               }}
             >
-              <span className="active-story">{`Active ( ${active} )`}</span>
+              <span className="active-story">
+                {`Active ( ${activeLength} )`}
+              </span>
             </button>
           </li>
           <li>
@@ -109,7 +130,7 @@ export class ConnectedStories extends Component {
                 this.showStories("completed");
               }}
             >
-              <span>{`Completed ( ${completed} )`}</span>
+              <span>{`Completed ( ${completedLength} )`}</span>
             </button>
           </li>
           <li>
@@ -118,10 +139,10 @@ export class ConnectedStories extends Component {
               className="story-state-choice"
               onClick={e => {
                 e.preventDefault();
-                this.showStories("all");
+                this.showStories();
               }}
             >
-              <span>{`All ( ${all} )`}</span>
+              <span>{`All ( ${allLength} )`}</span>
             </button>
           </li>
           <li className="newstory-btn">
@@ -140,7 +161,7 @@ export class ConnectedStories extends Component {
         <div id="roomstory" className="todaystory">
           <table className="storytable">
             <tbody>
-              {showStories.map(id => {
+              {showme.map(id => {
                 const { id: storyId, text } = stories.byId[id];
                 return (
                   <StoryDescription

@@ -79,4 +79,27 @@ router.put("/reset", async (req, res) => {
   res.send({}).status(200);
 });
 
+router.put("/next", async (req, res) => {
+  const { server } = serverConfig;
+  const { endedStoryId, roomId } = req.body;
+  await db.update("stories", "isActive", 0, { id: endedStoryId });
+  const next = await db.getNextStory(roomId);
+  if (next) {
+    const date = new Date(Date.now());
+    await db.update("stories", "isActive", 1, { id: next.id });
+    await db.startStory(date, next.id);
+    server.broadcast(roomId, {
+      reason: "NEXT_STORY",
+      data: { activeStoryId: next.id }
+    });
+    server.broadcast(roomId, { reason: "STORY_STARTED", data: { date } });
+  } else {
+    server.broadcast(roomId, {
+      reason: "NEXT_STORY",
+      data: { activeStoryId: null }
+    });
+  }
+  res.send({}).status(200);
+});
+
 module.exports = router;
