@@ -88,11 +88,14 @@ router.put("/next", async (req, res) => {
     const date = new Date(Date.now());
     await db.update("stories", "isActive", 1, { id: next.id });
     await db.startStory(date, next.id);
-    server.broadcast(roomId, {
-      reason: "NEXT_STORY",
-      data: { activeStoryId: next.id }
-    });
-    server.broadcast(roomId, { reason: "STORY_STARTED", data: { date } });
+    server.broadcast(roomId, [
+      {
+        reason: "NEXT_STORY",
+        data: { activeStoryId: next.id }
+      },
+      { reason: "STORY_STARTED", data: { date } },
+      { reason: "CLEAR_VOTES" }
+    ]);
   } else {
     server.broadcast(roomId, {
       reason: "NEXT_STORY",

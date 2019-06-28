@@ -24,12 +24,16 @@ export class ConnectedStory extends Component {
     this.validateEditStory = this.validateEditStory.bind(this);
   }
 
-  handleNewTitle(event) {
-    this.setState({ newTitle: event.target.value });
-  }
-
-  handleError(error) {
-    this.setState({ error });
+  getVotingDuration(storyId) {
+    const { stories } = this.props;
+    const { start, end } = stories.byId[storyId];
+    const time = Math.round((end - start) / 1000);
+    const duration = {
+      hours: Math.floor(time / 3600),
+      minutes: Math.floor((time / 60) % 60),
+      seconds: time % 60
+    };
+    return `${duration.hours}:${duration.minutes}:${duration.seconds}`;
   }
 
   validateEditStory() {
@@ -40,17 +44,12 @@ export class ConnectedStory extends Component {
     });
   }
 
-  getVotingDuration(storyId) {
-    const { stories } = this.props;
-    const { start, end } = stories.byId[storyId];
-    const time = Math.round((end - start) / 1000);
-    console.log(time);
-    const duration = {
-      hours: Math.floor(time / 3600),
-      minutes: Math.floor((time / 60) % 60),
-      seconds: time % 60
-    };
-    return `${duration.hours}:${duration.minutes}:${duration.seconds}`;
+  handleError(error) {
+    this.setState({ error });
+  }
+
+  handleNewTitle(event) {
+    this.setState({ newTitle: event.target.value });
   }
 
   render() {
