@@ -34,15 +34,13 @@ const allowedVotes = [
 
 const user = joi
   .string()
-  .min(4)
-  .max(20)
+  .regex(/^\s*(\S\s*){3,20}$/)
   .error(() => "Please insert a valid username");
 const userId = joi.number().integer();
 const roomName = joi
   .string()
+  .regex(/^\s*(\S\s*){5,30}$/)
   .allow("")
-  .min(5)
-  .max(30)
   .error(() => "Room name must have between 5-30 characters");
 const roomId = joi
   .number()
