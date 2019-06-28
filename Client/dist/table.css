@@ -315,11 +315,6 @@
   min-width: 300px;
 }
 
-.activestory {
-  font-size: 18px;
-  color: var(--editable-input-text);
-}
-
 .story-state-choice {
   background: none;
   border: none;
@@ -336,7 +331,12 @@
   font-weight: bold;
 }
 
-.activestory:hover {
+.activetext-edit {
+  font-size: 18px;
+  color: var(--editable-input-text);
+}
+
+.activetext-edit:hover {
   color: var(--editable-input-hover);
   cursor: pointer;
   text-decoration: underline;
@@ -443,7 +443,7 @@ p.corner:nth-child(4) {
     grid-template-columns: auto 1fr;
     grid-template-areas:
       "header header"
-      "info info"
+      "info ."
       "game results"
       "stories results"
       ". .";

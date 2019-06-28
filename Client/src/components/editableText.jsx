@@ -17,6 +17,9 @@ class EditableText extends Component {
   componentDidUpdate() {
     const { edit } = this.state;
     if (edit) this.textInput.current.focus();
+    document.addEventListener("keydown", e => {
+      if (e.keyCode === 27) this.editText(false);
+    });
   }
 
   editText(prop) {
@@ -35,7 +38,7 @@ class EditableText extends Component {
   normalMode(text) {
     return (
       <div
-        className="activestory"
+        className="activetext-edit"
         onClick={e => {
           e.preventDefault();
           this.editText(true);
@@ -57,6 +60,7 @@ class EditableText extends Component {
     return (
       <>
         <form
+          className="edit-form"
           onSubmit={async e => {
             e.preventDefault();
             const { value } = this.state;

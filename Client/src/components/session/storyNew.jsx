@@ -43,7 +43,7 @@ class NewStory extends Component {
     const { story, error } = this.state;
     const { addMany } = this.props;
     return (
-      <React.Fragment>
+      <>
         <div className="modal-header">Create New Story</div>
         <div className="modal-center">
           <textarea
@@ -53,6 +53,7 @@ class NewStory extends Component {
             value={story}
           />
         </div>
+        {error && <p>{error}</p>}
         <div className="modal-footer">
           <button
             className="votes-blue"
@@ -84,9 +85,8 @@ class NewStory extends Component {
           >
             {`Cancel`}
           </button>
-          {error && <p>{error}</p>}
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }
