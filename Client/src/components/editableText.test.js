@@ -55,7 +55,7 @@ describe("user clicks save button after modifying the value", () => {
     const input = wrapper.find(".activestory-input");
     const saveButton = wrapper.find(".editable-submit");
     input.simulate("change", { target: { value: "new text" } });
-    await saveButton.simulate("click", { preventDefault() {} });
+    await saveButton.simulate("submit", { preventDefault() {} });
 
     expect(newText).toBe("new text");
   });

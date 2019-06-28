@@ -56,40 +56,40 @@ class EditableText extends Component {
   editMode(commit, text, validation, error) {
     return (
       <>
-        <div className="editable-input">
-          <input
-            ref={this.textInput}
-            tabIndex="0"
-            className="activestory-input"
-            type="text"
-            defaultValue={text}
-            onChange={this.handleChange}
-            onBlur={e => {
-              if (
-                !e.relatedTarget ||
-                e.relatedTarget.className !== "editable-submit"
-              )
-                this.editText(false);
-            }}
-          />
-          <button
-            className="editable-submit"
-            type="button"
-            onClick={async e => {
-              e.preventDefault();
-              const { value } = this.state;
-              try {
-                await validation(value);
-                commit({ value });
-                this.editText(false);
-              } catch (err) {
-                this.handleError(err.message);
-              }
-            }}
-          >
-            <i className="fas fa-check" />
-          </button>
-        </div>
+        <form
+          onSubmit={async e => {
+            e.preventDefault();
+            const { value } = this.state;
+            try {
+              await validation(value);
+              commit({ value });
+              this.editText(false);
+            } catch (err) {
+              this.handleError(err.message);
+            }
+          }}
+        >
+          <div className="editable-input">
+            <input
+              ref={this.textInput}
+              tabIndex="0"
+              className="activestory-input"
+              type="text"
+              defaultValue={text}
+              onChange={this.handleChange}
+              onBlur={e => {
+                if (
+                  !e.relatedTarget ||
+                  e.relatedTarget.className !== "editable-submit"
+                )
+                  this.editText(false);
+              }}
+            />
+            <button className="editable-submit" type="submit">
+              <i className="fas fa-check" />
+            </button>
+          </div>
+        </form>
         {error && <p>{error}</p>}
       </>
     );
