@@ -20,8 +20,9 @@ module.exports = class wsServer {
 
   broadcast(roomId, data) {
     this._roomsSockets[roomId] = this._roomsSockets[roomId] || [];
+    data = data.constructor === Array ? data : [data];
     this._roomsSockets[roomId].forEach(s => {
-      s.send(JSON.stringify(data));
+      data.map(obj => s.send(JSON.stringify(obj)));
     });
   }
 
