@@ -24,6 +24,13 @@ const getRoomStories = async roomId => {
     .where({ roomId });
 };
 
+const getNextStory = async roomId => {
+  return await knex("stories")
+    .select()
+    .where({ roomId, ended: null, isActive: 0 })
+    .first();
+};
+
 const getUserById = async id => {
   return await knex("members")
     .select("name")
@@ -191,6 +198,7 @@ const resetTimer = async (storyId, newStart) => {
 module.exports = {
   getRoomMembers,
   getRoomStories,
+  getNextStory,
   getUserById,
   getRoomStats,
   checkUserUniquenessWithinRoom,
