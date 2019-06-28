@@ -320,6 +320,22 @@
   color: var(--editable-input-text);
 }
 
+.story-state-choice {
+  background: none;
+  border: none;
+  color: black;
+  padding: 6px 24px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: "Open Sans", sans-serif;
+}
+
+.story-state-choice:hover {
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .activestory:hover {
   color: var(--editable-input-hover);
   cursor: pointer;
