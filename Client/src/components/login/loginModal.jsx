@@ -14,7 +14,12 @@ class LoginForm extends Component {
     this.handleCreateRoom = this.handleCreateRoom.bind(this);
   }
 
-  handleCreateRoom() {
+  componentDidMount() {
+    this.input.current.focus();
+  }
+
+  handleCreateRoom(e) {
+    e.preventDefault();
     const { create } = this.props;
     const validate = roomNameValidation(this.input.current.value);
     if (validate.message) {
@@ -28,39 +33,34 @@ class LoginForm extends Component {
     return (
       <>
         <div className="modal-header">Create New Room</div>
-        <div className="log-modal-input">
-          <input
-            type="text"
-            className="modal-input-roomname"
-            placeholder="Enter room name"
-            ref={this.input}
-          />
-          {error && <p className="loginError">{error}</p>}
-        </div>
+        <form onSubmit={this.handleCreateRoom}>
+          <div className="log-modal-input">
+            <input
+              type="text"
+              className="modal-input-roomname"
+              placeholder="Enter room name"
+              ref={this.input}
+            />
+            {error && <p className="loginError">{error}</p>}
+          </div>
 
-        <div className="modal-footer">
-          <button
-            className="votes-blue"
-            type="button"
-            onClick={e => {
-              e.preventDefault();
-              this.handleCreateRoom();
-            }}
-          >
-            {`Create`}
-          </button>
-          <button
-            className="votes-option"
-            type="button"
-            onClick={e => {
-              e.preventDefault();
-              cancel();
-              document.body.classList.remove("modal-open");
-            }}
-          >
-            {`Cancel`}
-          </button>
-        </div>
+          <div className="modal-footer">
+            <button className="votes-blue" type="submit">
+              {`Create`}
+            </button>
+            <button
+              className="votes-option"
+              type="button"
+              onClick={e => {
+                e.preventDefault();
+                cancel();
+                document.body.classList.remove("modal-open");
+              }}
+            >
+              {`Cancel`}
+            </button>
+          </div>
+        </form>
       </>
     );
   }

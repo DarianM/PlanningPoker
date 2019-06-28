@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { ConnectedLogin } from "./login";
 
-const connection = { isLoading: false, error: "" };
+const connection = { isLoading: false, error: [""] };
 const mockCreateRoom = jest.fn();
 const mockJoinRoom = jest.fn();
 const applyMount = hash => {
@@ -31,7 +31,7 @@ describe("Login Component", () => {
           wrapper.instance().user.current.value = "name";
           wrapper
             .find(".enter-button")
-            .simulate("click", { preventDefault() {} });
+            .simulate("submit", { preventDefault() {} });
           expect(wrapper.state().show).toBe(true);
           expect(wrapper.find(".log-modal-input").exists()).toBe(true);
         });
@@ -45,7 +45,7 @@ describe("Login Component", () => {
 
           wrapper
             .find(".enter-button")
-            .simulate("click", { preventDefault() {} });
+            .simulate("submit", { preventDefault() {} });
           expect(wrapper.state().error).toEqual([
             "Please enter no more than 20 characters"
           ]);
@@ -60,7 +60,7 @@ describe("Login Component", () => {
     describe("when start a session button is clicked some data is beeing fetched", () => {
       it("button text should be Processing...", () => {
         const wrapper = applyMount(hash);
-        wrapper.setProps({ connection: { isLoading: true, error: "" } });
+        wrapper.setProps({ connection: { isLoading: true, error: [""] } });
         expect(wrapper.find(".enter-button").text()).toEqual("Processing...");
       });
       it("should join a created room", () => {
@@ -68,7 +68,7 @@ describe("Login Component", () => {
         wrapper.instance().user.current.value = "valid";
         wrapper
           .find(".enter-button")
-          .simulate("click", { preventDefault() {} });
+          .simulate("submit", { preventDefault() {} });
         expect(mockJoinRoom).toHaveBeenCalled();
       });
     });
