@@ -47,7 +47,7 @@ describe("Login Component", () => {
             .find(".enter-button")
             .simulate("submit", { preventDefault() {} });
           expect(wrapper.state().error).toEqual([
-            "Please enter no more than 20 characters"
+            "Please insert between 3-20 characters"
           ]);
           expect(wrapper.find(".loginError").exists()).toBe(true);
         });

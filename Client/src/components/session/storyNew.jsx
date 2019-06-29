@@ -52,8 +52,8 @@ class NewStory extends Component {
             onChange={this.handleChange}
             value={story}
           />
+          {error && <p className="newstory-error">{error}</p>}
         </div>
-        {error && <p>{error}</p>}
         <div className="modal-footer">
           <button
             className="votes-blue"

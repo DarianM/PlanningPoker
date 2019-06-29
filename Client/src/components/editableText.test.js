@@ -10,7 +10,7 @@ describe("EditableText Component", () => {
       <EditableText text="test" commit={save} validation={validation} />
     );
     it("should display text by default", () => {
-      expect(component.find(".activestory").text()).toEqual("test");
+      expect(component.find(".activetext-edit").text()).toEqual("test");
     });
   });
 
@@ -24,7 +24,7 @@ describe("EditableText Component", () => {
         validation={mockValidation}
       />
     );
-    let text = wrapper.find(".activestory");
+    let text = wrapper.find(".activetext-edit");
     text.simulate("click", { preventDefault() {} });
 
     text = wrapper.find(".activestory-input");

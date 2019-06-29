@@ -35,7 +35,7 @@ describe("Sessioninfo Component", () => {
         });
         expect(
           infoComponent
-            .find(".activestory")
+            .find(".activetext-edit")
             .at(1)
             .text()
         ).toEqual("testStory");
