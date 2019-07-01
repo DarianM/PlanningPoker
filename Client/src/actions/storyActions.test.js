@@ -13,9 +13,12 @@ import {
   editStory,
   renamingStory,
   resetTimer,
-  resetingTimer
+  resetingTimer,
+  nextStory,
+  movingToNextStory
 } from "./storyActions";
 import * as Api from "../Api";
+import { Promise } from "bluebird";
 
 jest.mock("../Api", () => ({
   start: jest.fn(),
@@ -25,7 +28,8 @@ jest.mock("../Api", () => ({
   flip: jest.fn(),
   clearVotes: jest.fn(),
   addStory: jest.fn(),
-  editStory: jest.fn()
+  editStory: jest.fn(),
+  next: jest.fn()
 }));
 
 beforeAll(() => {
@@ -492,6 +496,82 @@ describe("start story thunk mid", () => {
       const payload = { newDate: 12000 };
       const result = resetingTimer(payload);
       expect(result).toEqual({ type: "RESET_TIMER", payload });
+    });
+  });
+
+  describe("move to next story", () => {
+    const getState = jest.fn(() => ({
+      stories: {
+        byId: {
+          1: {
+            id: 1
+          },
+          2: {
+            id: 2
+          }
+        },
+        allIds: [1, 2],
+        activeStoryId: 1
+      },
+      gameRoom: {
+        user: "random",
+        id: 1
+      }
+    }));
+    describe("succeding", () => {
+      it("should move to the next story", async () => {
+        Api.next.mockImplementationOnce(
+          () => new Promise(resolve => resolve())
+        );
+        const dispatch = jest.fn();
+        const result = nextStory();
+        await result(dispatch, getState);
+
+        expect(dispatch).toHaveBeenCalledWith({ type: "NEXT_STORY_STARTING" });
+        expect(dispatch).toHaveBeenCalledWith({ type: "NEXT_STORY_SUCCESS" });
+      });
+    });
+    describe("failing", () => {
+      it("should dispaly the error occured", async () => {
+        Api.next.mockImplementationOnce(
+          () => new Promise((resolve, reject) => reject([{ message: "error" }]))
+        );
+        const dispatch = jest.fn();
+        const result = nextStory();
+        await result(dispatch, getState);
+
+        expect(dispatch).toHaveBeenCalledWith({ type: "NEXT_STORY_STARTING" });
+        expect(dispatch).toHaveBeenCalledWith({ type: "NEXT_STORY_FAILURE" });
+      });
+    });
+  });
+
+  describe("moving to next story", () => {
+    describe("when there is a next story", () => {
+      it("should create proper action for reducer", async () => {
+        const dispatch = jest.fn();
+        const payload = { activeStoryId: 1 };
+        const result = movingToNextStory(payload);
+        await result(dispatch);
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({ type: "NEXT_STORY", payload });
+      });
+    });
+    describe("when the are no more stories", () => {
+      it("should dipatch toast with this warning", async () => {
+        const dispatch = jest.fn();
+        const payload = { activeStoryId: undefined };
+        const result = movingToNextStory(payload);
+        await result(dispatch);
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: "ADD_TOAST",
+          payload: {
+            expires: 8000,
+            text: "There are no more stories in the backlog"
+          }
+        });
+      });
     });
   });
 });
