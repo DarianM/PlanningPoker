@@ -21,7 +21,10 @@ import {
   END_FAILURE,
   RESET_STARTING,
   RESET_SUCCESS,
-  RESET_FAILURE
+  RESET_FAILURE,
+  NEXT_STORY_STARTING,
+  NEXT_STORY_SUCCESS,
+  NEXT_STORY_FAILURE
 } from "./types";
 import { addToast } from "./toastsActions";
 import { getActiveStory, isFlipped } from "../selectors";
@@ -207,11 +210,17 @@ function resetingTimer(payload) {
 
 function nextStory() {
   return async (dispatch, getState) => {
+    dispatch({ type: NEXT_STORY_STARTING });
     const state = getState();
     const { id: roomId } = state.gameRoom;
     const { id: endedStoryId } = getActiveStory(state);
-
-    await Api.next(endedStoryId, roomId);
+    try {
+      await Api.next(endedStoryId, roomId);
+      dispatch({ type: NEXT_STORY_SUCCESS });
+    } catch (error) {
+      dispatch({ type: NEXT_STORY_FAILURE });
+      error.map(e => dispatch(addToast({ text: e.message })));
+    }
   };
 }
 
