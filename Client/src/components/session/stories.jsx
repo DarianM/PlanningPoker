@@ -153,7 +153,7 @@ export class ConnectedStories extends Component {
         </ul>
         <div id="roomstory" className="todaystory">
           <table className="storytable">
-            <tbody className="droppable" onDragOver={e => e.preventDefault()}>
+            <tbody>
               {showStories.map(id => {
                 const { id: storyId, text } = stories.byId[id];
                 return (

@@ -21,17 +21,13 @@ class StoryDescription extends Component {
     document.body.classList.remove("modal-open");
   }
 
-  handleDragStart(e, id) {
-    e.dataTransfer.setData("text/html", id);
-  }
-
   render() {
     const { story, activeStoryId, deleteStory, id, roomId } = this.props;
     const { show } = this.state;
 
     return (
       <>
-        <tr draggable onDragStart={e => this.handleDragStart(e, id)}>
+        <tr>
           <td>
             <button
               type="button"
