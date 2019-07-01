@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import className from "classnames";
 import StoryDescription from "./storyDescription";
-import { Modal } from "../modals";
+import Modal from "../modals";
 import NewStory from "./storyNew";
 import * as actions from "../../actions/storyActions";
 
@@ -33,6 +34,7 @@ export class ConnectedStories extends Component {
     };
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
+    this.getCurrentShowClassNames = this.getCurrentShowClassNames.bind(this);
   }
 
   componentDidMount() {
@@ -45,6 +47,14 @@ export class ConnectedStories extends Component {
       const { currentShow } = this.state;
       this.showStories(currentShow);
     }
+  }
+
+  getCurrentShowClassNames(list) {
+    const { currentShow: clicked } = this.state;
+    return className({
+      "story-state-choice": true,
+      "story-state-clicked": list === clicked
+    });
   }
 
   handleNewStory(storyModal) {
@@ -79,7 +89,11 @@ export class ConnectedStories extends Component {
     return (
       <div className="stories">
         {add && (
-          <Modal>
+          <Modal
+            cancel={() => {
+              this.handleNewStory(false);
+            }}
+          >
             <NewStory
               roomId={roomId}
               addNewStory={newStory}
@@ -91,37 +105,37 @@ export class ConnectedStories extends Component {
           <li>
             <button
               type="button"
-              className="story-state-choice"
+              className={this.getCurrentShowClassNames("active")}
               onClick={e => {
                 e.preventDefault();
                 this.showStories("active");
               }}
             >
-              <span className="active-story">{`Active ( ${active} )`}</span>
+              <span className="active-story">{`Active (${active})`}</span>
             </button>
           </li>
           <li>
             <button
               type="button"
-              className="story-state-choice"
+              className={this.getCurrentShowClassNames("completed")}
               onClick={e => {
                 e.preventDefault();
                 this.showStories("completed");
               }}
             >
-              <span>{`Completed ( ${completed} )`}</span>
+              <span>{`Completed (${completed})`}</span>
             </button>
           </li>
           <li>
             <button
               type="button"
-              className="story-state-choice"
+              className={this.getCurrentShowClassNames("all")}
               onClick={e => {
                 e.preventDefault();
                 this.showStories("all");
               }}
             >
-              <span>{`All ( ${all} )`}</span>
+              <span>{`All (${all})`}</span>
             </button>
           </li>
           <li className="newstory-btn">
@@ -139,7 +153,7 @@ export class ConnectedStories extends Component {
         </ul>
         <div id="roomstory" className="todaystory">
           <table className="storytable">
-            <tbody>
+            <tbody className="droppable" onDragOver={e => e.preventDefault()}>
               {showStories.map(id => {
                 const { id: storyId, text } = stories.byId[id];
                 return (

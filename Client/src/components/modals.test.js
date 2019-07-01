@@ -1,6 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
-import { Modal, ConnectedToasts } from "./modals";
+import { ConnectedToasts } from "./toasts";
+import Modal from "./modals";
 
 describe("Modal components", () => {
   it("renders a modal without crashing", () => {

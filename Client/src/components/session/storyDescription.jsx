@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Story from "./storyModal";
-import { Modal } from "../modals";
+import Modal from "../modals";
 
 class StoryDescription extends Component {
   constructor(props) {
@@ -21,13 +21,17 @@ class StoryDescription extends Component {
     document.body.classList.remove("modal-open");
   }
 
+  handleDragStart(e, id) {
+    e.dataTransfer.setData("text/html", id);
+  }
+
   render() {
     const { story, activeStoryId, deleteStory, id, roomId } = this.props;
     const { show } = this.state;
 
     return (
       <>
-        <tr>
+        <tr draggable onDragStart={e => this.handleDragStart(e, id)}>
           <td>
             <button
               type="button"
@@ -61,7 +65,7 @@ class StoryDescription extends Component {
           </td>
           <td>
             {show && (
-              <Modal>
+              <Modal cancel={this.hideModal}>
                 <Story
                   story={story}
                   roomId={roomId}

@@ -4,13 +4,12 @@ import PropTypes from "prop-types";
 class EditableText extends Component {
   constructor(props) {
     super(props);
-    this.state = { edit: false, error: "", value: "" };
+    this.state = { edit: false, error: "" };
     this.textInput = React.createRef();
     this.editText = this.editText.bind(this);
 
     this.normalMode = this.normalMode.bind(this);
     this.editMode = this.editMode.bind(this);
-    this.handleChange = this.handleChange.bind(this);
     this.handleError = this.handleError.bind(this);
   }
 
@@ -23,12 +22,7 @@ class EditableText extends Component {
   }
 
   editText(prop) {
-    const { text } = this.props;
-    this.setState({ edit: prop, value: text });
-  }
-
-  handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ edit: prop });
   }
 
   handleError(error) {
@@ -63,7 +57,7 @@ class EditableText extends Component {
           className="edit-form"
           onSubmit={async e => {
             e.preventDefault();
-            const { value } = this.state;
+            const { value } = this.textInput.current;
             try {
               await validation(value);
               commit({ value });
@@ -101,10 +95,10 @@ class EditableText extends Component {
 
   render() {
     const { text, commit, validation } = this.props;
-    const { value, error, edit } = this.state;
+    const { error, edit } = this.state;
 
     return edit
-      ? this.editMode(commit, value, validation, error)
+      ? this.editMode(commit, text, validation, error)
       : this.normalMode(text);
   }
 }

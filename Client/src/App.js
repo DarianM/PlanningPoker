@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Login from "./components/login/login";
 import Session from "./components/session/session";
-import { Toasts } from "./components/modals";
+import { Toasts } from "./components/toasts";
 
 const mapStateToProps = state => ({
   hasJoined: state.gameRoom.hasJoined,

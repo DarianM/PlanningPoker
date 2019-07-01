@@ -157,13 +157,13 @@
 
 .nav-story {
   list-style-type: none;
-  display: grid;
-  grid-template-columns: auto auto auto 1fr;
-  grid-column-gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .newstory-btn {
-  place-self: end;
+  margin-left: auto;
+  flex-basis: 40px;
 }
 
 .newstory-btn > :first-child {
@@ -329,6 +329,11 @@
 .story-state-choice:hover {
   cursor: pointer;
   font-weight: bold;
+}
+
+.story-state-clicked {
+  font-weight: bold;
+  border-bottom: 2px solid var(--control-btn-color);
 }
 
 .activetext-edit {

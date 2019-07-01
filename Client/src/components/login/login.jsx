@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { userNameValidation } from "./validation";
 import * as actions from "../../actions/roomActions";
-import { Modal } from "../modals";
+import Modal from "../modals";
 import LoginForm from "./loginModal";
 
 import "./login.css";
@@ -113,7 +113,7 @@ export class ConnectedLogin extends Component {
           </div>
         </div>
         {show && (
-          <Modal>
+          <Modal cancel={this.showCreateModal}>
             <LoginForm
               create={this.handleNewSession}
               cancel={this.showCreateModal}
