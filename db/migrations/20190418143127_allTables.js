@@ -35,14 +35,13 @@ exports.up = async knex => {
     table
       .foreign("roomId")
       .references("id")
-      .inTable("rooms")
-      .onDelete("cascade");
+      .inTable("rooms");
   });
 };
 
 exports.down = async knex => {
-  await knex.raw("DROP TABLE if exists members CASCADE");
-  await knex.raw("DROP TABLE if exists rooms CASCADE");
-  await knex.raw("DROP TABLE if exists roomsMembers CASCADE");
-  await knex.raw("DROP TABLE if exists stories CASCADE");
+  await knex.schema.dropTableIfExists("roomsMembers");
+  await knex.schema.dropTableIfExists("stories");
+  await knex.schema.dropTableIfExists("rooms");
+  await knex.schema.dropTableIfExists("members");
 };
