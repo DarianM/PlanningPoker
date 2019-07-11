@@ -185,4 +185,57 @@ describe("Route: /api/story", () => {
       );
     });
   });
+
+  describe("moving to next story", () => {
+    describe("when there is a next story", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room/create")
+          .send({ user: "test" });
+        await request(app)
+          .post("/api/story/add")
+          .send({ story: "new story", roomId: 1, active: true });
+        await request(app)
+          .post("/api/story/add")
+          .send({ story: "new story2", roomId: 1, active: false });
+        await request(app)
+          .post("/api/story/end")
+          .send({ date: "2019-05-22T07:41:17.882Z", roomId: 1, storyId: 1 });
+        socket.send.mockClear();
+        result = await request(app)
+          .put("/api/story/next")
+          .send({ endedStoryId: 1, roomId: 1 });
+      });
+
+      it("should broadcast the next story", () => {
+        expect(result.statusCode).toBe(200);
+        console.log(socket.send.mock.calls);
+        expect(socket.send.mock.calls[0][0]).toHaveBeenCalledWith(
+          JSON.stringify({ reason: "NEXT_STORY", data: { activeStoryId: 2 } })
+        );
+      });
+    });
+    describe("when there is no next story", () => {
+      let result;
+      beforeEach(async () => {
+        await request(app)
+          .post("/api/room/create")
+          .send({ user: "test" });
+        await request(app)
+          .post("/api/story/add")
+          .send({ story: "new story", roomId: 1, active: true });
+        await request(app)
+          .post("/api/story/end")
+          .send({ date: "2019-05-22T07:41:17.882Z", roomId: 1, storyId: 1 });
+        result = await request(app)
+          .put("/api/story/next")
+          .send({ endedStoryId: 1, roomId: 1 });
+      });
+      it("should broadcast null next story id ", () => {
+        expect(result.statusCode).toBe(200);
+        expect(socket.send).toHaveBeenCalled();
+      });
+    });
+  });
 });

@@ -9,10 +9,22 @@ module.exports = {
     },
     useNullAsDefault: true
   },
+  // production: {
+  //   client: "postgresql",
+  //   connection: process.env.DATABASE_URL,
+  //   ssl: true,
+  //   migrations: {
+  //     directory: "./db/migrations"
+  //   }
+  // },
   production: {
     client: "postgresql",
-    connection: process.env.DATABASE_URL,
-    ssl: true,
+    connection: {
+      host: "192.168.96.104",
+      user: "admin",
+      password: "1qa2ws3ed",
+      database: "test"
+    },
     migrations: {
       directory: "./db/migrations"
     }

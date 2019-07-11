@@ -25,9 +25,30 @@ const getRoomStories = async roomId => {
 };
 
 const getNextStory = async roomId => {
+  let next;
+  await knex.transaction(async trx => {
+    const [{ order }] = await knex("stories")
+      .transacting(trx)
+      .min("order as order")
+      .whereNull("started")
+      .whereNull("ended")
+      .where({ roomId });
+    if (order) {
+      const nextStory = await knex("stories")
+        .transacting(trx)
+        .select()
+        .where({ order, roomId })
+        .first();
+      next = nextStory;
+    }
+  });
+  return next;
+};
+
+const getActiveStory = async roomId => {
   return await knex("stories")
-    .select()
-    .where({ roomId, ended: null, isActive: 0 })
+    .select("id")
+    .where({ roomId, isActive: 1 })
     .first();
 };
 
@@ -39,9 +60,37 @@ const getUserById = async id => {
 };
 
 const addStory = async (roomId, story, isActive) => {
-  return await knex("stories")
-    .insert({ roomId, description: story, isActive })
-    .returning("id");
+  let storyId;
+  await knex.transaction(async trx => {
+    const [id] = await knex("stories")
+      .transacting(trx)
+      .insert({ roomId, description: story, isActive })
+      .returning("id");
+    const [{ maxOrder }] = await knex("stories")
+      .transacting(trx)
+      .max("order as maxOrder")
+      .where({ roomId });
+    const order = maxOrder + 1 || 1;
+    await knex("stories")
+      .transacting(trx)
+      .update({ order })
+      .where({ id });
+    storyId = id;
+  });
+  return storyId;
+};
+
+const completeActiveStory = async roomId => {
+  await knex.transaction(async trx => {
+    const [{ id }] = await knex("stories")
+      .transacting(trx)
+      .select("id")
+      .where({ roomId, isActive: 1 });
+    await knex("stories")
+      .transacting(trx)
+      .update({ order: null, isActive: 0 })
+      .where({ id });
+  });
 };
 
 const checkUserUniquenessWithinRoom = async (user, roomMembers) => {
@@ -137,7 +186,7 @@ const deleteRoomVotes = async (roomId, storyId) => {
     .innerJoin("roomsMembers", "members.id", "roomsMembers.userId")
     .where({ roomId });
   await knex("stories")
-    .update({ ended: null })
+    .update({ ended: null, isActive: 1 })
     .where({ id: storyId });
   ids.forEach(
     async id =>
@@ -178,6 +227,7 @@ const startStory = async (started, id) => {
 };
 
 const endStory = async (ended, id) => {
+  console.log(id);
   await knex("stories")
     .update({ ended })
     .where({ id });
@@ -195,12 +245,42 @@ const resetTimer = async (storyId, newStart) => {
     .where({ id: storyId });
 };
 
+const reorderStories = async (roomId, sourceId, destinationId) => {
+  const { order: newLocationOrder } = await knex("stories")
+    .select("order")
+    .where({ id: destinationId, roomId })
+    .first();
+  const { order: movedOrder } = await knex("stories")
+    .select("order")
+    .where({ id: sourceId, roomId })
+    .first();
+
+  await knex.transaction(async trx => {
+    await knex("stories")
+      .transacting(trx)
+      .increment("order", 1)
+      .whereBetween("order", [newLocationOrder, movedOrder - 1]);
+    await knex("stories")
+      .transacting(trx)
+      .update({ order: newLocationOrder })
+      .where({ id: sourceId, roomId });
+  });
+
+  const ids = await knex("stories")
+    .select("id")
+    .whereNotNull("order")
+    .orderBy("order");
+  return ids;
+};
+
 module.exports = {
   getRoomMembers,
   getRoomStories,
+  getActiveStory,
   getNextStory,
   getUserById,
   getRoomStats,
+  completeActiveStory,
   checkUserUniquenessWithinRoom,
   checkRoomAvailability,
   checkUserVotes,
@@ -217,5 +297,6 @@ module.exports = {
   addStory,
   editStory,
   resetTimer,
-  disconnectUser
+  disconnectUser,
+  reorderStories
 };

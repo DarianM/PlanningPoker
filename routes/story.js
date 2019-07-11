@@ -6,10 +6,19 @@ const validate = require("../validations");
 const db = require("../db/db_utils");
 let serverConfig = require("../ws/wsServerConfig");
 
-router.post("/add", validate.newStory, async (req, res) => {
-  const { story, roomId, active } = req.body;
-  const [id] = await db.addStory(roomId, story, active);
+router.put("/reorder", async (req, res) => {
   const { server } = serverConfig;
+  const { roomId, sourceId, destinationId } = req.body;
+  const storiesOrder = await db.reorderStories(roomId, sourceId, destinationId);
+  const storiesIds = storiesOrder.map(story => story.id);
+  server.broadcast(roomId, { reason: "REORDER_STORIES", data: { storiesIds } });
+  res.send({}).status(200);
+});
+
+router.post("/add", validate.newStory, async (req, res) => {
+  const { server } = serverConfig;
+  const { story, roomId, active } = req.body;
+  const id = await db.addStory(roomId, story, active);
   server.broadcast(roomId, {
     reason: "NEW_STORY",
     data: { story, id }
@@ -36,6 +45,7 @@ router.put("/rename", validate.renameStory, async (req, res) => {
 
 router.post("/start", validate.date, validate.gameStart, async (req, res) => {
   const { date, roomId, storyId } = req.body;
+  console.log(date);
   await db.startStory(date, storyId);
 
   const data = {
@@ -43,14 +53,14 @@ router.post("/start", validate.date, validate.gameStart, async (req, res) => {
     data: { date }
   };
   const { server } = serverConfig;
-
   server.broadcast(roomId, data);
   res.send({}).status(200);
 });
 
 router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   const { date, roomId, storyId } = req.body;
-  await db.endStory(date, storyId);
+  const endDate = new Date(Date.now());
+  await db.endStory(endDate, storyId);
 
   const data = {
     reason: "STORY_ENDED",
@@ -59,12 +69,6 @@ router.post("/end", validate.date, validate.gameStart, async (req, res) => {
   const { server } = serverConfig;
 
   server.broadcast(roomId, data);
-  res.send({}).status(200);
-});
-
-router.put("/keep-alive", validate.storyId, async (req, res) => {
-  const { storyId } = req.body;
-  await db.resetStory(storyId);
   res.send({}).status(200);
 });
 
@@ -81,8 +85,11 @@ router.put("/reset", async (req, res) => {
 
 router.put("/next", async (req, res) => {
   const { server } = serverConfig;
-  const { endedStoryId, roomId } = req.body;
-  await db.update("stories", "isActive", 0, { id: endedStoryId });
+  const { roomId } = req.body;
+  const activeStory = await db.getActiveStory(roomId);
+  if (activeStory) {
+    await db.completeActiveStory(roomId);
+  }
   const next = await db.getNextStory(roomId);
   if (next) {
     const date = new Date(Date.now());
