@@ -195,6 +195,19 @@ export default function(state = initialState, action) {
     };
   }
 
+  if (action.type === "REORDER_STORIES") {
+    const order = action.payload;
+    const reorder = {};
+    order.forEach(s => {
+      reorder[s] = state.byId[s];
+    });
+    console.log(reorder);
+    return {
+      ...state,
+      byId: reorder
+    };
+  }
+
   if (action.type === "RESET_STORY") {
     const { activeStoryId } = action.payload;
     return {

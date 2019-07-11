@@ -10,7 +10,8 @@ import * as actions from "../../actions/storyActions";
 function mapDispatchToProps(dispatch) {
   return {
     newStory: story => dispatch(actions.newStory(story)),
-    deleteStory: story => dispatch(actions.deleteStory(story))
+    deleteStory: story => dispatch(actions.deleteStory(story)),
+    reorderStories: story => dispatch(actions.reorderStories(story))
   };
 }
 
@@ -32,9 +33,14 @@ export class ConnectedStories extends Component {
       completed: 0,
       all: 0
     };
+    console.log("CONSTRUCTOR");
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
     this.getCurrentShowClassNames = this.getCurrentShowClassNames.bind(this);
+
+    this.dragStart = this.dragStart.bind(this);
+    this.dragEnd = this.dragEnd.bind(this);
+    this.dragOver = this.dragOver.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +66,43 @@ export class ConnectedStories extends Component {
   handleNewStory(storyModal) {
     this.setState({ add: storyModal });
     if (!storyModal) document.body.classList.remove("modal-open");
+  }
+
+  dragStart(e, id) {
+    console.log("this is Start!!!");
+    this.draggedItem = id;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.target.parentNode);
+    e.dataTransfer.setDragImage(e.target.parentNode, 20, 20);
+  }
+
+  dragEnd() {
+    console.log("this is in dragEnd");
+    console.log(`${this.draggedOverItem} this is dragged over item`);
+    console.log(`${this.draggedItem} this is dragged item`);
+    if (this.draggedItem === this.draggedOverItem) return;
+    const { reorderStories } = this.props;
+    reorderStories({
+      draggedItem: this.draggedItem,
+      draggedOverItem: this.draggedOverItem
+    });
+    this.draggedItem = null;
+  }
+
+  dragOver(e, draggedOverItem) {
+    e.preventDefault();
+    this.draggedOverItem = draggedOverItem;
+    // const { showStories } = this.state;
+    // console.log(`${showStories} INITIAL`);
+    // console.log("**************drag Over");
+    // console.log(`${draggedOverItem} this is dragged over item`);
+    // console.log(`${this.draggedItem} this is dragged item`);
+    // if (this.draggedItem === draggedOverItem) return;
+    // const items = showStories.filter(item => item !== this.draggedItem);
+    // console.log(items);
+    // items.splice(showStories.indexOf(draggedOverItem), 0, this.draggedItem);
+    // console.log(`${items} FINAL`);
+    // reorderStories(this.draggedItem, draggedOverItem);
   }
 
   showStories(list) {
@@ -151,7 +194,7 @@ export class ConnectedStories extends Component {
             </button>
           </li>
         </ul>
-        <div id="roomstory" className="todaystory">
+        <div className="todaystory">
           <table className="storytable">
             <tbody>
               {showStories.map(id => {
@@ -164,6 +207,9 @@ export class ConnectedStories extends Component {
                     id={storyId}
                     activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
+                    dragStart={this.dragStart}
+                    dragOver={this.dragOver}
+                    dragEnd={this.dragEnd}
                   />
                 );
               })}

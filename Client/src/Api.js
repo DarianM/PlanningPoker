@@ -58,6 +58,9 @@ const resetTimer = (roomId, storyId) =>
 const next = (endedStoryId, roomId) =>
   fetchMethod(PUT, "/api/story/next", { endedStoryId, roomId });
 
+const reorder = (roomId, sourceId, destinationId) =>
+  fetchMethod(PUT, "/api/story/reorder", { roomId, sourceId, destinationId });
+
 export {
   vote,
   join,
@@ -70,5 +73,6 @@ export {
   updateRoomName,
   addStory,
   editStory,
-  resetTimer
+  resetTimer,
+  reorder
 };

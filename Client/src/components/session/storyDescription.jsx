@@ -22,12 +22,20 @@ class StoryDescription extends Component {
   }
 
   render() {
-    const { story, activeStoryId, deleteStory, id, roomId } = this.props;
+    const {
+      story,
+      activeStoryId,
+      deleteStory,
+      id,
+      roomId,
+      dragStart,
+      dragOver,
+      dragEnd
+    } = this.props;
     const { show } = this.state;
-
     return (
       <>
-        <tr>
+        <tr onDragOver={e => dragOver(e, id)}>
           <td>
             <button
               type="button"
@@ -35,7 +43,12 @@ class StoryDescription extends Component {
               tabIndex="0"
               className="table-title"
             >
-              <i className="fas fa-list-ul" />
+              <i
+                className="fas fa-list-ul"
+                draggable
+                onDragStart={e => dragStart(e, id)}
+                onDragEnd={dragEnd}
+              />
               <span>{story}</span>
             </button>
           </td>

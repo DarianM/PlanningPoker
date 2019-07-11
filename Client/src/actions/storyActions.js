@@ -226,6 +226,19 @@ function movingToNextStory(payload) {
   };
 }
 
+function reorderStories(payload) {
+  const { draggedItem: sourceId, draggedOverItem: destinationId } = payload;
+  console.log(sourceId, destinationId);
+  return async (dispatch, getState) => {
+    const roomId = getState().gameRoom.id;
+    try {
+      await Api.reorder(roomId, sourceId, destinationId);
+    } catch (error) {
+      error.map(e => dispatch(addToast({ text: e.message })));
+    }
+  };
+}
+
 export {
   addVote,
   flipCards,
@@ -245,5 +258,6 @@ export {
   resetTimer,
   resetingStory,
   resetingTimer,
-  renamingStory
+  renamingStory,
+  reorderStories
 };
