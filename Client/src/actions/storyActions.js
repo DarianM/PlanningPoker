@@ -239,6 +239,10 @@ function reorderStories(payload) {
   };
 }
 
+function reorderingStories(payload) {
+  return { type: "REORDER_STORIES", payload };
+}
+
 export {
   addVote,
   flipCards,
@@ -259,5 +263,6 @@ export {
   resetingStory,
   resetingTimer,
   renamingStory,
-  reorderStories
+  reorderStories,
+  reorderingStories
 };
