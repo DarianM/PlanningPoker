@@ -33,7 +33,6 @@ export class ConnectedStories extends Component {
       completed: 0,
       all: 0
     };
-    console.log("CONSTRUCTOR");
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
     this.getCurrentShowClassNames = this.getCurrentShowClassNames.bind(this);
@@ -69,7 +68,6 @@ export class ConnectedStories extends Component {
   }
 
   dragStart(e, id) {
-    console.log("this is Start!!!");
     this.draggedItem = id;
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/html", e.target.parentNode);
@@ -77,9 +75,6 @@ export class ConnectedStories extends Component {
   }
 
   dragEnd() {
-    console.log("this is in dragEnd");
-    console.log(`${this.draggedOverItem} this is dragged over item`);
-    console.log(`${this.draggedItem} this is dragged item`);
     if (this.draggedItem === this.draggedOverItem) return;
     const { reorderStories } = this.props;
     reorderStories({
@@ -92,17 +87,11 @@ export class ConnectedStories extends Component {
   dragOver(e, draggedOverItem) {
     e.preventDefault();
     this.draggedOverItem = draggedOverItem;
-    // const { showStories } = this.state;
-    // console.log(`${showStories} INITIAL`);
-    // console.log("**************drag Over");
-    // console.log(`${draggedOverItem} this is dragged over item`);
-    // console.log(`${this.draggedItem} this is dragged item`);
-    // if (this.draggedItem === draggedOverItem) return;
-    // const items = showStories.filter(item => item !== this.draggedItem);
-    // console.log(items);
-    // items.splice(showStories.indexOf(draggedOverItem), 0, this.draggedItem);
-    // console.log(`${items} FINAL`);
-    // reorderStories(this.draggedItem, draggedOverItem);
+    const { showStories } = this.state;
+    if (this.draggedItem === draggedOverItem) return;
+    const items = showStories.filter(item => item !== this.draggedItem);
+    items.splice(showStories.indexOf(draggedOverItem), 0, this.draggedItem);
+    this.setState({ showStories: items });
   }
 
   showStories(list) {
@@ -210,6 +199,7 @@ export class ConnectedStories extends Component {
                     dragStart={this.dragStart}
                     dragOver={this.dragOver}
                     dragEnd={this.dragEnd}
+                    currentDragItem={this.draggedItem}
                   />
                 );
               })}

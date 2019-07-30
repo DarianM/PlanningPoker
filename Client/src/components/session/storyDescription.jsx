@@ -30,12 +30,16 @@ class StoryDescription extends Component {
       roomId,
       dragStart,
       dragOver,
-      dragEnd
+      dragEnd,
+      currentDragItem
     } = this.props;
     const { show } = this.state;
     return (
       <>
-        <tr onDragOver={e => dragOver(e, id)}>
+        <tr
+          onDragOver={e => dragOver(e, id)}
+          className={id === currentDragItem && "story-drag-hide"}
+        >
           <td>
             <button
               type="button"

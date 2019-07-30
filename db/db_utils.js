@@ -195,6 +195,42 @@ const resetTimer = async (storyId, newStart) => {
     .where({ id: storyId });
 };
 
+const reorderStories = async (roomId, sourceId, destinationId) => {
+  const { order: newLocationOrder } = await knex("stories")
+    .select("order")
+    .where({ id: destinationId, roomId })
+    .first();
+  const { order: movedOrder } = await knex("stories")
+    .select("order")
+    .where({ id: sourceId, roomId })
+    .first();
+
+  await knex.transaction(async trx => {
+    if (newLocationOrder > movedOrder)
+      await knex("stories")
+        .transacting(trx)
+        .increment("order", -1)
+        .whereBetween("order", [movedOrder + 1, newLocationOrder]);
+    else
+      await knex("stories")
+        .transacting(trx)
+        .increment("order", 1)
+        .whereBetween("order", [newLocationOrder, movedOrder - 1]);
+
+    await knex("stories")
+      .transacting(trx)
+      .update({ order: newLocationOrder })
+      .where({ id: sourceId, roomId });
+  });
+
+  const ids = await knex("stories")
+    .select("id")
+    .whereNotNull("order")
+    .where({ roomId })
+    .orderBy("order");
+  return ids;
+};
+
 module.exports = {
   getRoomMembers,
   getRoomStories,
@@ -216,6 +252,7 @@ module.exports = {
   update,
   addStory,
   editStory,
+  reorderStories,
   resetTimer,
   disconnectUser
 };

@@ -228,7 +228,6 @@ function movingToNextStory(payload) {
 
 function reorderStories(payload) {
   const { draggedItem: sourceId, draggedOverItem: destinationId } = payload;
-  console.log(sourceId, destinationId);
   return async (dispatch, getState) => {
     const roomId = getState().gameRoom.id;
     try {

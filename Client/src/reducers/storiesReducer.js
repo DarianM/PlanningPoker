@@ -196,16 +196,10 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === "REORDER_STORIES") {
-    console.log(action.payload);
-    const order = action.payload;
-    const reorder = {};
-    order.forEach(s => {
-      reorder[s] = state.byId[s];
-    });
-    console.log(reorder);
+    const { storiesIds: order } = action.payload;
     return {
       ...state,
-      byId: reorder
+      allIds: order
     };
   }
 
