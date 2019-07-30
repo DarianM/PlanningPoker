@@ -256,10 +256,17 @@ const reorderStories = async (roomId, sourceId, destinationId) => {
     .first();
 
   await knex.transaction(async trx => {
-    await knex("stories")
-      .transacting(trx)
-      .increment("order", 1)
-      .whereBetween("order", [newLocationOrder, movedOrder - 1]);
+    if (newLocationOrder > movedOrder)
+      await knex("stories")
+        .transacting(trx)
+        .increment("order", -1)
+        .whereBetween("order", [movedOrder + 1, newLocationOrder]);
+    else
+      await knex("stories")
+        .transacting(trx)
+        .increment("order", 1)
+        .whereBetween("order", [newLocationOrder, movedOrder - 1]);
+
     await knex("stories")
       .transacting(trx)
       .update({ order: newLocationOrder })
@@ -269,6 +276,7 @@ const reorderStories = async (roomId, sourceId, destinationId) => {
   const ids = await knex("stories")
     .select("id")
     .whereNotNull("order")
+    .where({ roomId })
     .orderBy("order");
   return ids;
 };
@@ -296,6 +304,7 @@ module.exports = {
   update,
   addStory,
   editStory,
+  reorderStories,
   resetTimer,
   disconnectUser,
   reorderStories

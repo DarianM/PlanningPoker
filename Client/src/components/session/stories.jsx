@@ -10,7 +10,8 @@ import * as actions from "../../actions/storyActions";
 function mapDispatchToProps(dispatch) {
   return {
     newStory: story => dispatch(actions.newStory(story)),
-    deleteStory: story => dispatch(actions.deleteStory(story))
+    deleteStory: story => dispatch(actions.deleteStory(story)),
+    reorderStories: story => dispatch(actions.reorderStories(story))
   };
 }
 
@@ -35,6 +36,10 @@ export class ConnectedStories extends Component {
     this.handleNewStory = this.handleNewStory.bind(this);
     this.showStories = this.showStories.bind(this);
     this.getCurrentShowClassNames = this.getCurrentShowClassNames.bind(this);
+
+    this.dragStart = this.dragStart.bind(this);
+    this.dragEnd = this.dragEnd.bind(this);
+    this.dragOver = this.dragOver.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +65,33 @@ export class ConnectedStories extends Component {
   handleNewStory(storyModal) {
     this.setState({ add: storyModal });
     if (!storyModal) document.body.classList.remove("modal-open");
+  }
+
+  dragStart(e, id) {
+    this.draggedItem = id;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.target.parentNode);
+    e.dataTransfer.setDragImage(e.target.parentNode, 20, 20);
+  }
+
+  dragEnd() {
+    if (this.draggedItem === this.draggedOverItem) return;
+    const { reorderStories } = this.props;
+    reorderStories({
+      draggedItem: this.draggedItem,
+      draggedOverItem: this.draggedOverItem
+    });
+    this.draggedItem = null;
+  }
+
+  dragOver(e, draggedOverItem) {
+    e.preventDefault();
+    this.draggedOverItem = draggedOverItem;
+    const { showStories } = this.state;
+    if (this.draggedItem === draggedOverItem) return;
+    const items = showStories.filter(item => item !== this.draggedItem);
+    items.splice(showStories.indexOf(draggedOverItem), 0, this.draggedItem);
+    this.setState({ showStories: items });
   }
 
   showStories(list) {
@@ -151,7 +183,7 @@ export class ConnectedStories extends Component {
             </button>
           </li>
         </ul>
-        <div id="roomstory" className="todaystory">
+        <div className="todaystory">
           <table className="storytable">
             <tbody>
               {showStories.map(id => {
@@ -164,6 +196,10 @@ export class ConnectedStories extends Component {
                     id={storyId}
                     activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
+                    dragStart={this.dragStart}
+                    dragOver={this.dragOver}
+                    dragEnd={this.dragEnd}
+                    currentDragItem={this.draggedItem}
                   />
                 );
               })}

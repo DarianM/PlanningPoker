@@ -235,6 +235,22 @@ function movingToNextStory(payload) {
   };
 }
 
+function reorderStories(payload) {
+  const { draggedItem: sourceId, draggedOverItem: destinationId } = payload;
+  return async (dispatch, getState) => {
+    const roomId = getState().gameRoom.id;
+    try {
+      await Api.reorder(roomId, sourceId, destinationId);
+    } catch (error) {
+      error.map(e => dispatch(addToast({ text: e.message })));
+    }
+  };
+}
+
+function reorderingStories(payload) {
+  return { type: "REORDER_STORIES", payload };
+}
+
 export {
   addVote,
   flipCards,
@@ -254,5 +270,7 @@ export {
   resetTimer,
   resetingStory,
   resetingTimer,
-  renamingStory
+  renamingStory,
+  reorderStories,
+  reorderingStories
 };

@@ -14,7 +14,8 @@ import {
   renamingStory,
   flippingCards,
   deletingVotes,
-  resetingTimer
+  resetingTimer,
+  reorderingStories
 } from "../actions/storyActions";
 import { send } from "../actions/websocketActions";
 import {
@@ -94,6 +95,10 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "NEXT_STORY") {
       store.dispatch(movingToNextStory(data));
+    }
+
+    if (reason === "REORDER_STORIES") {
+      store.dispatch(reorderingStories(data));
     }
     return {};
   }
