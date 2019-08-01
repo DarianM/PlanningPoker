@@ -100,10 +100,13 @@ export default function(state = initialState, action) {
   }
 
   if (action.type === DELETE_STORY) {
-    // should be treated on the server first
     const { id } = action.payload;
-    const newList = state.stories.filter(e => e.id !== id);
-    return { ...state, stories: [...newList] };
+    const newList = state.allIds.filter(e => e !== id);
+    const obj = Object.fromEntries(
+      Object.entries(state.byId).filter(k => Number(k[0]) !== id)
+    );
+
+    return { ...state, byId: obj, allIds: [...newList] };
   }
 
   if (action.type === REMOVE_MEMBER) {
@@ -220,6 +223,10 @@ export default function(state = initialState, action) {
   if (action.type === "NEXT_STORY") {
     const { activeStoryId } = action.payload;
     return { ...state, activeStoryId };
+  }
+
+  if (action.type === "CHANGE_VIEW") {
+    return { ...state, currentView: action.payload };
   }
 
   return state;
