@@ -239,6 +239,12 @@ const editStory = async (description, id) => {
     .where({ id });
 };
 
+const deleteStory = async id => {
+  await knex("stories")
+    .where({ id })
+    .del();
+};
+
 const resetTimer = async (storyId, newStart) => {
   await knex("stories")
     .update({ started: newStart })
@@ -305,6 +311,7 @@ module.exports = {
   addStory,
   editStory,
   reorderStories,
+  deleteStory,
   resetTimer,
   disconnectUser,
   reorderStories

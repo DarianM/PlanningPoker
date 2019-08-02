@@ -2,11 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Story from "./storyModal";
 import Modal from "../modals";
+import RemoveDialogue from "./storyRemove";
 
 class StoryDescription extends Component {
   constructor(props) {
     super(props);
-    this.state = { show: false };
+    this.state = { show: false, remove: false };
+    this.openRemoveDialogue = this.openRemoveDialogue.bind(this);
+    this.closeRemoveDialogue = this.closeRemoveDialogue.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.onEditStory = this.onEditStory.bind(this);
   }
@@ -21,6 +24,16 @@ class StoryDescription extends Component {
     document.body.classList.remove("modal-open");
   }
 
+  openRemoveDialogue() {
+    this.setState({ remove: true });
+    document.body.classList.add("modal-open");
+  }
+
+  closeRemoveDialogue() {
+    this.setState({ remove: false });
+    document.body.classList.remove("modal-open");
+  }
+
   render() {
     const {
       story,
@@ -28,12 +41,13 @@ class StoryDescription extends Component {
       deleteStory,
       id,
       roomId,
+      view,
       dragStart,
       dragOver,
       dragEnd,
       currentDragItem
     } = this.props;
-    const { show } = this.state;
+    const { show, remove } = this.state;
     return (
       <>
         <tr
@@ -47,12 +61,14 @@ class StoryDescription extends Component {
               tabIndex="0"
               className="table-title"
             >
-              <i
-                className="fas fa-list-ul"
-                draggable
-                onDragStart={e => dragStart(e, id)}
-                onDragEnd={dragEnd}
-              />
+              {view === "active" && (
+                <i
+                  className="fas fa-list-ul"
+                  draggable
+                  onDragStart={e => dragStart(e, id)}
+                  onDragEnd={dragEnd}
+                />
+              )}
               <span>{story}</span>
             </button>
           </td>
@@ -60,12 +76,7 @@ class StoryDescription extends Component {
             {id !== activeStoryId && (
               <i
                 onClick={() => {
-                  if (
-                    window.confirm(
-                      "Are you sure you wish to delete this story?"
-                    )
-                  )
-                    deleteStory({ id });
+                  this.openRemoveDialogue();
                 }}
                 onKeyDown={e => {
                   e.preventDefault();
@@ -77,6 +88,15 @@ class StoryDescription extends Component {
             )}
           </td>
           <td>
+            {remove && (
+              <Modal cancel={this.closeRemoveDialogue}>
+                <RemoveDialogue
+                  id={id}
+                  remove={deleteStory}
+                  abort={this.closeRemoveDialogue}
+                />
+              </Modal>
+            )}
             {show && (
               <Modal cancel={this.hideModal}>
                 <Story

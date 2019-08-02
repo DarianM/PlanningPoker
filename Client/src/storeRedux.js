@@ -16,7 +16,8 @@ const initialStore = {
   stories: {
     byId: {},
     allIds: [],
-    activeStoryId: undefined
+    activeStoryId: undefined,
+    currentView: "active"
   }
 };
 

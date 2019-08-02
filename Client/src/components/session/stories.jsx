@@ -11,14 +11,32 @@ function mapDispatchToProps(dispatch) {
   return {
     newStory: story => dispatch(actions.newStory(story)),
     deleteStory: story => dispatch(actions.deleteStory(story)),
-    reorderStories: story => dispatch(actions.reorderStories(story))
+    reorderStories: story => dispatch(actions.reorderStories(story)),
+    reorderingStories: ids => dispatch(actions.reorderingStories(ids)),
+    changeView: view => dispatch(actions.changeStoriesView(view))
   };
 }
 
 const mapStateToProps = state => {
+  const view = state.stories.currentView;
+  const { stories } = state;
+  const filterStoriesIds = storyFilter =>
+    stories.allIds.filter(id => storyFilter(stories.byId[id]));
+
+  const filteredStories = {
+    all: stories.allIds,
+    active: filterStoriesIds(s => Boolean(!s.end)),
+    completed: filterStoriesIds(s => Boolean(s.end))
+  };
+
   return {
     roomId: state.gameRoom.id,
-    stories: state.stories
+    stories,
+    showStories: filteredStories[view],
+    currentShow: view,
+    active: filteredStories.active.length,
+    completed: filteredStories.completed.length,
+    all: filteredStories.all.length
   };
 };
 
@@ -27,14 +45,10 @@ export class ConnectedStories extends Component {
     super(props);
     this.state = {
       add: true,
-      showStories: [],
-      currentShow: "active",
-      active: 0,
-      completed: 0,
-      all: 0
+      order: props.showStories,
+      isOrdering: false
     };
     this.handleNewStory = this.handleNewStory.bind(this);
-    this.showStories = this.showStories.bind(this);
     this.getCurrentShowClassNames = this.getCurrentShowClassNames.bind(this);
 
     this.dragStart = this.dragStart.bind(this);
@@ -42,20 +56,8 @@ export class ConnectedStories extends Component {
     this.dragOver = this.dragOver.bind(this);
   }
 
-  componentDidMount() {
-    this.showStories("active");
-  }
-
-  componentDidUpdate(prevProps) {
-    const { stories } = this.props;
-    if (stories !== prevProps.stories) {
-      const { currentShow } = this.state;
-      this.showStories(currentShow);
-    }
-  }
-
   getCurrentShowClassNames(list) {
-    const { currentShow: clicked } = this.state;
+    const { currentShow: clicked } = this.props;
     return className({
       "story-state-choice": true,
       "story-state-clicked": list === clicked
@@ -75,6 +77,7 @@ export class ConnectedStories extends Component {
   }
 
   dragEnd() {
+    this.setState({ isOrdering: false });
     if (this.draggedItem === this.draggedOverItem) return;
     const { reorderStories } = this.props;
     reorderStories({
@@ -87,36 +90,28 @@ export class ConnectedStories extends Component {
   dragOver(e, draggedOverItem) {
     e.preventDefault();
     this.draggedOverItem = draggedOverItem;
-    const { showStories } = this.state;
+    const { showStories } = this.props;
     if (this.draggedItem === draggedOverItem) return;
     const items = showStories.filter(item => item !== this.draggedItem);
     items.splice(showStories.indexOf(draggedOverItem), 0, this.draggedItem);
-    this.setState({ showStories: items });
-  }
-
-  showStories(list) {
-    const { stories } = this.props;
-    const filterStoriesIds = storyFilter =>
-      stories.allIds.filter(id => storyFilter(stories.byId[id]));
-
-    const storiesIds = {
-      all: stories.allIds,
-      active: filterStoriesIds(s => Boolean(!s.end)),
-      completed: filterStoriesIds(s => Boolean(s.end))
-    };
-
-    this.setState({
-      showStories: storiesIds[list],
-      active: storiesIds.active.length,
-      completed: storiesIds.completed.length,
-      all: storiesIds.all.length,
-      currentShow: list
-    });
+    this.setState({ isOrdering: true, order: items });
   }
 
   render() {
-    const { stories, roomId, newStory, deleteStory } = this.props;
-    const { add, showStories, active, completed, all } = this.state;
+    const {
+      stories,
+      roomId,
+      newStory,
+      deleteStory,
+      changeView,
+      currentShow,
+      showStories,
+      active,
+      completed,
+      all
+    } = this.props;
+    const { add, order, isOrdering } = this.state;
+    const ids = isOrdering ? order : showStories;
     if (add) document.body.classList.add("modal-open");
     return (
       <div className="stories">
@@ -140,7 +135,7 @@ export class ConnectedStories extends Component {
               className={this.getCurrentShowClassNames("active")}
               onClick={e => {
                 e.preventDefault();
-                this.showStories("active");
+                changeView("active");
               }}
             >
               <span className="active-story">{`Active (${active})`}</span>
@@ -152,7 +147,7 @@ export class ConnectedStories extends Component {
               className={this.getCurrentShowClassNames("completed")}
               onClick={e => {
                 e.preventDefault();
-                this.showStories("completed");
+                changeView("completed");
               }}
             >
               <span>{`Completed (${completed})`}</span>
@@ -164,7 +159,7 @@ export class ConnectedStories extends Component {
               className={this.getCurrentShowClassNames("all")}
               onClick={e => {
                 e.preventDefault();
-                this.showStories("all");
+                changeView("all");
               }}
             >
               <span>{`All (${all})`}</span>
@@ -186,7 +181,7 @@ export class ConnectedStories extends Component {
         <div className="todaystory">
           <table className="storytable">
             <tbody>
-              {showStories.map(id => {
+              {ids.map(id => {
                 const { id: storyId, text } = stories.byId[id];
                 return (
                   <StoryDescription
@@ -194,6 +189,7 @@ export class ConnectedStories extends Component {
                     story={text}
                     roomId={roomId}
                     id={storyId}
+                    view={currentShow}
                     activeStoryId={stories.activeStoryId}
                     deleteStory={deleteStory}
                     dragStart={this.dragStart}

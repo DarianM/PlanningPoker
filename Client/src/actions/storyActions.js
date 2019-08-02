@@ -167,6 +167,16 @@ function endingStory(payload) {
 
 function deleteStory(payload) {
   // to be treated on server
+  return async (dispatch, getState) => {
+    const { id } = payload;
+    const roomId = getState().gameRoom.id;
+    try {
+      await Api.deleteStory(id, roomId);
+    } catch (error) {}
+  };
+}
+
+function deletingStory(payload) {
   return {
     type: DELETE_STORY,
     payload
@@ -251,6 +261,13 @@ function reorderingStories(payload) {
   return { type: "REORDER_STORIES", payload };
 }
 
+function changeStoriesView(payload) {
+  return {
+    type: "CHANGE_VIEW",
+    payload
+  };
+}
+
 export {
   addVote,
   flipCards,
@@ -272,5 +289,7 @@ export {
   resetingTimer,
   renamingStory,
   reorderStories,
-  reorderingStories
+  reorderingStories,
+  deletingStory,
+  changeStoriesView
 };

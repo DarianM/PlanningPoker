@@ -52,6 +52,9 @@ const addStory = (story, roomId, active) =>
 const editStory = (story, storyId, roomId) =>
   fetchMethod(PUT, "/api/story/rename", { story, storyId, roomId });
 
+const deleteStory = (id, roomId) =>
+  fetchMethod(DELETE, "/api/story/delete", { id, roomId });
+
 const resetTimer = (roomId, storyId) =>
   fetchMethod(PUT, "/api/story/reset", { roomId, storyId });
 
@@ -74,5 +77,6 @@ export {
   addStory,
   editStory,
   resetTimer,
-  reorder
+  reorder,
+  deleteStory
 };

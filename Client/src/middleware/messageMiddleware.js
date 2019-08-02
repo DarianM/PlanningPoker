@@ -12,6 +12,7 @@ import {
   endingStory,
   movingToNextStory,
   renamingStory,
+  deletingStory,
   flippingCards,
   deletingVotes,
   resetingTimer,
@@ -71,6 +72,9 @@ const messageMiddleware = fetch => store => next => async action => {
     }
     if (reason === "STORY_ENDED") {
       store.dispatch(endingStory(data));
+    }
+    if (reason === "STORY_DELETED") {
+      store.dispatch(deletingStory(data));
     }
     if (reason === "CLEAR_VOTES") {
       store.dispatch(deletingVotes());

@@ -26,6 +26,14 @@ router.post("/add", validate.newStory, async (req, res) => {
   res.send({}).status(200);
 });
 
+router.delete("/delete", async (req, res) => {
+  const { server } = serverConfig;
+  const { id, roomId } = req.body;
+  await db.deleteStory(id);
+  server.broadcast(roomId, { reason: "STORY_DELETED", data: { id } });
+  res.send({}).status(200);
+});
+
 router.put("/rename", validate.renameStory, async (req, res) => {
   const { story: description, storyId: id, roomId } = req.body;
   const story = await db.checkStory(id);
